@@ -36,7 +36,7 @@ export class CustomerLayout implements OnInit {
   constructor(
     public notifService: NotificationService,
     public dataService: DataService,
-    private authService: AuthService,
+    public authService: AuthService,
     private bookingService: BookingService,
     private themeService: ThemeService,
   ) {}

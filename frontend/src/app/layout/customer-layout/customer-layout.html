@@ -46,7 +46,7 @@
           <button pRipple class="relative overflow-hidden w-full p-link flex align-items-center p-2 pl-3 text-color hover:surface-200 border-noround border-top-1 surface-border mt-2">
             <p-avatar icon="pi pi-user" styleClass="mr-2 bg-teal-100 text-teal-600" shape="circle"></p-avatar>
             <span class="flex flex-column text-left">
-              <span class="font-bold text-900">Hunain Abbas</span>
+              <span class="font-bold text-900">{{authService.currentUser()?.firstName || ''}} {{authService.currentUser()?.lastName || ''}}</span>
               <span class="text-sm text-600">Customer</span>
             </span>
           </button>

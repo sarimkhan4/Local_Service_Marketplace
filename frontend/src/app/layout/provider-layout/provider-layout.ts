@@ -33,7 +33,7 @@ export class ProviderLayout implements OnInit {
 
   constructor(
     public notifService: NotificationService,
-    private authService: AuthService,
+    public authService: AuthService,
     private themeService: ThemeService,
   ) {}
 
