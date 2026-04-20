@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, BadRequestException } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 
 /**
@@ -15,11 +15,19 @@ export class PaymentsController {
     @Body('method') method: string,
     @Body('amount') amount: number
   ) {
-    return this.paymentsService.processPayment(+bookingId, method, amount);
+    const id = +bookingId;
+    if (isNaN(id)) {
+      throw new BadRequestException('bookingId must be a valid number');
+    }
+    return this.paymentsService.processPayment(id, method, amount);
   }
 
   @Get('booking/:bookingId')
   getPayment(@Param('bookingId') bookingId: string) {
-    return this.paymentsService.getPaymentByBooking(+bookingId);
+    const id = +bookingId;
+    if (isNaN(id)) {
+      throw new BadRequestException('bookingId must be a valid number');
+    }
+    return this.paymentsService.getPaymentByBooking(id);
   }
 }

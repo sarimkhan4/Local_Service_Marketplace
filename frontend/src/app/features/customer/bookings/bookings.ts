@@ -64,12 +64,12 @@ export class Bookings {
   ];
 
   bookings = signal<CustomerBooking[]>([
-    { id: 'b1', serviceName: 'Full Home Deep Clean', providerName: 'Pro Cleaning Services', providerInitials: 'PC', providerColor: '#14b8a6', date: '2026-05-12', time: '09:00', price: 150, status: 'Completed', address: 'House 12, Gulshan, Karachi', serviceId: 's1', providerId: 'p1' },
-    { id: 'b2', serviceName: 'Pipe Leak Repair', providerName: 'Mario Bros Plumbing', providerInitials: 'MB', providerColor: '#6366f1', date: '2026-04-28', time: '11:00', price: 85, status: 'Completed', address: 'House 12, Gulshan, Karachi', serviceId: 's2', providerId: 'p2' },
-    { id: 'b3', serviceName: 'Electrical Panel Upgrade', providerName: 'Volt Masters', providerInitials: 'VM', providerColor: '#f59e0b', date: '2026-04-20', time: '10:00', price: 200, status: 'Confirmed', address: 'House 12, Gulshan, Karachi', serviceId: 's3', providerId: 'p3' },
-    { id: 'b4', serviceName: 'Window Washing', providerName: 'Crystal Clear', providerInitials: 'CC', providerColor: '#ef4444', date: '2026-04-10', time: '14:00', price: 75, status: 'Cancelled', address: 'House 12, Gulshan, Karachi', serviceId: 's4', providerId: 'p4' },
-    { id: 'b5', serviceName: 'Post-Construction Cleanup', providerName: 'Build Clean Co.', providerInitials: 'BC', providerColor: '#8b5cf6', date: '2026-03-30', time: '08:00', price: 320, status: 'Completed', address: 'House 12, Gulshan, Karachi', serviceId: 's5', providerId: 'p5' },
-    { id: 'b6', serviceName: 'Lawn Mowing & Edging', providerName: 'Green Thumb', providerInitials: 'GT', providerColor: '#22c55e', date: '2026-04-25', time: '09:00', price: 60, status: 'Pending', address: 'House 12, Gulshan, Karachi', serviceId: 's6', providerId: 'p6' },
+    { id: '1', serviceName: 'Full Home Deep Clean', providerName: 'Pro Cleaning Services', providerInitials: 'PC', providerColor: '#14b8a6', date: '2026-05-12', time: '09:00', price: 150, status: 'Completed', address: 'House 12, Gulshan, Karachi', serviceId: 's1', providerId: 'p1' },
+    { id: '2', serviceName: 'Pipe Leak Repair', providerName: 'Mario Bros Plumbing', providerInitials: 'MB', providerColor: '#6366f1', date: '2026-04-28', time: '11:00', price: 85, status: 'Completed', address: 'House 12, Gulshan, Karachi', serviceId: 's2', providerId: 'p2' },
+    { id: '3', serviceName: 'Electrical Panel Upgrade', providerName: 'Volt Masters', providerInitials: 'VM', providerColor: '#f59e0b', date: '2026-04-20', time: '10:00', price: 200, status: 'Confirmed', address: 'House 12, Gulshan, Karachi', serviceId: 's3', providerId: 'p3' },
+    { id: '4', serviceName: 'Window Washing', providerName: 'Crystal Clear', providerInitials: 'CC', providerColor: '#ef4444', date: '2026-04-10', time: '14:00', price: 75, status: 'Cancelled', address: 'House 12, Gulshan, Karachi', serviceId: 's4', providerId: 'p4' },
+    { id: '5', serviceName: 'Post-Construction Cleanup', providerName: 'Build Clean Co.', providerInitials: 'BC', providerColor: '#8b5cf6', date: '2026-03-30', time: '08:00', price: 320, status: 'Completed', address: 'House 12, Gulshan, Karachi', serviceId: 's5', providerId: 'p5' },
+    { id: '6', serviceName: 'Lawn Mowing & Edging', providerName: 'Green Thumb', providerInitials: 'GT', providerColor: '#22c55e', date: '2026-04-25', time: '09:00', price: 60, status: 'Pending', address: 'House 12, Gulshan, Karachi', serviceId: 's6', providerId: 'p6' },
   ]);
 
   filteredBookings = computed(() => {

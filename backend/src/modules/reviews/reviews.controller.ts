@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, BadRequestException } from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
 
 /**
@@ -15,11 +15,19 @@ export class ReviewsController {
     @Body('rating') rating: number,
     @Body('comment') comment: string
   ) {
-    return this.reviewsService.leaveReview(+bookingId, rating, comment);
+    const id = +bookingId;
+    if (isNaN(id)) {
+      throw new BadRequestException('bookingId must be a valid number');
+    }
+    return this.reviewsService.leaveReview(id, rating, comment);
   }
 
   @Get('booking/:bookingId')
   getReview(@Param('bookingId') bookingId: string) {
-    return this.reviewsService.getReviewByBooking(+bookingId);
+    const id = +bookingId;
+    if (isNaN(id)) {
+      throw new BadRequestException('bookingId must be a valid number');
+    }
+    return this.reviewsService.getReviewByBooking(id);
   }
 }

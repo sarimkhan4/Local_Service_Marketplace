@@ -23,8 +23,16 @@ export class ServicesController {
     return this.servicesService.getAllProviderServices();
   }
 
+  @Get('provider/:providerId')
+  getServicesByProvider(@Param('providerId') providerId: string) {
+    return this.servicesService.getServicesByProvider(+providerId);
+  }
+
   @Get(':id')
   getService(@Param('id') id: string) {
+    if (isNaN(+id)) {
+      return null;
+    }
     return this.servicesService.findById(+id);
   }
 
@@ -55,10 +63,5 @@ export class ServicesController {
   ) {
     const providerId = req.user.userId;
     return this.servicesService.bulkSaveProviderServices(+providerId, services);
-  }
-
-  @Get('provider/:providerId')
-  getServicesByProvider(@Param('providerId') providerId: string) {
-    return this.servicesService.getServicesByProvider(+providerId);
   }
 }
