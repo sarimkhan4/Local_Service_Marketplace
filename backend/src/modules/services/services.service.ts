@@ -60,7 +60,35 @@ export class ServicesService {
   async getServicesByProvider(providerId: number): Promise<ProviderService[]> {
     return this.providerServiceRepository.find({
       where: { provider: { userId: providerId } },
-      relations: ['service']
+      relations: ['service', 'service.category']
     });
+  }
+
+  /**
+   * Fetch all provider services globally (for customer browsing)
+   */
+  async getAllProviderServices(): Promise<ProviderService[]> {
+    return this.providerServiceRepository.find({
+      relations: ['service', 'service.category', 'provider']
+    });
+  }
+
+  /**
+   * Bulk save provider services
+   */
+  async bulkSaveProviderServices(providerId: number, services: { serviceId: number, price: number }[]) {
+    // Remove existing
+    await this.providerServiceRepository.delete({ provider: { userId: providerId } });
+    
+    // Insert new
+    if (services && services.length > 0) {
+      const newProviderServices = services.map(s => this.providerServiceRepository.create({
+        provider: { userId: providerId } as any,
+        service: { serviceId: s.serviceId } as any,
+        price: s.price
+      }));
+      return this.providerServiceRepository.save(newProviderServices);
+    }
+    return [];
   }
 }

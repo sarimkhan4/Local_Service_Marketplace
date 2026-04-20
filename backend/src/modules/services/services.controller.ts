@@ -1,4 +1,7 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards, Request } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 import { ServicesService } from './services.service';
 
 /**
@@ -6,6 +9,7 @@ import { ServicesService } from './services.service';
  * Exposes API endpoints for services and provider pricing.
  */
 @Controller('services')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class ServicesController {
   constructor(private readonly servicesService: ServicesService) {}
 
@@ -14,11 +18,17 @@ export class ServicesController {
     return this.servicesService.findAll();
   }
 
+  @Get('listings')
+  getAllProviderServices() {
+    return this.servicesService.getAllProviderServices();
+  }
+
   @Get(':id')
   getService(@Param('id') id: string) {
     return this.servicesService.findById(+id);
   }
 
+  @Roles('Admin')
   @Post()
   createService(@Body() data: any) {
     return this.servicesService.create(data);
@@ -26,13 +36,25 @@ export class ServicesController {
 
   // --- ProviderService logic ---
 
-  @Post('provider/:providerId')
+  @Roles('Provider')
+  @Post('provider')
   addProviderService(
-    @Param('providerId') providerId: string,
+    @Request() req: any,
     @Body('serviceId') serviceId: number,
     @Body('price') price: number
   ) {
+    const providerId = req.user.userId;
     return this.servicesService.addProviderService(+providerId, serviceId, price);
+  }
+
+  @Roles('Provider')
+  @Post('provider/bulk')
+  bulkSaveProviderServices(
+    @Request() req: any,
+    @Body() services: { serviceId: number, price: number }[]
+  ) {
+    const providerId = req.user.userId;
+    return this.servicesService.bulkSaveProviderServices(+providerId, services);
   }
 
   @Get('provider/:providerId')

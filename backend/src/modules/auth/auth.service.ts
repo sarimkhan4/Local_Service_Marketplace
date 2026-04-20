@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { User } from '../../entities/user.entity';
+import { JwtService } from '@nestjs/jwt';
 
 /**
  * AuthService
@@ -8,7 +9,10 @@ import { User } from '../../entities/user.entity';
  */
 @Injectable()
 export class AuthService {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly jwtService: JwtService
+  ) {}
 
   /**
    * Dummy login validation
@@ -55,12 +59,13 @@ export class AuthService {
    * Basic auth handler
    */
   async login(user: User) {
-    // Return token in a real app
+    const role = (user as any).role || 'Customer';
+    const payload = { email: user.email, sub: user.userId, role };
     return {
-      access_token: 'dummy_token',
+      access_token: this.jwtService.sign(payload),
       userId: user.userId,
       name: user.name,
-      role: (user as any).role || 'Customer' // default to customer if missing
+      role
     };
   }
 }

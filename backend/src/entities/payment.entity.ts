@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Booking } from './booking.entity';
 
 /**
@@ -22,8 +22,8 @@ export class Payment {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   date: Date;
 
-  // Links directly to a single booking (1:1)
-  @OneToOne(() => Booking, { onDelete: 'CASCADE' })
+  // Links directly to a single booking (M:1)
+  @ManyToOne(() => Booking, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'booking_id' })
   booking: Booking;
 }
