@@ -1,5 +1,6 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { lastValueFrom } from 'rxjs';
 
@@ -16,6 +17,7 @@ export interface User {
 })
 export class AuthService {
   private http = inject(HttpClient);
+  private router = inject(Router);
   
   // Global Signal for authentication state
   readonly currentUser = signal<User | null>(null);
@@ -106,5 +108,6 @@ export class AuthService {
     this.isAuthenticated.set(false);
     localStorage.removeItem('access_token');
     localStorage.removeItem('user');
+    this.router.navigate(['/login']);
   }
 }

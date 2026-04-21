@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { User } from '../../entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
@@ -29,7 +29,7 @@ export class AuthService {
   async signup(data: any): Promise<User> {
     const existing = await this.usersService.findByEmailWithPassword(data.email);
     if (existing) {
-      throw new UnauthorizedException('Email already in use');
+      throw new BadRequestException('Email already in use');
     }
 
     const baseData = {
@@ -37,6 +37,7 @@ export class AuthService {
       password: data.password || 'password123',
       name: `${data.firstName || ''} ${data.lastName || ''}`.trim(),
       phone: data.phoneNumber || '0000000000',
+      role: data.role // Ensure role is explicitly set on the object
     };
 
     if (data.role === 'customer' || data.role === 'Customer') {
@@ -51,7 +52,7 @@ export class AuthService {
       });
       return provider;
     } else {
-      throw new UnauthorizedException('Invalid role');
+      throw new BadRequestException('Invalid role');
     }
   }
 

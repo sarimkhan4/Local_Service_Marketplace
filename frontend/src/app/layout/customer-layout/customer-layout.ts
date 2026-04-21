@@ -57,7 +57,7 @@ export class CustomerLayout implements OnInit {
         label: 'Profile',
         items: [
           { label: 'Settings', icon: 'pi pi-cog', shortcut: '⌘+O', routerLink: '/app/customer/settings' },
-          { label: 'Logout', icon: 'pi pi-sign-out', shortcut: '⌘+Q', routerLink: '/login' }
+          { label: 'Logout', icon: 'pi pi-sign-out', shortcut: '⌘+Q', command: () => this.authService.logout() }
         ]
       }
     ];

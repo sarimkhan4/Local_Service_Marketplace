@@ -11,5 +11,5 @@ export const guestGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: 
   }
 
   const role = authService.currentUser()?.role;
-  return router.parseUrl(role === 'Provider' ? '/provider' : role === 'Customer' ? '/customer' : '/');
+  return router.parseUrl(role === 'Provider' ? '/app/provider' : role === 'Customer' ? '/app/customer' : '/');
 };

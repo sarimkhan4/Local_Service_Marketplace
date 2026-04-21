@@ -69,6 +69,11 @@ export class Login {
        }
     }
     
-    this.router.navigate(['/app/customer/dashboard']);
+    const userRole = this.authService.currentUser()?.role;
+    if (userRole === 'Provider') {
+      this.router.navigate(['/app/provider/dashboard']);
+    } else {
+      this.router.navigate(['/app/customer/dashboard']);
+    }
   }
 }
