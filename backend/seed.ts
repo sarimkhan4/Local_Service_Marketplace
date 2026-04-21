@@ -10,6 +10,11 @@ import { ProviderService } from './src/entities/provider-service.entity';
 import { Address } from './src/entities/address.entity';
 import { Schedule } from './src/entities/schedule.entity';
 import { Booking } from './src/entities/booking.entity';
+import { Payment } from './src/entities/payment.entity';
+import { Review } from './src/entities/review.entity';
+import { Notification } from './src/entities/notification.entity';
+import { BookingService } from './src/entities/booking-service.entity';
+import { NotificationType } from './src/common/enums/notification_type.enum';
 
 async function seed() {
   const dataSource = new DataSource({
@@ -19,13 +24,17 @@ async function seed() {
     username: 'hunain',
     password: 'mysql',
     database: 'local_service_management_system',
-    entities: [User, Customer, Provider, Category, Service, ProviderService, Address, Schedule, Booking],
+    entities: [User, Customer, Provider, Category, Service, ProviderService, Address, Schedule, Booking, Payment, Review, Notification, BookingService],
   });
 
   await dataSource.initialize();
   console.log('Connected. Wiping old data to ensure unique realistic seeds...');
   await dataSource.query('SET FOREIGN_KEY_CHECKS = 0');
   await dataSource.query('TRUNCATE TABLE schedules');
+  await dataSource.query('TRUNCATE TABLE reviews');
+  await dataSource.query('TRUNCATE TABLE payments');
+  await dataSource.query('TRUNCATE TABLE notifications');
+  await dataSource.query('TRUNCATE TABLE booking_services');
   await dataSource.query('TRUNCATE TABLE bookings');
   await dataSource.query('TRUNCATE TABLE provider_services');
   await dataSource.query('TRUNCATE TABLE addresses');
@@ -62,12 +71,13 @@ async function seed() {
 
   // 3. Customers
   const customers: Customer[] = [];
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 15; i++) {
     const c = dataSource.manager.create(Customer, {
       name: faker.person.fullName(),
       email: faker.internet.email(),
-      phone: '0000000000',
+      phone: faker.string.numeric(10),
       password: 'password123',
+      role: 'customer'
     });
     await dataSource.manager.save(c);
     customers.push(c);
@@ -79,8 +89,9 @@ async function seed() {
     const p = dataSource.manager.create(Provider, {
       name: faker.person.fullName(),
       email: faker.internet.email(),
-      phone: '0000000000',
+      phone: faker.string.numeric(10),
       password: 'password123',
+      role: 'provider',
       experience: faker.number.int({ min: 1, max: 20 }),
     });
     await dataSource.manager.save(p);
@@ -88,7 +99,7 @@ async function seed() {
   }
 
   // 5. Provider Services
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 30; i++) {
     const p = providers[Math.floor(Math.random() * providers.length)];
     const s = services[Math.floor(Math.random() * services.length)];
     
@@ -105,6 +116,7 @@ async function seed() {
   }
 
   // 6. Addresses
+  const addresses: Address[] = [];
   for(const user of [...customers, ...providers]) {
      const addr = dataSource.manager.create(Address, {
          user: user,
@@ -114,6 +126,94 @@ async function seed() {
          zipCode: faker.location.zipCode()
      });
      await dataSource.manager.save(addr);
+     addresses.push(addr);
+  }
+
+  // 7. Schedules for Providers
+  for(const provider of providers) {
+    for (let i = 0; i < 3; i++) {
+      const schedule = dataSource.manager.create(Schedule, {
+        provider: provider,
+        date: faker.date.future(),
+        timeSlot: `${faker.number.int({ min: 8, max: 12 })}:00 - ${faker.number.int({ min: 13, max: 17 })}:00`,
+      });
+      await dataSource.manager.save(schedule);
+    }
+  }
+
+  // 8. Notifications
+  for(const user of [...customers, ...providers]) {
+     const notif = dataSource.manager.create(Notification, {
+        user: user,
+        title: 'Welcome to LSM',
+        message: 'Thank you for joining our platform.',
+        type: NotificationType.SYSTEM_ALERT,
+        isRead: false,
+        isSent: true,
+     });
+     await dataSource.manager.save(notif);
+  }
+
+  // 9. Bookings
+  const statuses = ['PENDING', 'CONFIRMED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'];
+  for (let i = 0; i < 30; i++) {
+    const customer = customers[Math.floor(Math.random() * customers.length)];
+    const provider = providers[Math.floor(Math.random() * providers.length)];
+    const address = addresses.find(a => a.user.userId === customer.userId) || addresses[0];
+    
+    const bookingStatus = statuses[Math.floor(Math.random() * statuses.length)];
+
+    const b = dataSource.manager.create(Booking, {
+      customer: customer,
+      provider: provider,
+      address: address,
+      status: bookingStatus,
+      date: faker.date.recent(),
+      totalAmount: faker.number.int({ min: 100, max: 1000 }),
+    });
+    await dataSource.manager.save(b);
+
+    // 10. Booking Services
+    const numServices = faker.number.int({ min: 1, max: 3 });
+    for (let j = 0; j < numServices; j++) {
+      const s = services[Math.floor(Math.random() * services.length)];
+      const bs = dataSource.manager.create(BookingService, {
+        booking: b,
+        service: s,
+        serviceStatus: bookingStatus === 'COMPLETED' ? 'COMPLETED' : 'PENDING'
+      });
+      await dataSource.manager.save(bs);
+    }
+
+    // 11. Payments for Bookings
+    const payment = dataSource.manager.create(Payment, {
+      booking: b,
+      paymentStatus: bookingStatus === 'COMPLETED' ? 'PAID' : 'UNPAID',
+      method: 'CREDIT_CARD',
+      amount: b.totalAmount,
+      date: b.date,
+    });
+    await dataSource.manager.save(payment);
+
+    // 12. Reviews for completed Bookings
+    if (bookingStatus === 'COMPLETED') {
+       const review = dataSource.manager.create(Review, {
+         booking: b,
+         rating: faker.number.int({ min: 3, max: 5 }),
+         comment: faker.lorem.sentence()
+       });
+       await dataSource.manager.save(review);
+    }
+    
+    // Notification for booking
+    const notif = dataSource.manager.create(Notification, {
+      user: customer,
+      title: `Booking ${bookingStatus}`,
+      message: `Your booking status is now ${bookingStatus}`,
+      type: NotificationType.BOOKING_CREATED,
+      isRead: false,
+    });
+    await dataSource.manager.save(notif);
   }
 
   console.log('Seeded successfully!');

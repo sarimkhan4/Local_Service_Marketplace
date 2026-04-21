@@ -45,8 +45,45 @@
       <h2 class="text-xl font-semibold text-900 m-0 mb-1">Available Providers</h2>
       <p class="text-500 text-sm m-0 mb-4">Compare providers, check ratings, and book the one that fits your needs.</p>
 
-      <!-- Provider Cards -->
-      <div class="providers-grid">
+      <!-- SKELETON LOADING STATE -->
+      <div class="providers-grid" *ngIf="loadingProviders()">
+        <div *ngFor="let i of [0,1,2]" class="provider-card surface-card border-1 surface-border border-round-xl p-4 flex flex-column gap-3">
+          
+          <!-- Provider top row skeleton -->
+          <div class="flex align-items-center gap-3">
+            <p-skeleton shape="circle" size="3rem" styleClass="flex-shrink-0"></p-skeleton>
+            <div class="flex flex-column gap-2 flex-1 min-w-0">
+              <p-skeleton width="70%" height="1.25rem"></p-skeleton>
+              <p-skeleton width="50%" height="0.875rem"></p-skeleton>
+            </div>
+            <div class="text-right flex-shrink-0">
+              <p-skeleton width="4rem" height="1.5rem"></p-skeleton>
+            </div>
+          </div>
+
+          <p-divider styleClass="my-0"></p-divider>
+
+          <!-- Bio skeleton -->
+          <div class="flex flex-column gap-2">
+            <p-skeleton width="100%" height="1rem"></p-skeleton>
+            <p-skeleton width="95%" height="1rem"></p-skeleton>
+            <p-skeleton width="80%" height="1rem"></p-skeleton>
+          </div>
+
+          <!-- Stats chips skeleton -->
+          <div class="flex flex-wrap gap-2">
+            <p-skeleton width="6rem" height="2rem" styleClass="border-round-lg"></p-skeleton>
+            <p-skeleton width="7rem" height="2rem" styleClass="border-round-lg"></p-skeleton>
+            <p-skeleton width="7rem" height="2rem" styleClass="border-round-lg"></p-skeleton>
+          </div>
+
+          <!-- Button skeleton -->
+          <p-skeleton width="100%" height="2.5rem" styleClass="border-round-lg"></p-skeleton>
+        </div>
+      </div>
+
+      <!-- ACTUAL CONTENT (When loaded) -->
+      <div class="providers-grid" *ngIf="!loadingProviders()">
         <div *ngFor="let provider of service.providers" class="provider-card surface-card border-1 surface-border border-round-xl p-4 flex flex-column gap-3">
 
           <!-- Provider top row -->

@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
+import { HttpClient } from '@angular/common/http';
+import { lastValueFrom } from 'rxjs';
 
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -11,8 +13,10 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ChipModule } from 'primeng/chip';
 import { AvatarModule } from 'primeng/avatar';
 import { DividerModule } from 'primeng/divider';
+import { SkeletonModule } from 'primeng/skeleton';
 
 import { DataService, CatalogService, CatalogProvider } from '../../../core/services/data.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-service-detail',
@@ -20,7 +24,8 @@ import { DataService, CatalogService, CatalogProvider } from '../../../core/serv
   imports: [
     CommonModule, RouterModule, FormsModule,
     ButtonModule, DialogModule, TagModule,
-    InputTextModule, ChipModule, AvatarModule, DividerModule
+    InputTextModule, ChipModule, AvatarModule, DividerModule,
+    SkeletonModule
   ],
   templateUrl: './service-detail.html',
   styleUrl: './service-detail.css'
@@ -30,8 +35,10 @@ export class ServiceDetail implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private titleService = inject(Title);
+  private http = inject(HttpClient);
 
   service: CatalogService | undefined;
+  loadingProviders = signal(false);
 
   // ── Booking dialog state ──
   bookingVisible = false;
@@ -51,12 +58,13 @@ export class ServiceDetail implements OnInit {
       
       if (this.service) {
         this.titleService.setTitle('Local Service Management System | ' + this.service.title);
+        
+        // Start skeleton loader
+        this.loadingProviders.set(true);
         try {
-          const { lastValueFrom } = await import('rxjs');
-          const { HttpClient } = await import('@angular/common/http');
-          const { environment } = await import('../../../../environments/environment');
-          const http = Reflect.get(this.dataService, 'apiService')['http'];
-          const listings: any[] = await lastValueFrom(http.get(`${environment.apiUrl}/services/listings`));
+          const listings: any[] = await lastValueFrom(
+            this.http.get<any[]>(`${environment.apiUrl}/services/listings`)
+          );
           
           this.service.providers = listings
             .filter(ps => ps.service?.serviceId?.toString() === id)
@@ -72,6 +80,9 @@ export class ServiceDetail implements OnInit {
             }));
         } catch (e) {
           console.error('Failed to load listings', e);
+        } finally {
+          // Stop skeleton loader
+          this.loadingProviders.set(false);
         }
       }
     }
