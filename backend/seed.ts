@@ -1,5 +1,7 @@
 import { DataSource } from 'typeorm';
 import { faker } from '@faker-js/faker';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 import { User } from './src/entities/user.entity';
 import { Customer } from './src/entities/customer.entity';
@@ -19,11 +21,11 @@ import { NotificationType } from './src/common/enums/notification_type.enum';
 async function seed() {
   const dataSource = new DataSource({
     type: 'mysql',
-    host: 'localhost',
-    port: 3306,
-    username: 'hunain',
-    password: 'mysql',
-    database: 'local_service_management_system',
+    host: process.env.DB_HOST || 'localhost',
+    port: process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : 3306,
+    username: process.env.DB_USERNAME || 'root',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'test_db',
     entities: [User, Customer, Provider, Category, Service, ProviderService, Address, Schedule, Booking, Payment, Review, Notification, BookingService],
   });
 

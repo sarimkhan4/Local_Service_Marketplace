@@ -13,8 +13,14 @@ import { BookingsModule } from './modules/bookings/bookings.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
 
+import { ConfigModule } from '@nestjs/config';
+
 @Module({
-  imports: [DatabaseModule, NotificationModule, UsersModule, AuthModule, AddressesModule, CategoriesModule, ServicesModule, SchedulesModule, BookingsModule, PaymentsModule, ReviewsModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true, // Make env variables accessible globally
+    }),
+    DatabaseModule, NotificationModule, UsersModule, AuthModule, AddressesModule, CategoriesModule, ServicesModule, SchedulesModule, BookingsModule, PaymentsModule, ReviewsModule],
   controllers: [AppController],
   providers: [AppService],
 })
