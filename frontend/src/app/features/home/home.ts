@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -16,7 +16,10 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TabsModule } from 'primeng/tabs';
 import { CardModule } from 'primeng/card';
 import { SkeletonModule } from 'primeng/skeleton';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
+gsap.registerPlugin(ScrollTrigger);
 interface ServiceItem {
   id: string;
   name: string;
@@ -56,38 +59,63 @@ interface Testimonial {
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
-export class Home implements OnInit {
+export class Home implements OnInit, AfterViewInit {
   selectedCategoryId: string = '';
   loadingCategories = signal(true);
   categories: any[] = [];
 
   apiService = inject(ApiService);
 
-  constructor(private authService: AuthService, private router: Router, private dataService: DataService) {}
-  
+  constructor(private authService: AuthService, private router: Router, private dataService: DataService) { }
+
+
   ngOnInit() {
     this.apiService.getCategories().subscribe((cats: any) => {
       this.apiService.getServices().subscribe((srvs: any) => {
         const dynamicCategories = cats.map((cat: any) => {
-           return {
-             id: cat.categoryId,
-             name: cat.categoryName,
-             icon: 'pi-cog',
-             services: srvs.filter((s:any) => s.category.categoryId === cat.categoryId).map((s:any) => ({
-               id: s.serviceId,
-               name: s.name,
-               startingPrice: 50,
-               image: 'https://primefaces.org/cdn/primeng/images/card-ng.jpg'
-             }))
-           }
+          return {
+            id: cat.categoryId,
+            name: cat.categoryName,
+            icon: 'pi-cog',
+            services: srvs.filter((s: any) => s.category.categoryId === cat.categoryId).map((s: any) => ({
+              id: s.serviceId,
+              name: s.name,
+              startingPrice: 50,
+              image: 'https://primefaces.org/cdn/primeng/images/card-ng.jpg'
+            }))
+          }
         });
         this.categories = dynamicCategories;
-        if(this.categories.length > 0) {
+        if (this.categories.length > 0) {
           this.selectedCategoryId = this.categories[0].id;
         }
         this.loadingCategories.set(false);
       });
     });
+  }
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      gsap.fromTo(
+        ".main-gallery-heading",
+        {
+          fontSize: "8rem",
+        },
+        {
+          fontSize: "5rem",
+          y: 0,
+          ease: "none",
+          scrollTrigger: {
+            trigger: ".gallery-header",
+            start: "top bottom",
+            end: "top center",
+            scrub: 1, // Smooth "catch up" effect
+            invalidateOnRefresh: true,
+            // markers: true // Turn this on to see the bottom start line!
+          }
+        }
+      );
+    }, 100);
   }
 
   onSaveService(service: any, categoryName: string) {
