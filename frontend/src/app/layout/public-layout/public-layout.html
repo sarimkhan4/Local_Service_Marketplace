@@ -1,24 +1,39 @@
 <div class="public-wrapper">
   <!-- PrimeNG Menubar -->
-  <!-- <p-menubar styleClass="custom-menubar">
-    <ng-template #start>
-      <div class="nav-brand" routerLink="/">
-        <div class="logo-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2L2 22h20L12 2zm0 4.5l6.5 13h-13L12 6.5z"/>
-          </svg>
-        </div>
-        <span class="logo-text">Local Service Management System</span>
-      </div>
-    </ng-template>
+  <nav class="custom-navbar">
+  <div class="nav-brand-centered" routerLink="/">
+    <span class="logo-text">LSM</span>
+  </div>
 
-    <ng-template #end>
-      <div class="nav-actions">
-        <p-button label="Sign In" [text]="true" [rounded]="true" severity="secondary" routerLink="/login"></p-button>
-        <p-button label="Join as Professional" [rounded]="true" routerLink="/signup"></p-button>
-      </div>
-    </ng-template>
-  </p-menubar> 
+  <div class="nav-actions-right">
+    <button class="hamburger-btn" aria-label="Menu" (click)="toggleMenu()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+        <line x1="4" y1="8" x2="20" y2="8"></line>
+        <line x1="4" y1="16" x2="20" y2="16"></line>
+      </svg>
+    </button>
+  </div>
+</nav>
+
+  <!-- Full Screen Menu -->
+  <div class="fullscreen-menu">
+    <div class="menu-header">
+      <button class="close-btn" aria-label="Close Menu" (click)="toggleMenu()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="menu-content">
+      <ul class="menu-links">
+        <li><a routerLink="/" (click)="toggleMenu()">Home</a></li>
+        <li><a routerLink="/signup" (click)="toggleMenu()">Join as a Professional</a></li>
+        <li><a routerLink="/login" (click)="toggleMenu()">Sign In</a></li>
+        <li><a routerLink="/about" (click)="toggleMenu()">About Us</a></li>
+      </ul>
+    </div>
+  </div>
 
   <!-- Page Content -->
   <main class="public-content">

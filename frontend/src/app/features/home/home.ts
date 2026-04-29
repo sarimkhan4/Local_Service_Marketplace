@@ -75,6 +75,11 @@ export class Home implements OnInit, AfterViewInit {
 
 
   ngOnInit() {
+    const navbar = document.querySelector('.custom-navbar') as HTMLElement;
+    if (navbar) {
+      navbar.style.opacity = '0';
+    }
+
     this.apiService.getCategories().subscribe((cats: any) => {
       this.apiService.getServices().subscribe((srvs: any) => {
         const dynamicCategories = cats.map((cat: any) => {
@@ -113,7 +118,7 @@ export class Home implements OnInit, AfterViewInit {
     })
 
       // The Hold
-      .to({}, { duration: 1 })
+      .to({}, { duration: 0.6})
 
       // Curtain Reveal
       .to(".reveal-curtain", {
@@ -121,13 +126,19 @@ export class Home implements OnInit, AfterViewInit {
         duration: 2,
         ease: "power4.inOut",
       })
+      
 
       .from(".hero-content", {
         opacity: 0,
         y: 40,
         duration: 1.5,
         ease: "power3.out"
-      }, "-=1.2");
+      }, "-=1.2")
+      .to('.custom-navbar', {
+        opacity: 1,
+        duration: 1.5,
+        ease: "power2.out"
+      }, "-=0.5");
 
 
     // // Cinematic Deep Parallax
