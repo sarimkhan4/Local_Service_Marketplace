@@ -1,5 +1,19 @@
+/* Provider Dashboard - Colorful & Animated Styling */
+
 .app-dash-page {
   font-family: var(--font-family, 'Inter', sans-serif);
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.provider-dash-page::before {
+  content: '';
+  display: block;
+  height: 5px;
+  background: linear-gradient(90deg, #0d9488, #14b8a6, #06b6d4, #6366f1, #8b5cf6);
+  border-radius: 3px;
+  margin-bottom: 1.5rem;
 }
 
 .app-dash-grid {
@@ -37,8 +51,58 @@
 }
 
 .app-dash-card {
-  background: white;
-  border: 1px solid #f1f5f9;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.app-dash-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, #0d9488, #14b8a6, #06b6d4);
+}
+
+.app-dash-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+}
+
+/* Animated icon boxes */
+.app-dash-icon-box {
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  animation: icon-float 3s ease-in-out infinite;
+}
+
+@keyframes icon-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* Chart placeholder animation */
+.layout-chart-placeholder {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 2px dashed #cbd5e1;
+  border-radius: 1rem;
+  animation: placeholder-pulse 2s ease-in-out infinite;
+}
+
+@keyframes placeholder-pulse {
+  0%, 100% { border-color: #cbd5e1; }
+  50% { border-color: #94a3b8; }
 }
 
 .provider-card-head {
@@ -59,6 +123,31 @@
   gap: 0.75rem 1rem;
   align-items: center;
   margin-bottom: 1rem;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.provider-service-row:hover {
+  background: linear-gradient(90deg, #f0fdfa 0%, #f5f3ff 100%);
+  transform: translateX(5px);
+}
+
+/* Progress bar animation */
+.provider-progress-track {
+  min-width: 6rem;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.provider-progress-track > div {
+  transition: width 1s ease;
+  animation: progress-shine 2s ease-in-out infinite;
+}
+
+@keyframes progress-shine {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.1); }
 }
 
 @media (max-width: 768px) {

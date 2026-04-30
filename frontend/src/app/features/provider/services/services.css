@@ -1,7 +1,21 @@
+/* Services Page - Colorful & Animated Styling */
+
 .services-page {
   display: grid;
   gap: 1.5rem;
-  max-width: 1200px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.services-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: linear-gradient(90deg, #0d9488, #14b8a6, #06b6d4, #6366f1);
 }
 
 .services-header {
@@ -9,6 +23,19 @@
   grid-template-columns: 1fr auto;
   gap: 1rem 1.5rem;
   align-items: start;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 10px 40px -10px rgba(99, 102, 241, 0.4);
+}
+
+.services-header h1 {
+  color: white !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.services-header p {
+  color: rgba(255, 255, 255, 0.9) !important;
 }
 
 @media (max-width: 640px) {
@@ -35,4 +62,49 @@
   border: 1px solid #e2e8f0;
   overflow: hidden;
   background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Table row animations */
+.services-table-wrap tr {
+  transition: all 0.2s ease;
+}
+
+.services-table-wrap tr:hover {
+  background: linear-gradient(90deg, #f5f3ff 0%, #f0f9ff 50%, #ecfdf5 100%);
+  transform: scale(1.002);
+}
+
+/* Group header styling */
+.services-table-wrap [pRowGroupHeader] {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
+}
+
+.services-table-wrap [pRowGroupHeader] i {
+  color: #6366f1 !important;
+  animation: folder-bounce 2s ease-in-out infinite;
+}
+
+@keyframes folder-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+/* Checkbox animation */
+.services-table-wrap p-checkbox {
+  transition: transform 0.2s ease;
+}
+
+.services-table-wrap p-checkbox:hover {
+  transform: scale(1.1);
+}
+
+/* Price input styling */
+.services-table-wrap p-inputNumber {
+  transition: all 0.3s ease;
+}
+
+.services-table-wrap p-inputNumber:focus {
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
