@@ -1,3 +1,5 @@
+<p-toast></p-toast>
+
 <div class="auth-split-container">
   <!-- Left Side: Image Container -->
   <div class="auth-image-side">
@@ -18,26 +20,27 @@
         <p>Log in to access your dashboard</p>
       </div>
 
-      <!-- Keep onSubmit() as requested -->
       <form (ngSubmit)="onSubmit()" class="auth-form">
 
         <!-- Email Input -->
         <div class="form-group mb-4">
           <label for="email">Email</label>
-          <div class="input-wrapper">
-            <i class="pi pi-envelope"></i> <!-- Kept the PrimeIcon class if you still have the font loaded -->
+          <div class="input-wrapper" [class.has-error]="validationErrors.email">
+            <i class="pi pi-envelope"></i>
             <input type="email" id="email" [(ngModel)]="email" name="email" placeholder="you@example.com"
-              class="w-full custom-input" required />
+              class="w-full custom-input" [class.error]="validationErrors.email" required />
           </div>
+          <small class="error-message" *ngIf="validationErrors.email">{{ validationErrors.email }}</small>
         </div>
 
         <!-- Password Input -->
         <div class="form-group mb-4">
           <label for="password">Password</label>
-          <div class="input-wrapper">
+          <div class="input-wrapper" [class.has-error]="validationErrors.password">
             <input type="password" id="password" [(ngModel)]="password" name="password" placeholder="••••••••"
-              class="w-full custom-input" required />
+              class="w-full custom-input" [class.error]="validationErrors.password" required />
           </div>
+          <small class="error-message" *ngIf="validationErrors.password">{{ validationErrors.password }}</small>
         </div>
 
         <!-- Form Options (Native Checkbox) -->
@@ -51,9 +54,10 @@
           <a href="#" class="forgot-link text-sm font-medium">Forgot password?</a>
         </div>
 
-        <!-- Native Submit Button -->
-        <button type="submit" class="w-full custom-btn btn-large">
-          Sign In
+        <!-- Submit Button -->
+        <button type="submit" class="w-full custom-btn btn-large" [disabled]="isLoading">
+          <span *ngIf="!isLoading">Sign In</span>
+          <span *ngIf="isLoading">Signing In...</span>
         </button>
       </form>
 

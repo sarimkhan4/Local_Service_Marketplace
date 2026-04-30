@@ -164,16 +164,19 @@
 
     <div class="flex flex-column gap-2">
       <label class="text-700 font-medium text-sm">Your Rating <span class="text-red-400">*</span></label>
-      <p-rating [(ngModel)]="reviewRating"></p-rating>
+      <p-rating [(ngModel)]="reviewRating" [class.ng-invalid.ng-dirty]="reviewValidationErrors.rating"></p-rating>
       <span *ngIf="reviewRating > 0" class="text-500 text-xs">
         {{ ['', 'Terrible', 'Poor', 'Average', 'Good', 'Excellent!'][reviewRating] }}
       </span>
+      <small class="p-error" *ngIf="reviewValidationErrors.rating">{{ reviewValidationErrors.rating }}</small>
     </div>
 
     <div class="flex flex-column gap-2">
       <label class="text-700 font-medium text-sm">Comments (Optional)</label>
       <textarea pTextarea [(ngModel)]="reviewComment" rows="3"
-        placeholder="Share your experience with this service..." class="w-full"></textarea>
+        placeholder="Share your experience with this service..." class="w-full"
+        [class.ng-invalid.ng-dirty]="reviewValidationErrors.comment"></textarea>
+      <small class="p-error" *ngIf="reviewValidationErrors.comment">{{ reviewValidationErrors.comment }}</small>
     </div>
   </div>
 
@@ -181,7 +184,6 @@
     <p-button label="Cancel" severity="secondary" [text]="true" (click)="showReviewDialog = false"></p-button>
     <p-button label="Submit Review" icon="pi pi-check"
       [style]="{ 'background': '#0d9488', 'border-color': '#0d9488' }"
-      [disabled]="reviewRating === 0"
       (click)="submitReview()">
     </p-button>
   </ng-template>

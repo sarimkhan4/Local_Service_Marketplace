@@ -21,6 +21,8 @@ import { MessageService } from 'primeng/api';
 import { BookingService } from '../../../core/services/booking.service';
 import { ApiService } from '../../../core/services/api.service';
 import { AuthService } from '../../../core/services/auth';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { validateRating, validateReviewComment } from '../../../core/utils/validation.utils';
 import type { TagSeverity } from '../../../core/types/ui.types';
 
 type BookingStatus = 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled';
@@ -59,6 +61,10 @@ export class Bookings implements OnInit {
   private apiService = inject(ApiService);
   private authService = inject(AuthService);
   private messageService = inject(MessageService);
+  private errorHandler = inject(ErrorHandlerService);
+
+  // Validation errors
+  reviewValidationErrors: { rating?: string; comment?: string } = {};
 
   statusFilter = signal<BookingStatus | 'All'>('All');
   statusOptions = [
@@ -100,7 +106,10 @@ export class Bookings implements OnInit {
 
   async loadBookings() {
     const userId = this.authService.currentUser()?.id;
-    if (!userId) return;
+    if (!userId) {
+      this.errorHandler.showError('Unable to load bookings. Please log in again.');
+      return;
+    }
 
     try {
       const response: any = await lastValueFrom(this.apiService.getCustomerBookings(userId));
@@ -113,15 +122,14 @@ export class Bookings implements OnInit {
         date: new Date(b.date).toISOString().split('T')[0],
         time: new Date(b.date).toISOString().split('T')[1].substring(0, 5),
         price: Number(b.totalAmount),
-        status: b.status.charAt(0).toUpperCase() + b.status.slice(1).toLowerCase(), // e.g. Pending, Completed
+        status: b.status.charAt(0).toUpperCase() + b.status.slice(1).toLowerCase(),
         address: b.address?.street ? `${b.address.street}, ${b.address.city}` : 'No Address',
         serviceId: b.services?.length ? b.services[0].id : '',
         providerId: b.provider?.userId?.toString() || ''
       }));
       this.bookings.set(mappedBookings);
-    } catch (e) {
-      console.error('Failed to load bookings', e);
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Could not load bookings' });
+    } catch (error: any) {
+      this.errorHandler.handleHttpError(error, 'Failed to load your bookings. Please try again.');
     }
   }
 
@@ -162,14 +170,33 @@ export class Bookings implements OnInit {
     this.reviewTarget = booking;
     this.reviewRating = 0;
     this.reviewComment = '';
+    this.reviewValidationErrors = {};
     this.showReviewDialog = true;
   }
 
+  private validateReview(): boolean {
+    this.reviewValidationErrors = {};
+
+    const ratingResult = validateRating(this.reviewRating);
+    if (!ratingResult.valid) {
+      this.reviewValidationErrors.rating = ratingResult.errors[0];
+    }
+
+    const commentResult = validateReviewComment(this.reviewComment);
+    if (!commentResult.valid) {
+      this.reviewValidationErrors.comment = commentResult.errors[0];
+    }
+
+    return Object.keys(this.reviewValidationErrors).length === 0;
+  }
+
   async submitReview() {
-    if (!this.reviewTarget || this.reviewRating === 0) {
-      this.messageService.add({ severity: 'warn', summary: 'Please select a rating', life: 3000 });
+    if (!this.validateReview()) {
+      this.errorHandler.showWarning('Please fix the validation errors before submitting.');
       return;
     }
+
+    if (!this.reviewTarget) return;
 
     try {
       const currentUser = this.authService.currentUser();
@@ -191,14 +218,14 @@ export class Bookings implements OnInit {
       };
 
       await this.bookingService.addReview(this.reviewTarget.id, reviewData);
-      this.messageService.add({ severity: 'success', summary: 'Review Submitted!', detail: 'Thank you for your feedback.', life: 3000 });
+      this.errorHandler.showSuccess('Thank you for your feedback! Your review has been submitted successfully.');
       this.showReviewDialog = false;
 
       // Refresh reviews list
       const bookingIds = this.bookings().map(b => b.id);
       await this.bookingService.loadReviewsForBookings(bookingIds);
-    } catch (e) {
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Could not submit review' });
+    } catch (error: any) {
+      this.errorHandler.handleHttpError(error, 'Failed to submit your review. Please try again.');
     }
   }
 }
