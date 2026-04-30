@@ -1,21 +1,385 @@
+/* Saved Professionals Page Styling */
+
 .saved-page {
-  display: grid;
-  gap: 1.5rem;
-  max-width: 960px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1.5rem;
 }
 
+/* Header */
+.saved-page header {
+  margin-bottom: 1.5rem;
+}
+
+.saved-page header h1 {
+  font-size: 1.875rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0;
+}
+
+.saved-page header p {
+  font-size: 1rem;
+  color: #4b5563;
+  margin: 0.5rem 0 0 0;
+  line-height: 1.5;
+}
+
+/* Empty State */
 .saved-empty {
-  display: grid;
-  justify-items: center;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 3rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  gap: 0.75rem;
-  padding: 2.5rem 1.5rem;
-  border: 1px solid #e2e8f0;
-  background: #fff;
+  margin-top: 1rem;
 }
 
+.saved-empty i {
+  font-size: 3rem;
+  color: #9ca3af;
+  margin-bottom: 1rem;
+}
+
+.saved-empty h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0 0 0.5rem 0;
+}
+
+.saved-empty p {
+  font-size: 0.875rem;
+  color: #4b5563;
+  margin: 0 0 1.5rem 0;
+  line-height: 1.5;
+  max-width: 400px;
+}
+
+.saved-empty button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.saved-empty button:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+/* Grid Layout */
 .saved-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.25rem;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+@media (min-width: 768px) {
+  .saved-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .saved-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.col-12 {
+  grid-column: span 1;
+}
+
+.md\:col-6 {
+  grid-column: span 1;
+}
+
+.lg\:col-4 {
+  grid-column: span 1;
+}
+
+/* Card Container */
+.h-full {
+  height: 100%;
+}
+
+.saved-grid .h-full {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.saved-grid .h-full:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transform: translateY(-2px);
+}
+
+/* Custom Header */
+.bg-teal-50 {
+  background-color: #f0fdfa;
+}
+
+.saved-grid .h-full .p-4:first-child {
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.saved-grid .h-full .p-4:first-child .flex {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.saved-grid .h-full .p-4:first-child .bg-white {
+  background: white;
+  padding: 0.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+}
+
+.saved-grid .h-full .p-4:first-child i {
+  font-size: 1.25rem;
+  color: #0d9488;
+}
+
+.saved-grid .h-full .p-4:first-child h3 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.saved-grid .h-full .p-4:first-child span {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* Card Body */
+.saved-grid .h-full .p-4:nth-child(2) {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.saved-grid .h-full .p-4:nth-child(2) .flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.bg-teal-100 {
+  background-color: #ccfbf1;
+}
+
+.text-teal-700 {
+  color: #0f766e;
+}
+
+.saved-grid .h-full .bg-teal-100 {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #0f766e;
+}
+
+.saved-grid .h-full .flex .flex {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.text-yellow-500 {
+  color: #eab308;
+}
+
+.text-900 {
+  color: #0f172a;
+}
+
+.text-500 {
+  color: #6b7280;
+}
+
+.text-700 {
+  color: #374151;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+}
+
+.text-xs {
+  font-size: 0.75rem;
+}
+
+.saved-grid .h-full .p-4:nth-child(2) p {
+  font-size: 0.875rem;
+  color: #4b5563;
+  line-height: 1.5;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-height-3 {
+  line-height: 1.5;
+}
+
+.m-0 {
+  margin: 0;
+}
+
+/* Card Footer */
+.saved-grid .h-full .p-4:last-child {
+  padding: 1rem;
+  padding-top: 0;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.saved-grid .h-full .p-4:last-child button:first-child {
+  flex: 1;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 0.5rem;
+  color: white;
+  font-weight: 700;
+  font-size: 0.875rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: #0d9488;
+  transition: background-color 0.2s;
+}
+
+.saved-grid .h-full .p-4:last-child button:first-child:hover {
+  background: #0f766e;
+}
+
+.saved-grid .h-full .p-4:last-child button:last-child {
+  padding: 0.75rem;
+  border: 1px solid #ef4444;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: #ef4444;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.saved-grid .h-full .p-4:last-child button:last-child:hover {
+  background: #fef2f2;
+}
+
+/* Surface utilities */
+.surface-card {
+  background: white;
+}
+
+.surface-border {
+  border-color: #e5e7eb;
+}
+
+.border-1 {
+  border: 1px solid #e5e7eb;
+}
+
+.border-round {
+  border-radius: 0.5rem;
+}
+
+.border-bottom-1 {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+/* Flexbox utilities */
+.flex {
+  display: flex;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.justify-content-between {
+  justify-content: space-between;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.gap-3 {
+  gap: 0.75rem;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .saved-page {
+    padding: 1rem;
+  }
+
+  .saved-empty {
+    padding: 2rem 1.5rem;
+  }
+
+  .saved-grid {
+    grid-template-columns: 1fr;
+  }
 }

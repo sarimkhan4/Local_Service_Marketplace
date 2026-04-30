@@ -13,8 +13,6 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { SelectModule } from 'primeng/select';
 import { InputTextModule } from 'primeng/inputtext';
 import { ChipModule } from 'primeng/chip';
-import { IconField } from 'primeng/iconfield';
-import { InputIcon } from 'primeng/inputicon';
 import { SelectItem } from 'primeng/api';
 import type { SelectChangeEvent } from 'primeng/types/select';
 
@@ -36,8 +34,7 @@ export interface ListingService {
   imports: [
     CommonModule, RouterModule, FormsModule,
     ButtonModule, TagModule, DataViewModule,
-    SelectButtonModule, SelectModule, InputTextModule, ChipModule,
-    IconField, InputIcon,
+    SelectButtonModule, SelectModule, InputTextModule, ChipModule
   ],
   templateUrl: './browse.html',
   styleUrl: './browse.css'

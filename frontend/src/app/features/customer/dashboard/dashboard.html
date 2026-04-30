@@ -1,4 +1,5 @@
 <div class="app-dashboard-page">
+  <!-- Stats Row -->
   <div class="app-dash-grid stats-row">
     <div class="stat-col" *ngFor="let stat of stats">
       <div class="card mb-0">
@@ -21,88 +22,82 @@
 
   <div class="app-dash-grid main-row">
     <div class="main-col left-col">
+      <!-- Lively Chart -->
+      <div class="card mb-card">
+        <div class="card-title">Live Overview</div>
+        <div class="chart-container" style="height: 450px; position: relative;">
+          <p-chart type="bar" [data]="livelyChartData" [options]="livelyChartOptions" height="450px"></p-chart>
+        </div>
+      </div>
 
+      <!-- Recent Bookings Table -->
       <div class="card mb-card">
         <div class="card-title">Your Recent Bookings</div>
-        <p-table [value]="loading() ? [1,2,3,4,5] : $any(appointments)" [paginator]="!loading()" [rows]="loading() ? 5 : 7" responsiveLayout="scroll"
-          styleClass="app-dashboard-table">
-          <ng-template pTemplate="header">
-            <tr>
-              <th>Provider</th>
-              <th pSortableColumn="service">Service <p-sortIcon field="service"></p-sortIcon></th>
-              <th pSortableColumn="amount">Price <p-sortIcon field="amount"></p-sortIcon></th>
-              <th>Status</th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-apt>
-            <tr *ngIf="!loading()">
-              <td class="provider-cell">
-                <img [src]="apt.image" class="avatar-circle" width="36" alt="avatar" />
-                <span class="provider-name">{{ apt.provider }}</span>
-              </td>
-              <td>{{ apt.service }}</td>
-              <td class="price-cell">{{ apt.amount }}</td>
-              <td>
-                <span class="status-badge" [ngClass]="{
-                    'status-completed': apt.status === 'Completed',
-                    'status-confirmed': apt.status === 'Confirmed',
-                    'status-pending':   apt.status === 'Pending'
-                  }">
-                  {{ apt.status }}
-                </span>
-              </td>
-            </tr>
-            <tr *ngIf="loading()">
-              <td>
-                <div class="flex align-items-center">
-                    <p-skeleton shape="circle" size="36px" class="mr-2"></p-skeleton>
-                    <p-skeleton width="8rem" height="1.5rem"></p-skeleton>
-                </div>
-              </td>
-              <td><p-skeleton width="6rem" height="1.5rem"></p-skeleton></td>
-              <td><p-skeleton width="4rem" height="1.5rem"></p-skeleton></td>
-              <td><p-skeleton width="5rem" height="2rem" borderRadius="16px"></p-skeleton></td>
-            </tr>
-          </ng-template>
-        </p-table>
+        <div class="table-responsive">
+          <table class="app-dashboard-table">
+            <thead>
+              <tr>
+                <th>Provider</th>
+                <th>Service</th>
+                <th>Price</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Data Rows -->
+              <ng-container *ngIf="!loading()">
+                <tr *ngFor="let apt of appointments">
+                  <td class="provider-cell">
+                    <img [src]="apt.image" class="avatar-circle" width="36" alt="avatar" />
+                    <span class="provider-name">{{ apt.provider }}</span>
+                  </td>
+                  <td>{{ apt.service }}</td>
+                  <td class="price-cell">{{ apt.amount }}</td>
+                  <td>
+                    <span class="status-badge" [ngClass]="{
+                        'status-completed': apt.status === 'Completed',
+                        'status-confirmed': apt.status === 'Confirmed',
+                        'status-pending':   apt.status === 'Pending'
+                      }">
+                      {{ apt.status }}
+                    </span>
+                  </td>
+                </tr>
+              </ng-container>
+
+              <ng-container *ngIf="loading()">
+                <tr *ngFor="let item of [1,2,3]">
+                  <td>
+                    <div class="flex align-items-center">
+                      <div class="skeleton-circle mr-2" style="width: 36px; height: 36px;"></div>
+                      <div class="skeleton-line" style="width: 8rem; height: 1.5rem;"></div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="skeleton-line" style="width: 6rem; height: 1.5rem;"></div>
+                  </td>
+                  <td>
+                    <div class="skeleton-line" style="width: 4rem; height: 1.5rem;"></div>
+                  </td>
+                  <td>
+                    <div class="skeleton-line" style="width: 5rem; height: 2rem; border-radius: 16px;"></div>
+                  </td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+        </div> 
       </div>
-
-      <div class="card">
-        <div class="widget-header">
-          <span class="card-title">Most Used Categories</span>
-          <button pButton type="button" icon="pi pi-ellipsis-v"
-            class="p-button-rounded p-button-text p-button-plain menu-btn"></button>
-        </div>
-
-        <ul class="product-list">
-          <li class="product-item" *ngFor="let s of mostBookedCategories">
-            <div class="product-info">
-              <span class="product-name">{{ s.name }}</span>
-              <div class="product-sub">{{ s.bookings }} Bookings Total</div>
-            </div>
-            <div class="progress-group">
-              <div class="progress-track">
-                <div class="progress-fill bg-{{ s.color }}-fill" [style.width]="s.progress + '%'"></div>
-              </div>
-              <span class="progress-label text-{{ s.color }}-accent">{{ s.revenue }}</span>
-            </div>
-          </li>
-        </ul>
-      </div>
-
     </div>
 
     <div class="main-col right-col">
+      <!-- Activity Widget -->
       <div class="card mb-card">
-        <div class="card-title">Spending Trends</div>
-        <p-chart type="bar" [data]="chartData" [options]="chartOptions" height="350px"></p-chart>
-      </div>
-
-      <div class="card">
         <div class="widget-header">
           <span class="card-title">Activity & Updates</span>
-          <button pButton type="button" icon="pi pi-ellipsis-v"
-            class="p-button-rounded p-button-text p-button-plain menu-btn"></button>
+          <button type="button" class="menu-btn-plain">
+            <i class="pi pi-ellipsis-v"></i>
+          </button>
         </div>
 
         <span class="section-label">RECENT</span>
@@ -120,6 +115,13 @@
         </ul>
       </div>
 
+      <!-- Chart Placeholder for Spending Trends -->
+      <div class="card mb-card">
+        <div class="card-title">Spending Trends</div>
+        <div class="chart-container" style="height: 350px; position: relative;">
+          <p-chart type="doughnut" [data]="chartData" [options]="chartOptions" fill="false" height="350px" ></p-chart>
+        </div>
+      </div>
     </div>
   </div>
 </div>

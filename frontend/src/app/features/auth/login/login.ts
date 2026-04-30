@@ -9,8 +9,6 @@ import { RouterModule } from '@angular/router';
 // PrimeNG Modules
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
-import { IconField } from 'primeng/iconfield';
-import { InputIcon } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -23,8 +21,6 @@ import { CheckboxModule } from 'primeng/checkbox';
     RouterModule,
     CardModule, 
     ButtonModule, 
-    IconField, 
-    InputIcon, 
     InputTextModule, 
     PasswordModule, 
     CheckboxModule

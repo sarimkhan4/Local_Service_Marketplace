@@ -30,7 +30,7 @@ export class CustomerNotifications {
   private titleService = inject(Title);
 
   filterMode = signal<'all' | 'unread'>('all');
-  filterOptions = [
+  filterOptions: { label: string; value: 'all' | 'unread' }[] = [
     { label: 'All', value: 'all' },
     { label: 'Unread', value: 'unread' }
   ];

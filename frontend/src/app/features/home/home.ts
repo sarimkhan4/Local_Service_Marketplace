@@ -10,8 +10,6 @@ import { ApiService } from '../../core/services/api.service';
 // PrimeNG Modules
 import { ButtonModule } from 'primeng/button';
 import { CarouselModule } from 'primeng/carousel';
-import { IconField } from 'primeng/iconfield';
-import { InputIcon } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { TabsModule } from 'primeng/tabs';
 import { CardModule } from 'primeng/card';
@@ -55,8 +53,6 @@ interface Testimonial {
     CommonModule,
     ButtonModule,
     CarouselModule,
-    IconField,
-    InputIcon,
     InputTextModule,
     TabsModule,
     CardModule,

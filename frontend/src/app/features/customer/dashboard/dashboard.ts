@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { TableModule } from 'primeng/table';
@@ -19,10 +19,13 @@ import { lastValueFrom } from 'rxjs';
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
-export class CustomerDashboard implements OnInit {
+export class CustomerDashboard implements OnInit, OnDestroy {
   loading = signal(true);
   chartData: any;
   chartOptions: any;
+  livelyChartData: any;
+  livelyChartOptions: any;
+  chartInterval: any;
   menuItems: MenuItem[] = [
     { label: 'View Details', icon: 'pi pi-search' },
     { label: 'Cancel', icon: 'pi pi-times', styleClass: 'text-red-500' },
@@ -66,7 +69,7 @@ export class CustomerDashboard implements OnInit {
           service: b.services?.length ? b.services[0].name : 'Service',
           status: b.status.charAt(0).toUpperCase() + b.status.slice(1).toLowerCase(),
           amount: '$' + Number(b.totalAmount).toFixed(2),
-          image: ''
+          image: 'https://ui-avatars.com/api/?name=' + encodeURIComponent(b.provider?.name || 'Unknown Provider') + '&background=random'
         }));
 
       // STATS
@@ -124,28 +127,28 @@ export class CustomerDashboard implements OnInit {
         labels: ['Q1', 'Q2', 'Q3', 'Q4'],
         datasets: [
             {
-                type: 'bar',
+                type: 'doughnut',
                 label: 'Subscriptions',
-                backgroundColor: '#4f83cc', 
+                backgroundColor: '#008FFB', 
                 data: [9000, 15000, 20000, 9000],
-                barThickness: 32,
+                barThickness: 40,
                 borderRadius: 2
             },
             {
-                type: 'bar',
+                type: 'doughnut',
                 label: 'Advertising',
-                backgroundColor: '#7aabdd', 
+                backgroundColor: '#00E396', 
                 data: [2100, 8400, 2400, 7500],
-                barThickness: 32
+                barThickness: 40
             },
             {
-                type: 'bar',
+                type: 'doughnut',
                 label: 'Affiliate',
-                backgroundColor: '#a9c8ed', 
+                backgroundColor: '#FEB019',
                 data: [4100, 2600, 3400, 7400],
                 borderRadius: { topLeft: 4, topRight: 4, bottomLeft: 0, bottomRight: 0 },
                 borderSkipped: false,
-                barThickness: 32
+                barThickness: 40
             }
         ]
     };
@@ -162,5 +165,61 @@ export class CustomerDashboard implements OnInit {
             y: { stacked: true, ticks: { color: '#64748b' }, grid: { color: '#e2e8f0', borderColor: 'transparent', drawTicks: false } }
         }
     };
+
+    this.livelyChartData = {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [
+            {
+                type: 'bar',
+                label: 'Engagement',
+                backgroundColor: '#8b5cf6',
+                data: [65, 59, 80, 81, 56, 55, 40],
+                borderRadius: 4
+            },
+            {
+                type: 'bar',
+                label: 'Bookings',
+                backgroundColor: '#ec4899',
+                data: [28, 48, 40, 19, 86, 27, 90],
+                borderRadius: 4
+            }
+        ]
+    };
+
+    this.livelyChartOptions = {
+        maintainAspectRatio: false,
+        aspectRatio: 0.8,
+        animation: {
+            duration: 400,
+            easing: 'easeOutQuart'
+        },
+        plugins: {
+            tooltip: { mode: 'index', intersect: false },
+            legend: { position: 'bottom', labels: { color: '#475569', usePointStyle: true, padding: 20 } }
+        },
+        scales: {
+            x: { stacked: false, ticks: { color: '#64748b' }, grid: { color: 'transparent', borderColor: 'transparent' } },
+            y: { stacked: false, ticks: { color: '#64748b' }, grid: { color: '#e2e8f0', borderColor: 'transparent', drawTicks: false } }
+        }
+    };
+    
+    // Animate the chart periodically
+    this.chartInterval = setInterval(() => {
+        if (this.livelyChartData) {
+            this.livelyChartData = {
+                ...this.livelyChartData,
+                datasets: this.livelyChartData.datasets.map((dataset: any) => ({
+                    ...dataset,
+                    data: dataset.data.map(() => Math.floor(Math.random() * 100) + 10)
+                }))
+            };
+        }
+    }, 2000);
+  }
+
+  ngOnDestroy() {
+    if (this.chartInterval) {
+      clearInterval(this.chartInterval);
+    }
   }
 }

@@ -5,13 +5,12 @@
 
     <!-- Back link -->
     <div>
-      <p-button
-        label="Back to Services"
-        icon="pi pi-arrow-left"
-        severity="secondary"
-        [text]="true"
+      <button
+        class="flex align-items-center gap-2 p-2 border-none bg-transparent text-700 font-semibold cursor-pointer hover:surface-100 border-round transition-colors"
         (click)="goBack()">
-      </p-button>
+        <i class="pi pi-arrow-left"></i>
+        Back to Services
+      </button>
     </div>
 
     <!-- ── Service Header Card ── -->
@@ -20,21 +19,32 @@
 
         <!-- Hero icon -->
         <div class="flex align-items-center justify-content-center border-round-xl flex-shrink-0"
-             style="width:88px;height:88px;background:linear-gradient(135deg,#ccfbf1,#a7f3d0);">
+          style="width:88px;height:88px;background:linear-gradient(135deg,#ccfbf1,#a7f3d0);">
           <i class="pi pi-sparkles text-4xl" style="color:#0d9488;"></i>
         </div>
 
         <div class="flex flex-column gap-2 flex-1">
-          <p-tag [value]="service.categoryName" severity="success" [rounded]="true"></p-tag>
+          <span class="bg-green-100 text-green-700 px-3 py-1 border-round-2xl text-sm font-semibold w-fit">
+            {{service.categoryName}}
+          </span>
           <h1 class="text-3xl font-bold text-900 m-0">{{service.title}}</h1>
           <p class="text-500 text-base m-0 line-height-3">{{service.description}}</p>
 
-          <!-- Meta chips (p-chip v21 API) -->
+          <!-- Meta chips -->
           <div class="flex flex-wrap gap-2 mt-2">
-            <p-chip [label]="'From $' + service.basePrice" icon="pi pi-dollar"></p-chip>
-            <p-chip [label]="service.providers.length + ' provider' + (service.providers.length > 1 ? 's' : '')" icon="pi pi-users"></p-chip>
-            <p-chip label="Verified Professionals" icon="pi pi-verified"></p-chip>
-            <p-chip label="Instant Booking" icon="pi pi-bolt"></p-chip>
+            <div class="flex align-items-center gap-2 bg-surface-100 px-3 py-2 border-round-2xl text-700 text-sm">
+              <i class="pi pi-dollar"></i> From ${{ service.basePrice }}
+            </div>
+            <div class="flex align-items-center gap-2 bg-surface-100 px-3 py-2 border-round-2xl text-700 text-sm">
+              <i class="pi pi-users"></i> {{ service.providers.length }} provider{{ service.providers.length > 1 ? 's' :
+              '' }}
+            </div>
+            <div class="flex align-items-center gap-2 bg-surface-100 px-3 py-2 border-round-2xl text-700 text-sm">
+              <i class="pi pi-verified"></i> Verified Professionals
+            </div>
+            <div class="flex align-items-center gap-2 bg-surface-100 px-3 py-2 border-round-2xl text-700 text-sm">
+              <i class="pi pi-bolt"></i> Instant Booking
+            </div>
           </div>
         </div>
       </div>
@@ -45,234 +55,175 @@
       <h2 class="text-xl font-semibold text-900 m-0 mb-1">Available Providers</h2>
       <p class="text-500 text-sm m-0 mb-4">Compare providers, check ratings, and book the one that fits your needs.</p>
 
-      <!-- SKELETON LOADING STATE -->
-      <div class="providers-grid" *ngIf="loadingProviders()">
-        <div *ngFor="let i of [0,1,2]" class="provider-card surface-card border-1 surface-border border-round-xl p-4 flex flex-column gap-3">
-          
-          <!-- Provider top row skeleton -->
-          <div class="flex align-items-center gap-3">
-            <p-skeleton shape="circle" size="3rem" styleClass="flex-shrink-0"></p-skeleton>
-            <div class="flex flex-column gap-2 flex-1 min-w-0">
-              <p-skeleton width="70%" height="1.25rem"></p-skeleton>
-              <p-skeleton width="50%" height="0.875rem"></p-skeleton>
+      <!-- SKELETON LOADING STATE (Using pure CSS/PrimeFlex) -->
+      <div class="grid" *ngIf="loadingProviders()">
+        <div *ngFor="let i of [0,1,2]" class="col-12 md:col-6 lg:col-4">
+          <div class="surface-card border-1 surface-border border-round-xl p-4 flex flex-column gap-3">
+            <div class="flex align-items-center gap-3">
+              <div class="border-circle bg-surface-200" style="width: 3rem; height: 3rem;"></div>
+              <div class="flex-1">
+                <div class="bg-surface-200 h-1rem w-8 border-round mb-2"></div>
+                <div class="bg-surface-200 h-1rem w-4 border-round"></div>
+              </div>
             </div>
-            <div class="text-right flex-shrink-0">
-              <p-skeleton width="4rem" height="1.5rem"></p-skeleton>
-            </div>
+            <div class="bg-surface-200 h-3rem w-full border-round"></div>
+            <div class="bg-surface-200 h-2rem w-full border-round mt-2"></div>
           </div>
-
-          <p-divider styleClass="my-0"></p-divider>
-
-          <!-- Bio skeleton -->
-          <div class="flex flex-column gap-2">
-            <p-skeleton width="100%" height="1rem"></p-skeleton>
-            <p-skeleton width="95%" height="1rem"></p-skeleton>
-            <p-skeleton width="80%" height="1rem"></p-skeleton>
-          </div>
-
-          <!-- Stats chips skeleton -->
-          <div class="flex flex-wrap gap-2">
-            <p-skeleton width="6rem" height="2rem" styleClass="border-round-lg"></p-skeleton>
-            <p-skeleton width="7rem" height="2rem" styleClass="border-round-lg"></p-skeleton>
-            <p-skeleton width="7rem" height="2rem" styleClass="border-round-lg"></p-skeleton>
-          </div>
-
-          <!-- Button skeleton -->
-          <p-skeleton width="100%" height="2.5rem" styleClass="border-round-lg"></p-skeleton>
         </div>
       </div>
 
-      <!-- ACTUAL CONTENT (When loaded) -->
-      <div class="providers-grid" *ngIf="!loadingProviders()">
-        <div *ngFor="let provider of service.providers" class="provider-card surface-card border-1 surface-border border-round-xl p-4 flex flex-column gap-3">
+      <!-- ACTUAL CONTENT -->
+      <div class="grid" *ngIf="!loadingProviders()">
+        <div *ngFor="let provider of service.providers" class="col-12 md:col-6 lg:col-4">
+          <div
+            class="provider-card surface-card border-1 surface-border border-round-xl p-4 h-full flex flex-column gap-3 shadow-hover transition-all">
 
-          <!-- Provider top row -->
-          <div class="flex align-items-center gap-3">
-            <!-- p-avatar (PrimeNG) -->
-            <p-avatar
-              [label]="getInitials(provider.name)"
-              shape="circle"
-              size="large"
-              [style]="{'background':'linear-gradient(135deg,#14b8a6,#0891b2)', 'color':'#fff', 'font-weight':'700'}">
-            </p-avatar>
-            <div class="flex flex-column gap-1 flex-1 min-w-0">
-              <span class="text-900 font-semibold text-base">{{provider.name}}</span>
-              <span class="text-400 text-sm">{{provider.companyName}}</span>
-            </div>
-            <div class="text-right flex-shrink-0">
-              <span class="text-300 text-xs block">Price</span>
-              <span class="text-2xl font-bold" style="color:#0d9488;">${{provider.price}}</span>
-            </div>
-          </div>
-
-          <p-divider styleClass="my-0"></p-divider>
-
-          <!-- Bio -->
-          <p class="text-500 text-sm m-0 line-height-3">{{provider.bio}}</p>
-
-          <!-- Stats chips -->
-          <div class="flex flex-wrap gap-2">
-            <!-- Rating pill (official DataView pattern) -->
-            <div class="bg-surface-100 p-1">
-              <div class="bg-surface-0 flex align-items-center gap-2 justify-content-center py-1 px-2 border-1 surface-border">
-                <span class="text-900 font-medium text-sm">{{provider.rating}}</span>
-                <i class="pi pi-star-fill text-yellow-500" style="font-size:.75rem;"></i>
+            <div class="flex align-items-center gap-3">
+              <div class="flex align-items-center justify-content-center border-circle flex-shrink-0"
+                [style]="{'background':'linear-gradient(135deg,#14b8a6,#0891b2)', 'color':'#fff', 'font-weight':'700', 'width':'48px', 'height':'48px'}">
+                {{getInitials(provider.name)}}
+              </div>
+              <div class="flex flex-column gap-1 flex-1 min-w-0">
+                <span class="text-900 font-semibold text-base">{{provider.name}}</span>
+                <span class="text-400 text-sm">{{provider.companyName}}</span>
+              </div>
+              <div class="text-right flex-shrink-0">
+                <span class="text-300 text-xs block">Price</span>
+                <span class="text-2xl font-bold" style="color:#0d9488;">${{provider.price}}</span>
               </div>
             </div>
-            <p-chip [label]="provider.reviews + ' reviews'" icon="pi pi-comments"></p-chip>
-            <p-chip [label]="provider.yearsExperience + ' yrs exp'" icon="pi pi-briefcase"></p-chip>
-          </div>
 
-          <!-- Book CTA -->
-          <p-button
-            label="Book This Provider"
-            icon="pi pi-calendar-plus"
-            [style]="{'background':'#0d9488','border-color':'#0d9488','width':'100%'}"
-            (click)="openBooking(provider)">
-          </p-button>
+            <hr class="border-none border-top-1 surface-border my-0">
+
+            <p class="text-500 text-sm m-0 line-height-3 flex-1">{{provider.bio}}</p>
+
+            <div class="flex flex-wrap gap-2">
+              <div class="bg-surface-100 flex align-items-center gap-2 py-1 px-2 border-round text-sm">
+                <span class="text-900 font-medium">{{provider.rating}}</span>
+                <i class="pi pi-star-fill text-yellow-500" style="font-size:.75rem;"></i>
+              </div>
+              <div class="bg-surface-100 flex align-items-center gap-2 py-1 px-2 border-round text-sm">
+                <i class="pi pi-comments"></i> {{provider.reviews}} reviews
+              </div>
+              <div class="bg-surface-100 flex align-items-center gap-2 py-1 px-2 border-round text-sm">
+                <i class="pi pi-briefcase"></i> {{provider.yearsExperience}} yrs exp
+              </div>
+            </div>
+
+            <button
+              class="w-full p-3 border-none border-round text-white font-bold cursor-pointer flex align-items-center justify-content-center gap-2 transition-transform active:scale-95"
+              style="background:#0d9488;" (click)="openBooking(provider)">
+              <i class="pi pi-calendar-plus"></i>
+              Book This Provider
+            </button>
+          </div>
         </div>
       </div>
     </div>
-
   </ng-container>
 
   <!-- ════ SERVICE NOT FOUND ════ -->
   <div *ngIf="!service" class="flex flex-column align-items-center justify-content-center py-8 gap-3">
     <i class="pi pi-exclamation-circle text-5xl text-200"></i>
     <h2 class="text-600 m-0">Service not found</h2>
-    <p-button label="Back to Services" icon="pi pi-arrow-left" severity="secondary" [outlined]="true" (click)="goBack()"></p-button>
+    <button class="p-2 px-4 border-1 surface-border border-round bg-white text-700 font-semibold cursor-pointer"
+      (click)="goBack()">
+      <i class="pi pi-arrow-left mr-2"></i> Back to Services
+    </button>
   </div>
 
 </div>
 
-<!-- ════════════════════════════════════
-     BOOKING DIALOG — PrimeNG v21 API
-     Uses [(visible)], [modal], ng-template #header, ng-template #footer
-     ════════════════════════════════════ -->
-<p-dialog
-  [(visible)]="bookingVisible"
-  [modal]="true"
-  [draggable]="false"
-  [resizable]="false"
-  [style]="{ width: '28rem' }"
-  [breakpoints]="{ '768px': '90vw' }"
-  appendTo="body">
+<!-- ════ BOOKING MODAL (Manual Overlay) ════ -->
+<div *ngIf="bookingVisible"
+  class="fixed top-0 left-0 w-full h-full flex align-items-center justify-content-center z-5 px-3"
+  style="background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);">
 
-  <!-- ── Dialog Header (ng-template #header — v21) ── -->
-  <ng-template #header>
-    <div class="flex align-items-center gap-3">
-      <div class="flex align-items-center justify-content-center border-round-lg"
-           style="width:40px;height:40px;background:linear-gradient(135deg,#ccfbf1,#a7f3d0);">
-        <i class="pi pi-calendar-plus text-xl" style="color:#0d9488;"></i>
+  <div class="surface-card border-round-2xl shadow-8 w-full overflow-hidden" style="max-width: 28rem;">
+
+    <!-- Modal Header -->
+    <div class="p-4 border-bottom-1 surface-border flex align-items-center justify-content-between">
+      <div class="flex align-items-center gap-3">
+        <div class="flex align-items-center justify-content-center border-round-lg"
+          style="width:40px;height:40px;background:linear-gradient(135deg,#ccfbf1,#a7f3d0);">
+          <i class="pi pi-calendar-plus text-xl" style="color:#0d9488;"></i>
+        </div>
+        <div>
+          <div class="text-900 font-bold text-lg">Book Service</div>
+          <div class="text-400 text-xs">{{service?.title}}</div>
+        </div>
       </div>
-      <div>
-        <div class="text-900 font-bold text-lg">Book Service</div>
-        <div class="text-400 text-xs">{{service?.title}}</div>
-      </div>
-    </div>
-  </ng-template>
-
-  <!-- ── Dialog Body ── -->
-
-  <!-- SUCCESS STATE -->
-  <div *ngIf="bookingSuccess()" class="flex flex-column align-items-center gap-3 py-4">
-    <div class="flex align-items-center justify-content-center border-circle"
-         style="width:72px;height:72px;background:#dcfce7;">
-      <i class="pi pi-cart-plus text-4xl" style="color:#16a34a;"></i>
-    </div>
-    <h3 class="text-900 font-bold text-xl m-0">Added to Cart!</h3>
-    <p class="text-500 text-sm text-center m-0 line-height-3">
-      Your service with <strong class="text-900">{{selectedProvider?.companyName}}</strong> was added to your cart.<br/>
-      You can add more services or proceed to checkout.
-    </p>
-    <div class="flex gap-2 w-full mt-3">
-        <p-button
-          label="Keep Browsing"
-          severity="secondary"
-          [text]="true"
-          class="flex-1"
-          styleClass="w-full"
-          (click)="bookingVisible = false">
-        </p-button>
-        <p-button
-          label="Go To Checkout"
-          icon="pi pi-credit-card"
-          class="flex-1"
-          styleClass="w-full"
-          [style]="{'background':'#0d9488','border-color':'#0d9488'}"
-          (click)="goToCheckout()">
-        </p-button>
-    </div>
-  </div>
-
-  <!-- BOOKING FORM -->
-  <div *ngIf="!bookingSuccess()" class="flex flex-column gap-4">
-
-    <!-- Summary row: provider -->
-    <div class="flex align-items-center gap-3 p-3 border-round-lg" style="background:var(--surface-50);">
-      <p-avatar
-        [label]="getInitials(selectedProvider?.name || '')"
-        shape="circle"
-        [style]="{'background':'linear-gradient(135deg,#14b8a6,#0891b2)','color':'#fff','font-weight':'700'}">
-      </p-avatar>
-      <div class="flex flex-column gap-0">
-        <span class="text-900 font-semibold text-sm">{{selectedProvider?.name}}</span>
-        <span class="text-400 text-xs">{{selectedProvider?.companyName}}</span>
-      </div>
-      <span class="ml-auto text-xl font-bold" style="color:#0d9488;">${{selectedProvider?.price}}</span>
-    </div>
-
-    <!-- Date field (pInputText v21) -->
-    <div class="flex flex-column gap-2">
-      <label for="bookingDate" class="text-700 text-sm font-medium">Preferred Date</label>
-      <input
-        id="bookingDate"
-        type="date"
-        pInputText
-        [(ngModel)]="bookingDate"
-        [invalid]="!bookingDate && bookingDate !== ''" />
-      <small class="text-400">Select the date you'd like the service performed.</small>
-    </div>
-
-    <!-- Time field (pInputText v21) -->
-    <div class="flex flex-column gap-2">
-      <label for="bookingTime" class="text-700 text-sm font-medium">Preferred Time</label>
-      <input
-        id="bookingTime"
-        type="time"
-        pInputText
-        [(ngModel)]="bookingTime" />
-    </div>
-
-    <!-- Notes (optional) -->
-    <div class="flex flex-column gap-2">
-      <label for="bookingNotes" class="text-700 text-sm font-medium">Notes <span class="text-400 font-normal">(optional)</span></label>
-      <input
-        id="bookingNotes"
-        type="text"
-        pInputText
-        [(ngModel)]="bookingNotes"
-        placeholder="e.g. Please bring your own cleaning supplies" />
-    </div>
-  </div>
-
-  <!-- ── Dialog Footer (ng-template #footer — v21) ── -->
-  <ng-template #footer>
-    <div *ngIf="!bookingSuccess()" class="flex justify-content-end gap-2">
-      <p-button
-        label="Cancel"
-        severity="secondary"
-        [text]="true"
+      <button class="bg-transparent border-none p-2 cursor-pointer text-500 hover:text-900"
         (click)="bookingVisible = false">
-      </p-button>
-      <p-button
-        label="Add to Cart"
-        icon="pi pi-cart-plus"
-        [disabled]="!canConfirm"
-        [style]="{'background':'#0d9488','border-color':'#0d9488'}"
-        (click)="confirmBooking()">
-      </p-button>
+        <i class="pi pi-times"></i>
+      </button>
     </div>
-  </ng-template>
 
-</p-dialog>
+    <div class="p-4">
+      <!-- SUCCESS STATE -->
+      <div *ngIf="bookingSuccess()" class="flex flex-column align-items-center gap-3 py-2 text-center">
+        <div class="flex align-items-center justify-content-center border-circle"
+          style="width:72px;height:72px;background:#dcfce7;">
+          <i class="pi pi-cart-plus text-4xl" style="color:#16a34a;"></i>
+        </div>
+        <h3 class="text-900 font-bold text-xl m-0">Added to Cart!</h3>
+        <p class="text-500 text-sm line-height-3 m-0">
+          Your service with <strong class="text-900">{{selectedProvider?.companyName}}</strong> was added to your cart.
+        </p>
+        <div class="flex gap-2 w-full mt-3">
+          <button
+            class="flex-1 p-3 border-1 surface-border border-round bg-transparent text-700 font-semibold cursor-pointer"
+            (click)="bookingVisible = false">Keep Browsing</button>
+          <button class="flex-1 p-3 border-none border-round text-white font-bold cursor-pointer"
+            style="background:#0d9488;" (click)="goToCheckout()">Go To Checkout</button>
+        </div>
+      </div>
+
+      <!-- BOOKING FORM -->
+      <div *ngIf="!bookingSuccess()" class="flex flex-column gap-4">
+        <div class="flex align-items-center gap-3 p-3 border-round-lg" style="background:var(--surface-50);">
+          <div class="flex align-items-center justify-content-center border-circle"
+            [style]="{'background':'linear-gradient(135deg,#14b8a6,#0891b2)','color':'#fff','width':'40px','height':'40px','font-weight':'700'}">
+            {{getInitials(selectedProvider?.name || '')}}
+          </div>
+          <div class="flex flex-column">
+            <span class="text-900 font-semibold text-sm">{{selectedProvider?.name}}</span>
+            <span class="text-400 text-xs">{{selectedProvider?.companyName}}</span>
+          </div>
+          <span class="ml-auto text-xl font-bold" style="color:#0d9488;">${{selectedProvider?.price}}</span>
+        </div>
+
+        <div class="flex flex-column gap-2">
+          <label class="text-700 text-sm font-medium">Preferred Date</label>
+          <input type="date"
+            class="p-3 border-1 surface-border border-round outline-none focus:border-primary transition-colors"
+            [(ngModel)]="bookingDate" />
+        </div>
+
+        <div class="flex flex-column gap-2">
+          <label class="text-700 text-sm font-medium">Preferred Time</label>
+          <input type="time"
+            class="p-3 border-1 surface-border border-round outline-none focus:border-primary transition-colors"
+            [(ngModel)]="bookingTime" />
+        </div>
+
+        <div class="flex flex-column gap-2">
+          <label class="text-700 text-sm font-medium">Notes <span class="text-400 font-normal">(optional)</span></label>
+          <input type="text" placeholder="e.g. Please bring your own supplies"
+            class="p-3 border-1 surface-border border-round outline-none focus:border-primary transition-colors"
+            [(ngModel)]="bookingNotes" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div *ngIf="!bookingSuccess()" class="p-4 border-top-1 surface-border flex justify-content-end gap-2">
+      <button class="p-2 px-4 border-none bg-transparent text-700 font-semibold cursor-pointer border-round"
+        (click)="bookingVisible = false">Cancel</button>
+      <button class="p-2 px-4 border-none border-round text-white font-bold cursor-pointer"
+        [style.background]="canConfirm ? '#0d9488' : '#cbd5e1'" [disabled]="!canConfirm" (click)="confirmBooking()">
+        Add to Cart
+      </button>
+    </div>
+  </div>
+</div>
