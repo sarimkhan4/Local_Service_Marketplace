@@ -73,41 +73,53 @@ export class ServiceDetail implements OnInit {
 
   async ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      if (this.dataService.catalogServices.length === 0) {
-        await this.dataService.loadCatalogServices();
-      }
-      this.service = this.dataService.getServiceById(id);
+    if (!id) {
+      this.router.navigate(['/app/customer/services']);
+      return;
+    }
+
+    this.service = this.dataService.getServiceById(id);
+    
+    if (this.service) {
+      this.titleService.setTitle('Local Service Management | ' + this.service.title);
       
-      if (this.service) {
-        this.titleService.setTitle('Local Service Management | ' + this.service.title);
+      // Start skeleton loader
+      this.loadingProviders.set(true);
+      
+      try {
+        // Load provider reviews for this service
+        await this.loadProviderReviews();
         
-        // Start skeleton loader
-        this.loadingProviders.set(true);
-        try {
-          const listings: any[] = await lastValueFrom(
-            this.http.get<any[]>(`${environment.apiUrl}/services/listings`)
-          );
-          
-          this.service.providers = listings
-            .filter(ps => ps.service?.serviceId?.toString() === id)
-            .map(ps => ({
-              id: ps.provider?.userId?.toString() || '0',
+        // Load providers for this service
+        const providers = await lastValueFrom(this.apiService.getProviderServices(this.service.id));
+        
+        if (providers && Array.isArray(providers)) {
+          // Map providers with dynamic ratings based on reviews
+          this.service.providers = providers.map((ps: any) => {
+            const providerId = ps.provider?.userId?.toString() || '0';
+            const providerReviews = this.getProviderReviews(providerId);
+            const avgRating = this.calculateAverageRating(providerReviews);
+            
+            return {
+              id: providerId,
               name: ps.provider?.name || 'Unknown',
               companyName: ps.provider?.companyName || 'Independent',
-              rating: 4.8,
-              reviews: 12,
+              rating: avgRating,
+              reviews: providerReviews.length,
               yearsExperience: ps.provider?.experience || 0,
               price: Number(ps.price),
               bio: ps.provider?.bio || 'Local professional ready to help.'
-            }));
-        } catch (e) {
-          console.error('Failed to load listings', e);
-        } finally {
-          // Stop skeleton loader
-          this.loadingProviders.set(false);
+            };
+          });
         }
+        
+      } catch (error) {
+        console.error('Failed to load providers:', error);
+      } finally {
+        this.loadingProviders.set(false);
       }
+    } else {
+      this.router.navigate(['/app/customer/services']);
     }
   }
 
@@ -301,6 +313,36 @@ export class ServiceDetail implements OnInit {
 
   closeCartDialog() {
     this.cartVisible = false;
+  }
+
+  // Review loading and calculation methods
+  private providerReviews: { [providerId: string]: any[] } = {};
+
+  async loadProviderReviews() {
+    if (!this.service?.providers) return;
+    
+    try {
+      // Load reviews for each provider
+      for (const provider of this.service.providers) {
+        const reviews: any = await lastValueFrom(this.apiService.getProviderReviews(provider.id));
+        this.providerReviews[provider.id] = reviews || [];
+      }
+    } catch (error) {
+      console.error('Failed to load provider reviews:', error);
+    }
+  }
+
+  getProviderReviews(providerId: string): any[] {
+    return this.providerReviews[providerId] || [];
+  }
+
+  calculateAverageRating(reviews: any[]): number {
+    if (!reviews || reviews.length === 0) {
+      return 4.0; // Default rating
+    }
+    
+    const totalRating = reviews.reduce((sum, review) => sum + (review.rating || 0), 0);
+    return Math.round((totalRating / reviews.length) * 10) / 10; // Round to 1 decimal
   }
 
   getRatingStars(rating: number): number[] {
