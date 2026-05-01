@@ -60,8 +60,11 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       );
     }
 
-    // Map status codes to user-friendly messages
-    message = this.getUserFriendlyMessage(status, message);
+    // Map status codes to user-friendly messages only if the message is generic
+    const defaultMessages = ['Bad Request', 'Unauthorized', 'Forbidden', 'Not Found', 'Conflict', 'Internal Server Error', 'Service Unavailable'];
+    if (defaultMessages.includes(message) || !message) {
+      message = this.getUserFriendlyMessage(status, message);
+    }
 
     const errorResponse: ErrorResponse = {
       statusCode: status,

@@ -1,3 +1,4 @@
+<p-toast></p-toast>
 <div class="auth-split-container">
   <!-- Left Side: Image Container -->
   <div class="auth-image-side">
@@ -14,18 +15,22 @@
       </div>
 
       <div class="role-selector text-center mb-5 mt-3">
-        <p-selectbutton [options]="roleOptions" [(ngModel)]="selectedRole" optionLabel="label" optionValue="value" styleClass="w-full role-toggle"></p-selectbutton>
+        <p-selectbutton [options]="roleOptions" [(ngModel)]="selectedRole" optionLabel="label" optionValue="value" (onChange)="onRoleChange()" styleClass="w-full role-toggle"></p-selectbutton>
       </div>
 
-      <form (ngSubmit)="onSubmit()" class="auth-form">
+      <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="auth-form">
         <div class="formgrid grid mb-3">
           <div class="field col-12 md:col-6 mb-0">
             <label for="firstName">First Name</label>
-            <input type="text" pInputText id="firstName" [(ngModel)]="firstName" name="firstName" placeholder="John" class="w-full" required />
+            <input type="text" pInputText id="firstName" formControlName="firstName" placeholder="John" class="w-full" />
+            <small *ngIf="signupForm.get('firstName')?.errors?.['required'] && signupForm.get('firstName')?.touched" class="p-error">First name is required</small>
+            <small *ngIf="signupForm.get('firstName')?.errors?.['minlength'] && signupForm.get('firstName')?.touched" class="p-error">Min 2 characters</small>
           </div>
           <div class="field col-12 md:col-6 mb-0">
             <label for="lastName">Last Name</label>
-            <input type="text" pInputText id="lastName" [(ngModel)]="lastName" name="lastName" placeholder="Doe" class="w-full" required />
+            <input type="text" pInputText id="lastName" formControlName="lastName" placeholder="Doe" class="w-full" />
+            <small *ngIf="signupForm.get('lastName')?.errors?.['required'] && signupForm.get('lastName')?.touched" class="p-error">Last name is required</small>
+            <small *ngIf="signupForm.get('lastName')?.errors?.['minlength'] && signupForm.get('lastName')?.touched" class="p-error">Min 2 characters</small>
           </div>
         </div>
 
@@ -33,16 +38,20 @@
           <label for="email">Email Address</label>
           <p-iconfield styleClass="w-full">
             <p-inputicon styleClass="pi pi-envelope" />
-            <input type="email" pInputText id="email" [(ngModel)]="email" name="email" placeholder="you@example.com" class="w-full" required />
+            <input type="email" pInputText id="email" formControlName="email" placeholder="you@example.com" class="w-full" />
           </p-iconfield>
+          <small *ngIf="signupForm.get('email')?.errors?.['required'] && signupForm.get('email')?.touched" class="p-error">Email is required</small>
+          <small *ngIf="signupForm.get('email')?.errors?.['email'] && signupForm.get('email')?.touched" class="p-error">Invalid email format</small>
         </div>
 
         <div class="form-group mb-3">
           <label for="phoneNumber">Phone Number</label>
           <p-iconfield styleClass="w-full">
             <p-inputicon styleClass="pi pi-phone" />
-            <input type="text" pInputText id="phoneNumber" [(ngModel)]="phoneNumber" name="phoneNumber" placeholder="+1 234 567 8900" class="w-full" required />
+            <input type="text" pInputText id="phoneNumber" formControlName="phoneNumber" placeholder="+1 234 567 8900" class="w-full" />
           </p-iconfield>
+          <small *ngIf="signupForm.get('phoneNumber')?.errors?.['required'] && signupForm.get('phoneNumber')?.touched" class="p-error">Phone is required</small>
+          <small *ngIf="signupForm.get('phoneNumber')?.errors?.['pattern'] && signupForm.get('phoneNumber')?.touched" class="p-error">Invalid phone number</small>
         </div>
 
         <ng-container *ngIf="selectedRole === 'customer'">
@@ -50,54 +59,66 @@
             <label for="street">Street Address</label>
             <p-iconfield styleClass="w-full">
               <p-inputicon styleClass="pi pi-map-marker" />
-              <input type="text" pInputText id="street" [(ngModel)]="street" name="street" placeholder="123 Main Street" class="w-full" required />
+              <input type="text" pInputText id="street" formControlName="street" placeholder="123 Main Street" class="w-full" />
             </p-iconfield>
+            <small *ngIf="signupForm.get('street')?.errors?.['required'] && signupForm.get('street')?.touched" class="p-error">Street is required</small>
           </div>
           
           <div class="formgrid grid mb-3">
             <div class="field col-12 md:col-6 mb-0">
               <label for="city">City</label>
-              <input type="text" pInputText id="city" [(ngModel)]="city" name="city" placeholder="Karachi" class="w-full" required />
+              <input type="text" pInputText id="city" formControlName="city" placeholder="Karachi" class="w-full" />
+              <small *ngIf="signupForm.get('city')?.errors?.['required'] && signupForm.get('city')?.touched" class="p-error">City is required</small>
             </div>
             <div class="field col-12 md:col-6 mb-0">
-              <label for="state">State/Province</label>
-              <input type="text" pInputText id="state" [(ngModel)]="state" name="state" placeholder="Sindh" class="w-full" required />
+              <label for="state">State</label>
+              <input type="text" pInputText id="state" formControlName="state" placeholder="Sindh" class="w-full" />
+              <small *ngIf="signupForm.get('state')?.errors?.['required'] && signupForm.get('state')?.touched" class="p-error">State is required</small>
             </div>
           </div>
           
           <div class="form-group mb-3">
             <label for="zipCode">Postal Code</label>
-            <input type="text" pInputText id="zipCode" [(ngModel)]="zipCode" name="zipCode" placeholder="74200" class="w-full" required />
+            <input type="text" pInputText id="zipCode" formControlName="zipCode" placeholder="74200" class="w-full" />
+            <small *ngIf="signupForm.get('zipCode')?.errors?.['required'] && signupForm.get('zipCode')?.touched" class="p-error">Postal code is required</small>
+            <small *ngIf="signupForm.get('zipCode')?.errors?.['pattern'] && signupForm.get('zipCode')?.touched" class="p-error">Must be 5 digits</small>
           </div>
         </ng-container>
 
         <ng-container *ngIf="selectedRole === 'provider'">
           <div class="form-group mb-3">
-            <label for="companyName">Company / Business Name</label>
+            <label for="companyName">Company Name</label>
             <p-iconfield styleClass="w-full">
               <p-inputicon styleClass="pi pi-briefcase" />
-              <input type="text" pInputText id="companyName" [(ngModel)]="companyName" name="companyName" placeholder="Pro Fixers LLC" class="w-full" required />
+              <input type="text" pInputText id="companyName" formControlName="companyName" placeholder="Pro Fixers LLC" class="w-full" />
             </p-iconfield>
+            <small *ngIf="signupForm.get('companyName')?.errors?.['required'] && signupForm.get('companyName')?.touched" class="p-error">Company name is required</small>
           </div>
           
           <div class="formgrid grid mb-3">
             <div class="field col-12 md:col-8 mb-0">
-              <label for="bio">Short Bio</label>
-              <input type="text" pInputText id="bio" [(ngModel)]="bio" name="bio" placeholder="Expert in home repairs..." class="w-full" required />
+              <label for="bio">Bio</label>
+              <input type="text" pInputText id="bio" formControlName="bio" placeholder="Expert in home repairs..." class="w-full" />
+              <small *ngIf="signupForm.get('bio')?.errors?.['required'] && signupForm.get('bio')?.touched" class="p-error">Bio is required</small>
+              <small *ngIf="signupForm.get('bio')?.errors?.['minlength'] && signupForm.get('bio')?.touched" class="p-error">Min 20 characters</small>
             </div>
             <div class="field col-12 md:col-4 mb-0">
               <label for="experienceYears">Experience (Yrs)</label>
-              <p-inputNumber inputId="experienceYears" [(ngModel)]="experienceYears" name="experienceYears" class="w-full" styleClass="w-full" [min]="0"></p-inputNumber>
+              <p-inputNumber inputId="experienceYears" formControlName="experienceYears" class="w-full" styleClass="w-full" [min]="0"></p-inputNumber>
+              <small *ngIf="signupForm.get('experienceYears')?.errors?.['required'] && signupForm.get('experienceYears')?.touched" class="p-error">Required</small>
             </div>
           </div>
         </ng-container>
 
         <div class="form-group mb-5 mt-2">
           <label for="password">Create Password</label>
-          <p-password [(ngModel)]="password" [toggleMask]="true" name="password" styleClass="w-full" [inputStyle]="{'width':'100%'}" placeholder="••••••••"></p-password>
+          <p-password formControlName="password" [toggleMask]="true" styleClass="w-full" [inputStyle]="{'width':'100%'}" placeholder="••••••••"></p-password>
+          <small *ngIf="signupForm.get('password')?.errors?.['required'] && signupForm.get('password')?.touched" class="p-error">Password is required</small>
+          <small *ngIf="signupForm.get('password')?.errors?.['minlength'] && signupForm.get('password')?.touched" class="p-error">Min 8 characters</small>
+          <small *ngIf="signupForm.get('password')?.errors?.['pattern'] && signupForm.get('password')?.touched" class="p-error">Must have Upper, Lower, Number & Special Char</small>
         </div>
 
-        <p-button type="submit" [label]="selectedRole === 'customer' ? 'Create Customer Profile' : 'Register Provider Account'" styleClass="w-full" size="large"></p-button>
+        <p-button type="submit" [label]="isLoading ? 'Creating Account...' : (selectedRole === 'customer' ? 'Create Customer Profile' : 'Register Provider Account')" styleClass="w-full" size="large" [disabled]="isLoading"></p-button>
       </form>
 
 

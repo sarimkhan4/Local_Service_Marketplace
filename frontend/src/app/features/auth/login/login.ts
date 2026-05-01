@@ -46,6 +46,7 @@ export class Login {
   private router = inject(Router);
   private dataService = inject(DataService);
   private errorHandler = inject(ErrorHandlerService);
+  private messageService = inject(MessageService);
   private validator = new FormValidator();
 
   private validateForm(): boolean {
@@ -67,17 +68,25 @@ export class Login {
 
   async onSubmit() {
     if (!this.validateForm()) {
-      this.errorHandler.showWarning('Please fix the validation errors before proceeding.');
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Validation Error',
+        detail: 'Please fill out all required fields correctly.',
+        life: 4000
+      });
       return;
     }
 
     this.isLoading = true;
-    console.log('Login attempt:', this.email);
-
     try {
       await this.authService.login(this.email, this.password);
-
-      this.errorHandler.showSuccess('Welcome back! You have successfully logged in.');
+      
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Success',
+        detail: 'Welcome back! You have successfully logged in.',
+        life: 3000
+      });
 
       // Check for pending actions
       const pending = localStorage.getItem('pendingAction');
@@ -112,7 +121,23 @@ export class Login {
         this.router.navigate(['/app/customer/dashboard']);
       }
     } catch (error: any) {
-      this.errorHandler.handleHttpError(error, 'Login failed. Please check your credentials and try again.');
+      console.error('Login failed:', error);
+      let errorMessage = 'Login failed. Please check your credentials and try again.';
+      
+      const backendMessage = error.error?.message;
+      
+      if (error.status === 401) {
+        errorMessage = 'Invalid credentials. Please check your email and password.';
+      } else if (backendMessage) {
+        errorMessage = backendMessage;
+      }
+      
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Login Failed',
+        detail: errorMessage,
+        life: 5000
+      });
     } finally {
       this.isLoading = false;
     }

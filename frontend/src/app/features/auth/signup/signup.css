@@ -249,3 +249,13 @@
 .auth-footer a:hover {
   text-decoration: underline;
 }
+
+/* ===== ERROR MESSAGES ===== */
+.p-error {
+  font-size: 0.75rem;
+  color: #ef4444;
+  margin-top: 0.15rem;
+  font-weight: 300;
+  display: block;
+}
+

@@ -160,6 +160,7 @@ export class ServiceDetail implements OnInit {
 
       // Redirect to bookings after a short delay
       setTimeout(() => {
+        this.bookingVisible = false;
         this.goToBookings();
       }, 2000);
 
@@ -181,8 +182,16 @@ export class ServiceDetail implements OnInit {
   }
 
   goToBookings() {
-    this.bookingVisible = false;
     this.router.navigate(['/app/customer/bookings']);
+  }
+
+  onDialogHide() {
+    // Reset form when dialog is hidden
+    this.selectedProvider = null;
+    this.bookingDate = '';
+    this.bookingTime = '';
+    this.bookingNotes = '';
+    this.bookingSuccess.set(false);
   }
 
   goBack() {

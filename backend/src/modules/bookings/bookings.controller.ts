@@ -14,13 +14,19 @@ export class BookingsController {
   constructor(private readonly bookingsService: BookingsService) {}
 
   @Post()
-  createBooking(
+  async createBooking(
     @Body('customerId') customerId: number,
     @Body('providerId') providerId: number,
-    @Body('addressId') addressId: number,
     @Body('date') date: Date,
-    @Body('totalAmount') totalAmount: number
+    @Body('totalAmount') totalAmount: number,
+    @Body('addressId') addressId?: number,
+    @Body('serviceId') serviceId?: number,
   ) {
+    // For now, if no addressId provided, use a default value or skip
+    if (!addressId) {
+      addressId = 1; // Use a default address ID for now
+    }
+    
     return this.bookingsService.createBooking(customerId, providerId, addressId, date, totalAmount);
   }
 

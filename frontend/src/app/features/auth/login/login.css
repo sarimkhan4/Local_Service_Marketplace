@@ -136,8 +136,16 @@
   color: #cbd5e1;
 }
 
-.input-wrapper .custom-input:focus {
-  border-bottom-color: #0f172a;
+.input-wrapper .custom-input.error {
+  border-bottom-color: #ef4444;
+}
+
+.error-message {
+  color: #ef4444;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  font-family: 'Fira Sans', sans-serif;
+  font-weight: 200;
 }
 
 /* ===== FORM OPTIONS ===== */
