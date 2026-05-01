@@ -41,7 +41,7 @@ export class Availability {
   ];
 
   constructor() {
-    this.titleService.setTitle('Local Service Management System | Schedule Management');
+    this.titleService.setTitle('Local Service Management | Schedule Management');
   }
 
   get selectedDateStr(): string {

@@ -118,6 +118,12 @@
                 Book This Provider
               </button>
               <button
+                class="p-3 border-1 border-green-500 text-green-500 bg-transparent border-round cursor-pointer hover:bg-green-50 transition-colors"
+                (click)="addToCart(provider)" 
+                [attr.aria-label]="'Add ' + provider.name + ' to cart'">
+                <i class="pi pi-shopping-cart"></i>
+              </button>
+              <button
                 class="p-3 border-1 border-red-500 text-red-500 bg-transparent border-round cursor-pointer hover:bg-red-50 transition-colors"
                 (click)="saveProvider(provider)" 
                 [attr.aria-label]="'Save ' + provider.name">
@@ -141,6 +147,108 @@
   </div>
 
 </div>
+
+<!-- ════ CART MODAL (PrimeNG Dialog) ════ -->
+<p-dialog [(visible)]="cartVisible" [modal]="true" [draggable]="false" [resizable]="false" 
+          [style]="{width: '100%', maxWidth: '28rem'}" [contentStyle]="{'padding': '0', 'border-radius': '1rem'}"
+          [maskStyle]="{'backdrop-filter': 'blur(4px)'}"
+          styleClass="border-round-2xl overflow-hidden shadow-8" 
+          [showHeader]="false" [closable]="false" appendTo="body"
+          (onHide)="closeCartDialog()">
+  <div class="surface-card w-full">
+
+    <!-- Modal Header -->
+    <div class="p-4 border-bottom-1 surface-border flex align-items-center justify-content-between">
+      <div class="flex align-items-center gap-3">
+        <div class="flex align-items-center justify-content-center border-round-lg"
+          style="width:40px;height:40px;background:linear-gradient(135deg,#10b981,#059669);">
+          <i class="pi pi-shopping-cart text-xl" style="color:#ffffff;"></i>
+        </div>
+        <div>
+          <div class="text-900 font-bold text-lg">Add to Cart</div>
+          <div class="text-400 text-xs">{{service?.title}}</div>
+        </div>
+      </div>
+      <button class="bg-transparent border-none p-2 cursor-pointer text-500 hover:text-900"
+        (click)="cartVisible = false">
+        <i class="pi pi-times"></i>
+      </button>
+    </div>
+
+    <div class="p-4">
+      <!-- Toast container for messages -->
+      <p-toast></p-toast>
+
+      <!-- SUCCESS STATE -->
+      <div *ngIf="cartSuccess()" class="flex flex-column align-items-center gap-3 py-2 text-center">
+        <div class="flex align-items-center justify-content-center border-circle"
+          style="width:72px;height:72px;background:#dcfce7;">
+          <i class="pi pi-check-circle text-4xl" style="color:#16a34a;"></i>
+        </div>
+        <h3 class="text-900 font-bold text-xl m-0">Added to Cart!</h3>
+        <p class="text-500 text-sm line-height-3 m-0">
+          <strong class="text-900">{{selectedCartProvider?.name}}</strong> has been added to your cart.
+        </p>
+        <div class="flex gap-2 w-full mt-3">
+          <button
+            class="flex-1 p-3 border-1 surface-border border-round bg-transparent text-700 font-semibold cursor-pointer"
+            (click)="closeCartDialog()">Continue Shopping</button>
+          <button class="flex-1 p-3 border-none border-round text-white font-bold cursor-pointer"
+            style="background:#0d9488;" routerLink="/app/customer/checkout">View Cart</button>
+        </div>
+      </div>
+
+      <!-- CART FORM -->
+      <div *ngIf="!cartSuccess()" class="flex flex-column gap-4">
+        <div class="flex align-items-center gap-3 p-3 border-round-lg" style="background:var(--surface-50);">
+          <div class="flex align-items-center justify-content-center border-circle"
+            [style]="{'background':'linear-gradient(135deg,#10b981,#059669)','color':'#fff','width':'40px','height':'40px','font-weight':'700'}">
+            {{getInitials(selectedCartProvider?.name || '')}}
+          </div>
+          <div class="flex flex-column">
+            <span class="text-900 font-semibold text-sm">{{selectedCartProvider?.name}}</span>
+            <span class="text-400 text-xs">{{selectedCartProvider?.companyName}}</span>
+          </div>
+          <span class="ml-auto text-xl font-bold" style="color:#0d9488;">${{selectedCartProvider?.price}}</span>
+        </div>
+
+        <div class="flex flex-column gap-2">
+          <label class="text-700 text-sm font-medium">Preferred Date</label>
+          <input type="date"
+            class="p-3 border-1 surface-border border-round outline-none focus:border-primary transition-colors"
+            [(ngModel)]="cartDate" />
+        </div>
+
+        <div class="flex flex-column gap-2">
+          <label class="text-700 text-sm font-medium">Preferred Time</label>
+          <input type="time"
+            class="p-3 border-1 surface-border border-round outline-none focus:border-primary transition-colors"
+            [(ngModel)]="cartTime" />
+        </div>
+
+        <div class="flex flex-column gap-2">
+          <label class="text-700 text-sm font-medium">Notes <span class="text-400 font-normal">(optional)</span></label>
+          <input type="text" placeholder="e.g. Please bring your own supplies"
+            class="p-3 border-1 surface-border border-round outline-none focus:border-primary transition-colors"
+            [(ngModel)]="cartNotes" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div *ngIf="!cartSuccess()" class="p-4 border-top-1 surface-border flex justify-content-end gap-2">
+      <button class="p-2 px-4 border-none bg-transparent text-700 font-semibold cursor-pointer border-round"
+        (click)="cartVisible = false">Cancel</button>
+      <button class="p-2 px-4 border-none border-round text-white font-bold cursor-pointer"
+        [style.background]="canConfirmCart ? '#0d9488' : '#cbd5e1'" 
+        [disabled]="!canConfirmCart || cartLoading()" 
+        (click)="confirmAddToCart()">
+        <i *ngIf="cartLoading()" class="pi pi-spin pi-spinner mr-2"></i>
+        {{ cartLoading() ? 'Adding...' : 'Add to Cart' }}
+      </button>
+    </div>
+  </div>
+</p-dialog>
 
 <!-- ════ BOOKING MODAL (PrimeNG Dialog) ════ -->
 <p-dialog [(visible)]="bookingVisible" [modal]="true" [draggable]="false" [resizable]="false" 

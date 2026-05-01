@@ -65,6 +65,7 @@ export interface CartItem {
   service: CatalogService;
   provider: CatalogProvider;
   date: string;
+  notes?: string;
 }
 
 @Injectable({

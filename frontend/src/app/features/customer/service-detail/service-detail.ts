@@ -23,6 +23,7 @@ import { ApiService } from '../../../core/services/api.service';
 import { AuthService } from '../../../core/services/auth';
 import { NotificationService } from '../../../core/services/notification.service';
 import { environment } from '../../../../environments/environment';
+import { CartItem } from '../../../core/services/data.service';
 
 @Component({
   selector: 'app-service-detail',
@@ -52,6 +53,15 @@ export class ServiceDetail implements OnInit {
   loadingProviders = signal(false);
   bookingMessage = signal<{severity: 'success' | 'error' | 'info' | 'warn', summary: string, detail: string} | null>(null);
 
+  // ── Cart state ──
+  cartVisible = false;
+  selectedCartProvider: CatalogProvider | null = null;
+  cartDate = '';
+  cartTime = '';
+  cartNotes = '';
+  cartSuccess = signal(false);
+  cartLoading = signal(false);
+
   // ── Booking dialog state ──
   bookingVisible = false;
   selectedProvider: CatalogProvider | null = null;
@@ -70,7 +80,7 @@ export class ServiceDetail implements OnInit {
       this.service = this.dataService.getServiceById(id);
       
       if (this.service) {
-        this.titleService.setTitle('Local Service Management System | ' + this.service.title);
+        this.titleService.setTitle('Local Service Management | ' + this.service.title);
         
         // Start skeleton loader
         this.loadingProviders.set(true);
@@ -202,6 +212,10 @@ export class ServiceDetail implements OnInit {
     return !!(this.bookingDate && this.bookingTime);
   }
 
+  get canConfirmCart(): boolean {
+    return !!(this.cartDate && this.cartTime);
+  }
+
   getInitials(name: string): string {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
   }
@@ -213,6 +227,80 @@ export class ServiceDetail implements OnInit {
     } catch (error) {
       console.error('Failed to save provider:', error);
     }
+  }
+
+  addToCart(provider: CatalogProvider) {
+    this.selectedCartProvider = provider;
+    this.cartDate = '';
+    this.cartTime = '';
+    this.cartNotes = '';
+    this.cartSuccess.set(false);
+    this.cartVisible = true;
+  }
+
+  confirmAddToCart() {
+    if (!this.selectedCartProvider || !this.cartDate || !this.cartTime || !this.service) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Missing Information',
+        detail: 'Please select date and time to add to cart.'
+      });
+      return;
+    }
+
+    const currentUser = this.authService.currentUser();
+    if (!currentUser) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Authentication Required',
+        detail: 'Please login to add items to cart.'
+      });
+      return;
+    }
+
+    this.cartLoading.set(true);
+
+    try {
+      const dateStr = `${this.cartDate}T${this.cartTime}:00Z`;
+      
+      // Create cart item
+      const cartItem: CartItem = {
+        service: this.service,
+        provider: this.selectedCartProvider,
+        date: dateStr,
+        notes: this.cartNotes
+      };
+
+      // Add to cart
+      this.dataService.addToCart(cartItem);
+      
+      this.cartSuccess.set(true);
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Added to Cart!',
+        detail: `${this.service.title} has been added to your cart.`
+      });
+
+      // Close dialog after a short delay
+      setTimeout(() => {
+        this.cartVisible = false;
+        this.cartSuccess.set(false);
+      }, 1500);
+
+    } catch (error: any) {
+      console.error('Failed to add to cart:', error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Failed to Add to Cart',
+        detail: 'Please try again.'
+      });
+    } finally {
+      this.cartLoading.set(false);
+    }
+  }
+
+  closeCartDialog() {
+    this.cartVisible = false;
   }
 
   getRatingStars(rating: number): number[] {

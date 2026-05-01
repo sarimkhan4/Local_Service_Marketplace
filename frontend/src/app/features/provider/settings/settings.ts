@@ -32,7 +32,7 @@ export class ProviderSettings {
   description = "A reliable local service provider.";
 
   constructor() {
-    this.titleService.setTitle('Local Service Management System | Edit Provider Profile');
+    this.titleService.setTitle('Local Service Management | Edit Provider Profile');
     
     // Load existing config if applicable, but for now we set default DB fallbacks
     // If backend profile APIs exist, you would query them here
