@@ -256,6 +256,43 @@ export class Bookings implements OnInit {
     return Object.keys(this.reviewValidationErrors).length === 0;
   }
 
+  async completeBooking(booking: CustomerBooking) {
+    try {
+      // Update booking status to completed
+      await this.apiService.updateBookingStatus(booking.id, 'Completed');
+      
+      // Update local booking status
+      this.bookings.update(bookings => 
+        bookings.map(b => 
+          b.id === booking.id 
+            ? { ...b, status: 'Completed' as BookingStatus }
+            : b
+        )
+      );
+      
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Booking Completed',
+        detail: 'Your booking has been marked as completed. You can now leave a review.',
+        life: 4000
+      });
+      
+      // Show review dialog after completion
+      setTimeout(() => {
+        this.openReview(booking);
+      }, 1000);
+      
+    } catch (error: any) {
+      console.error('Failed to complete booking:', error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Failed to Complete Booking',
+        detail: 'Please try again or contact support.',
+        life: 5000
+      });
+    }
+  }
+
   async submitReview() {
     if (!this.validateReview()) {
       this.errorHandler.showWarning('Please fix the validation errors before submitting.');

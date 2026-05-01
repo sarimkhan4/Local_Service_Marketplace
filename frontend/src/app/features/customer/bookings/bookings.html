@@ -114,6 +114,16 @@
                   (click)="openReview(b)">
                 </p-button>
               </div>
+              <div *ngIf="b.status === 'Confirmed' || b.status === 'Pending'" class="flex align-items-center gap-2 mt-1 flex-wrap">
+                <p-button
+                  label="Complete Booking"
+                  icon="pi pi-check"
+                  size="small"
+                  severity="success"
+                  [outlined]="true"
+                  (click)="completeBooking(b)">
+                </p-button>
+              </div>
             </div>
 
             <div class="booking-price flex-shrink-0">
