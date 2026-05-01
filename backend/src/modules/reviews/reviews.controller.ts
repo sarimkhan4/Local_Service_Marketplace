@@ -33,4 +33,13 @@ export class ReviewsController {
     }
     return this.reviewsService.getReviewByBooking(id);
   }
+
+  @Get('provider/:providerId')
+  getProviderReviews(@Param('providerId') providerId: string) {
+    const id = +providerId;
+    if (isNaN(id)) {
+      throw new BadRequestException('providerId must be a valid number');
+    }
+    return this.reviewsService.getProviderReviews(id);
+  }
 }

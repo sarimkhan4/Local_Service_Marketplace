@@ -97,4 +97,29 @@ export class ApiService {
   getUserNotifications(userId: string) {
     return this.http.get(`${this.baseUrl}/notifications/user/${userId}`);
   }
+
+  // -- SAVED SERVICES --
+  getCustomerSavedServices(customerId: string) {
+    return this.http.get(`${this.baseUrl}/saved-services/customer/${customerId}`);
+  }
+
+  saveService(customerId: string, serviceId?: number, providerId?: number, notes?: string) {
+    return this.http.post(`${this.baseUrl}/saved-services`, {
+      customerId: +customerId,
+      serviceId,
+      providerId,
+      notes
+    });
+  }
+
+  removeSavedService(customerId: string, savedServiceId: string) {
+    return this.http.delete(`${this.baseUrl}/saved-services/${savedServiceId}/customer/${customerId}`);
+  }
+
+  checkIfSaved(customerId: string, serviceId?: number, providerId?: number) {
+    return this.http.post(`${this.baseUrl}/saved-services/customer/${customerId}/check`, {
+      serviceId,
+      providerId
+    });
+  }
 }

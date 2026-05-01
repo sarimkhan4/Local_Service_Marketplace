@@ -110,12 +110,20 @@
               </div>
             </div>
 
-            <button
-              class="w-full p-3 border-none border-round text-white font-bold cursor-pointer flex align-items-center justify-content-center gap-2 transition-transform active:scale-95"
-              style="background:#0d9488;" (click)="openBooking(provider)">
-              <i class="pi pi-calendar-plus"></i>
-              Book This Provider
-            </button>
+            <div class="flex gap-2">
+              <button
+                class="flex-1 p-3 border-none border-round text-white font-bold cursor-pointer flex align-items-center justify-content-center gap-2 transition-transform active:scale-95"
+                style="background:#0d9488;" (click)="openBooking(provider)">
+                <i class="pi pi-calendar-plus"></i>
+                Book This Provider
+              </button>
+              <button
+                class="p-3 border-1 border-red-500 text-red-500 bg-transparent border-round cursor-pointer hover:bg-red-50 transition-colors"
+                (click)="saveProvider(provider)" 
+                [attr.aria-label]="'Save ' + provider.name">
+                <i class="pi pi-heart"></i>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -160,22 +168,25 @@
     </div>
 
     <div class="p-4">
+      <!-- Toast container for messages -->
+      <p-toast></p-toast>
+
       <!-- SUCCESS STATE -->
       <div *ngIf="bookingSuccess()" class="flex flex-column align-items-center gap-3 py-2 text-center">
         <div class="flex align-items-center justify-content-center border-circle"
           style="width:72px;height:72px;background:#dcfce7;">
-          <i class="pi pi-cart-plus text-4xl" style="color:#16a34a;"></i>
+          <i class="pi pi-check-circle text-4xl" style="color:#16a34a;"></i>
         </div>
-        <h3 class="text-900 font-bold text-xl m-0">Added to Cart!</h3>
+        <h3 class="text-900 font-bold text-xl m-0">Booking Confirmed!</h3>
         <p class="text-500 text-sm line-height-3 m-0">
-          Your service with <strong class="text-900">{{selectedProvider?.companyName}}</strong> was added to your cart.
+          Your booking with <strong class="text-900">{{selectedProvider?.name}}</strong> has been created successfully.
         </p>
         <div class="flex gap-2 w-full mt-3">
           <button
             class="flex-1 p-3 border-1 surface-border border-round bg-transparent text-700 font-semibold cursor-pointer"
             (click)="bookingVisible = false">Keep Browsing</button>
           <button class="flex-1 p-3 border-none border-round text-white font-bold cursor-pointer"
-            style="background:#0d9488;" (click)="goToCheckout()">Go To Checkout</button>
+            style="background:#0d9488;" (click)="goToBookings()">View Bookings</button>
         </div>
       </div>
 
@@ -221,8 +232,11 @@
       <button class="p-2 px-4 border-none bg-transparent text-700 font-semibold cursor-pointer border-round"
         (click)="bookingVisible = false">Cancel</button>
       <button class="p-2 px-4 border-none border-round text-white font-bold cursor-pointer"
-        [style.background]="canConfirm ? '#0d9488' : '#cbd5e1'" [disabled]="!canConfirm" (click)="confirmBooking()">
-        Add to Cart
+        [style.background]="canConfirm ? '#0d9488' : '#cbd5e1'" 
+        [disabled]="!canConfirm || bookingLoading()" 
+        (click)="confirmBooking()">
+        <i *ngIf="bookingLoading()" class="pi pi-spin pi-spinner mr-2"></i>
+        {{ bookingLoading() ? 'Creating Booking...' : 'Book Now' }}
       </button>
     </div>
   </div>

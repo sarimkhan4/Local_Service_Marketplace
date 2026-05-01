@@ -47,11 +47,27 @@
 
         <ng-container *ngIf="selectedRole === 'customer'">
           <div class="form-group mb-3">
-            <label for="address">Full Address</label>
+            <label for="street">Street Address</label>
             <p-iconfield styleClass="w-full">
               <p-inputicon styleClass="pi pi-map-marker" />
-              <input type="text" pInputText id="address" [(ngModel)]="address" name="address" placeholder="123 Main St, City, Country" class="w-full" required />
+              <input type="text" pInputText id="street" [(ngModel)]="street" name="street" placeholder="123 Main Street" class="w-full" required />
             </p-iconfield>
+          </div>
+          
+          <div class="formgrid grid mb-3">
+            <div class="field col-12 md:col-6 mb-0">
+              <label for="city">City</label>
+              <input type="text" pInputText id="city" [(ngModel)]="city" name="city" placeholder="Karachi" class="w-full" required />
+            </div>
+            <div class="field col-12 md:col-6 mb-0">
+              <label for="state">State/Province</label>
+              <input type="text" pInputText id="state" [(ngModel)]="state" name="state" placeholder="Sindh" class="w-full" required />
+            </div>
+          </div>
+          
+          <div class="form-group mb-3">
+            <label for="zipCode">Postal Code</label>
+            <input type="text" pInputText id="zipCode" [(ngModel)]="zipCode" name="zipCode" placeholder="74200" class="w-full" required />
           </div>
         </ng-container>
 

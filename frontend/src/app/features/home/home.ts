@@ -339,19 +339,14 @@ export class Home implements OnInit, AfterViewInit {
 
 
 
-  onSaveService(service: any, categoryName: string) {
+  async onSaveService(service: any, categoryName: string) {
     if (this.authService.isAuthenticated()) {
-      this.dataService.savePro({
-        id: service.id,
-        firstName: service.name,
-        lastName: '',
-        companyName: 'LSM Local Provider',
-        category: categoryName,
-        rating: 4.5,
-        reviews: 10,
-        bio: 'Saved from Home page.'
-      });
-      this.router.navigate(['/app/customer/saved']);
+      try {
+        await this.dataService.saveService(+service.id, undefined, `Saved from Home page - ${categoryName}`);
+        this.router.navigate(['/app/customer/saved']);
+      } catch (error) {
+        console.error('Failed to save service:', error);
+      }
     } else {
       localStorage.setItem('pendingAction', JSON.stringify({ type: 'save', service, categoryName }));
       this.router.navigate(['/login']);
@@ -360,8 +355,30 @@ export class Home implements OnInit, AfterViewInit {
 
   onBookService(service: any) {
     if (this.authService.isAuthenticated()) {
-      this.dataService.createBooking(service.name, 'LSM Local Provider', new Date().toISOString(), service.startingPrice);
-      this.router.navigate(['/app/customer/bookings']);
+      // Add to cart for checkout
+      this.dataService.addToCart({
+        service: {
+          id: service.id,
+          title: service.name,
+          description: `Professional ${service.name} service`,
+          categoryId: '0',
+          categoryName: 'General',
+          basePrice: service.startingPrice,
+          providers: []
+        },
+        provider: {
+          id: '1',
+          name: 'Available Provider',
+          companyName: 'LSM Local Provider',
+          rating: 4.5,
+          reviews: 10,
+          yearsExperience: 5,
+          price: service.startingPrice,
+          bio: 'Professional service provider'
+        },
+        date: new Date().toISOString()
+      });
+      this.router.navigate(['/app/customer/checkout']);
     } else {
       localStorage.setItem('pendingAction', JSON.stringify({ type: 'book', service }));
       this.router.navigate(['/login']);

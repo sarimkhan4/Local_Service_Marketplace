@@ -1,13 +1,14 @@
 import { Controller, Get, Post, Put, Delete, Body, Param , UseGuards} from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
+import { ResourceOwnerGuard } from '../../common/guards/resource-owner.guard';
 import { AddressesService } from './addresses.service';
 
 /**
  * AddressesController
  * API endpoints for managing user addresses.
  */
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard, ResourceOwnerGuard)
 @Controller('addresses')
 export class AddressesController {
   constructor(private readonly addressesService: AddressesService) {}

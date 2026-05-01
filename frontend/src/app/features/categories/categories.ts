@@ -84,6 +84,9 @@ export class Categories implements OnInit {
     return filtered.slice(start, end);
   }
 
+  // Add Math object to template context
+  readonly Math = Math;
+
   onPageChange(event: any) {
     this.first = event.first;
     this.rows = event.rows;

@@ -14,8 +14,14 @@ import { ChipModule } from 'primeng/chip';
 import { AvatarModule } from 'primeng/avatar';
 import { DividerModule } from 'primeng/divider';
 import { SkeletonModule } from 'primeng/skeleton';
+import { MessageModule } from 'primeng/message';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 
 import { DataService, CatalogService, CatalogProvider } from '../../../core/services/data.service';
+import { ApiService } from '../../../core/services/api.service';
+import { AuthService } from '../../../core/services/auth';
+import { NotificationService } from '../../../core/services/notification.service';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -25,8 +31,9 @@ import { environment } from '../../../../environments/environment';
     CommonModule, RouterModule, FormsModule,
     ButtonModule, DialogModule, TagModule,
     InputTextModule, ChipModule, AvatarModule, DividerModule,
-    SkeletonModule
+    SkeletonModule, MessageModule, ToastModule
   ],
+  providers: [MessageService],
   templateUrl: './service-detail.html',
   styleUrl: './service-detail.css'
 })
@@ -36,9 +43,14 @@ export class ServiceDetail implements OnInit {
   private router = inject(Router);
   private titleService = inject(Title);
   private http = inject(HttpClient);
+  private apiService = inject(ApiService);
+  private authService = inject(AuthService);
+  private notificationService = inject(NotificationService);
+  private messageService = inject(MessageService);
 
   service: CatalogService | undefined;
   loadingProviders = signal(false);
+  bookingMessage = signal<{severity: 'success' | 'error' | 'info' | 'warn', summary: string, detail: string} | null>(null);
 
   // ── Booking dialog state ──
   bookingVisible = false;
@@ -47,6 +59,7 @@ export class ServiceDetail implements OnInit {
   bookingTime = '';
   bookingNotes = '';
   bookingSuccess = signal(false);
+  bookingLoading = signal(false);
 
   async ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -97,15 +110,68 @@ export class ServiceDetail implements OnInit {
     this.bookingVisible = true;
   }
 
-  confirmBooking() {
-    if (this.selectedProvider && this.bookingDate && this.bookingTime && this.service) {
-      const dateStr = `${this.bookingDate}T${this.bookingTime}:00Z`;
-      this.dataService.addToCart({
-        service: this.service,
-        provider: this.selectedProvider,
-        date: dateStr
+  async confirmBooking() {
+    if (!this.selectedProvider || !this.bookingDate || !this.bookingTime || !this.service) {
+      return;
+    }
+
+    const currentUser = this.authService.currentUser();
+    if (!currentUser) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Authentication Required',
+        detail: 'Please login to book a service'
       });
+      return;
+    }
+
+    this.bookingLoading.set(true);
+
+    try {
+      const dateStr = `${this.bookingDate}T${this.bookingTime}:00Z`;
+      
+      // Create booking via API
+      const bookingData = {
+        customerId: currentUser.id,
+        providerId: this.selectedProvider.id,
+        serviceId: this.service.id,
+        date: dateStr,
+        notes: this.bookingNotes,
+        totalAmount: this.selectedProvider.price
+      };
+
+      const booking = await lastValueFrom(this.apiService.createBooking(bookingData)) as any;
+      
+      // Create dynamic notification for customer
+      this.notificationService.createBookingNotification(
+        'booking_new',
+        booking.bookingId?.toString() || 'unknown',
+        this.service.title,
+        this.selectedProvider.name,
+        'Customer'
+      );
+      
       this.bookingSuccess.set(true);
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Booking Confirmed!',
+        detail: `Your booking with ${this.selectedProvider.name} has been created successfully.`
+      });
+
+      // Redirect to bookings after a short delay
+      setTimeout(() => {
+        this.goToBookings();
+      }, 2000);
+
+    } catch (error: any) {
+      console.error('Booking failed:', error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Booking Failed',
+        detail: error.error?.message || 'Failed to create booking. Please try again.'
+      });
+    } finally {
+      this.bookingLoading.set(false);
     }
   }
 
@@ -129,6 +195,15 @@ export class ServiceDetail implements OnInit {
 
   getInitials(name: string): string {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+  }
+
+  async saveProvider(provider: CatalogProvider) {
+    try {
+      await this.dataService.saveService(undefined, +provider.id, 'Saved from service detail page');
+      // Show success message or update UI
+    } catch (error) {
+      console.error('Failed to save provider:', error);
+    }
   }
 
   getRatingStars(rating: number): number[] {

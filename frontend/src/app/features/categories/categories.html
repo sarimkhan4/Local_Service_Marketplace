@@ -37,7 +37,7 @@
         }
       </div>
     } @else {
-      @if (paginatedCategories().length === 0) {
+      @if (paginatedCategories.length === 0) {
         <div class="no-results">
           <i class="pi pi-search no-results-icon"></i>
           <h3>No categories found</h3>
@@ -45,7 +45,7 @@
         </div>
       } @else {
         <div class="categories-grid">
-          @for (category of paginatedCategories(); track category.categoryId) {
+          @for (category of paginatedCategories; track category.categoryId) {
             <p-card class="category-card" (click)="viewCategory(category)">
               <div class="category-content">
                 <div class="category-icon-container" [class]="'bg-' + getCategoryColor(category.categoryName)">

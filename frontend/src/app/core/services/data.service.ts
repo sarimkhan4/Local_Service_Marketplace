@@ -1,6 +1,7 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { lastValueFrom } from 'rxjs';
 import { ApiService } from './api.service';
+import { AuthService } from './auth';
 
 export interface Provider {
   id: string;
@@ -71,9 +72,10 @@ export interface CartItem {
 })
 export class DataService {
   private apiService = inject(ApiService);
+  private authService = inject(AuthService);
 
   cart         = signal<CartItem[]>([]);
-  savedPros    = signal<Provider[]>([]);
+  savedServices = signal<any[]>([]);
   myBookings   = signal<Booking[]>([]);
   myServices   = signal<ServiceOffered[]>([]);
 
@@ -126,12 +128,74 @@ export class DataService {
   }
   clearCart() { this.cart.set([]); }
 
-  savePro(pro: Provider) {
-    if (!this.savedPros().find(p => p.id === pro.id)) {
-      this.savedPros.update(pros => [...pros, pro]);
+  // Load saved services for the current user
+  async loadSavedServices() {
+    const user = this.authService.currentUser();
+    if (!user?.id) return;
+    
+    try {
+      const data: any = await lastValueFrom(this.apiService.getCustomerSavedServices(user.id));
+      this.savedServices.set(data || []);
+    } catch (error) {
+      console.error('Failed to load saved services:', error);
     }
   }
-  unsavePro(proId: string)           { this.savedPros.update(pros => pros.filter(p => p.id !== proId)); }
+
+  // Save a service or provider
+  async saveService(serviceId?: number, providerId?: number, notes?: string) {
+    const user = this.authService.currentUser();
+    if (!user?.id) return;
+    
+    try {
+      const result: any = await lastValueFrom(this.apiService.saveService(user.id, serviceId, providerId, notes));
+      await this.loadSavedServices(); // Reload saved services
+      return result;
+    } catch (error) {
+      console.error('Failed to save service:', error);
+      throw error;
+    }
+  }
+
+  // Remove a saved service
+  async removeSavedService(savedServiceId: string) {
+    const user = this.authService.currentUser();
+    if (!user?.id) return;
+    
+    try {
+      await lastValueFrom(this.apiService.removeSavedService(user.id, savedServiceId));
+      await this.loadSavedServices(); // Reload saved services
+    } catch (error) {
+      console.error('Failed to remove saved service:', error);
+      throw error;
+    }
+  }
+
+  // Check if a service or provider is saved
+  async checkIfSaved(serviceId?: number, providerId?: number) {
+    const user = this.authService.currentUser();
+    if (!user?.id) return false;
+    
+    try {
+      const result: any = await lastValueFrom(this.apiService.checkIfSaved(user.id, serviceId, providerId));
+      return result.isSaved;
+    } catch (error) {
+      console.error('Failed to check if saved:', error);
+      return false;
+    }
+  }
+
+  // Legacy methods for backward compatibility
+  savePro(pro: Provider) {
+    if (!this.savedServices().find((s: any) => s.providerId === +pro.id)) {
+      this.saveService(undefined, +pro.id, 'Saved from legacy method');
+    }
+  }
+  unsavePro(proId: string) {
+    const saved = this.savedServices().find((s: any) => s.providerId === +proId);
+    if (saved) {
+      this.removeSavedService(saved.savedServiceId.toString());
+    }
+  }
   addService(s: ServiceOffered)      { this.myServices.update(list => [...list, s]); }
   updateService(s: ServiceOffered)   { this.myServices.update(list => list.map(x => x.id === s.id ? s : x)); }
   getServicesByCategory(id: string)  { return this.catalogServices.filter(s => s.categoryId === id); }

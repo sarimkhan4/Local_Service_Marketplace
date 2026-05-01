@@ -14,6 +14,7 @@ import { BookingService } from '../../entities/booking-service.entity';
 import { Payment }        from '../../entities/payment.entity';
 import { Review }         from '../../entities/review.entity';
 import { Notification }   from '../../entities/notification.entity';
+import { SavedService }   from '../../entities/saved-service.entity';
 
 /**
  * DatabaseProvider
@@ -45,6 +46,7 @@ export const databaseProviders = [
           Payment,
           Review,
           Notification,
+          SavedService,
         ],
         synchronize: true,
         logging: false,

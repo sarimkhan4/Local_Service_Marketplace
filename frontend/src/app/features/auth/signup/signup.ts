@@ -4,7 +4,9 @@ import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DataService } from '../../../core/services/data.service';
 import { AuthService } from '../../../core/services/auth';
+import { BookingService } from '../../../core/services/booking.service';
 import { RouterModule } from '@angular/router';
+import { lastValueFrom } from 'rxjs';
 
 // PrimeNG Modules
 import { CardModule } from 'primeng/card';
@@ -50,14 +52,17 @@ export class Signup {
   phoneNumber = '';
 
   // Customer-specific fields mapped to ER diagram
-  address = '';
+  street = '';
+  city = '';
+  state = '';
+  zipCode = '';
 
   // Provider-specific fields mapped to ER diagram
   companyName = '';
   bio = '';
   experienceYears: number | null = null;
 
-  constructor(private authService: AuthService, private router: Router, private dataService: DataService) {}
+  constructor(private authService: AuthService, private router: Router, private dataService: DataService, private bookingService: BookingService) {}
 
   async onSubmit() {
     console.log(`Signup attempt for ${this.selectedRole}:`, this.email);
@@ -68,12 +73,33 @@ export class Signup {
       email: this.email,
       password: this.password,
       phoneNumber: this.phoneNumber,
-      address: this.address,
+      street: this.street,
+      city: this.city,
+      state: this.state,
+      zipCode: this.zipCode,
       companyName: this.companyName,
       bio: this.bio,
       experienceYears: this.experienceYears
     };
-    await this.authService.signup(signupData);
+    
+    const user = await this.authService.signup(signupData) as any;
+    
+    // Save address for customer after successful signup
+    if (this.selectedRole === 'customer' && user?.id && (this.street && this.city)) {
+      try {
+        await this.bookingService.addAddress(user.id, {
+          street: this.street,
+          city: this.city,
+          state: this.state,
+          zipCode: this.zipCode,
+          isDefault: true,
+          label: 'Home'
+        });
+        console.log('Address saved successfully for customer');
+      } catch (error) {
+        console.error('Failed to save address:', error);
+      }
+    }
     
     // Check pending actions only if customer
     if (this.selectedRole === 'customer') {

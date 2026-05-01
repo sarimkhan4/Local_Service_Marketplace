@@ -59,7 +59,24 @@
   </div>
 
   <div class="bookings-list-shell">
-    <p-dataview [value]="filteredBookings()" [paginator]="true" [rows]="6">
+  <!-- Loading State -->
+  <div *ngIf="loading()" class="flex align-items-center justify-content-center py-8">
+    <i class="pi pi-spin pi-spinner text-2xl text-400"></i>
+    <span class="ml-2 text-600">Loading your bookings...</span>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="hasError() && !loading()" class="flex flex-column align-items-center py-8 gap-3">
+    <i class="pi pi-exclamation-triangle text-5xl text-orange-400"></i>
+    <h3 class="text-900 font-semibold text-lg m-0">Unable to Load Bookings</h3>
+    <p class="text-600 text-center m-0">We're having trouble loading your bookings. Showing sample data instead.</p>
+    <button class="p-2 px-4 border-1 surface-border border-round bg-white text-700 cursor-pointer" (click)="loadBookings()">
+      <i class="pi pi-refresh mr-2"></i>Try Again
+    </button>
+  </div>
+
+  <!-- Normal State -->
+  <p-dataview *ngIf="!loading()" [value]="filteredBookings()" [paginator]="true" [rows]="6">
 
       <ng-template #list let-items>
         <div *ngFor="let b of items; let first = first">
@@ -109,8 +126,15 @@
       <ng-template #empty>
         <div class="flex flex-column align-items-center py-8 gap-3">
           <i class="pi pi-calendar text-5xl text-200"></i>
-          <span class="text-500">No bookings found for this filter.</span>
-          <p-button label="Show All" severity="secondary" [outlined]="true" (click)="statusFilter.set('All')"></p-button>
+          <h3 class="text-900 font-semibold text-lg m-0">No Bookings Found</h3>
+          <span class="text-600 text-center">No bookings found for this filter. Try showing all bookings or book a service to get started!</span>
+          <div class="flex gap-2">
+            <p-button label="Show All" severity="secondary" [outlined]="true" (click)="statusFilter.set('All')"></p-button>
+            <a [routerLink]="['/app/customer/services']" class="p-button p-component p-button-outlined">
+  <i class="pi pi-search"></i>
+  <span>Browse Services</span>
+</a>
+          </div>
         </div>
       </ng-template>
 

@@ -32,4 +32,18 @@ export class ReviewsService {
   async getReviewByBooking(bookingId: number): Promise<Review | null> {
     return this.reviewRepository.findOneBy({ booking: { bookingId } as any });
   }
+
+  /**
+   * Get all reviews for a specific provider
+   */
+  async getProviderReviews(providerId: number): Promise<Review[]> {
+    return this.reviewRepository.find({
+      where: {
+        booking: {
+          provider: { userId: providerId }
+        }
+      },
+      relations: ['booking', 'booking.provider', 'booking.customer', 'booking.services']
+    });
+  }
 }

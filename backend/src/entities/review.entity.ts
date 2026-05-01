@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, CreateDateColumn } from 'typeorm';
 import { Booking } from './booking.entity';
 
 /**
@@ -15,6 +15,9 @@ export class Review {
 
   @Column({ type: 'text', nullable: true })
   comment: string;
+
+  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
+  createdAt: Date;
 
   // Linked optionally to one booking (0..1:1)
   @OneToOne(() => Booking, { onDelete: 'CASCADE' })

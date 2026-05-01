@@ -12,6 +12,7 @@ import { SchedulesModule } from './modules/schedules/schedules.module';
 import { BookingsModule } from './modules/bookings/bookings.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
+import { SavedServicesModule } from './modules/saved-services/saved-services.module';
 
 import { ConfigModule } from '@nestjs/config';
 
@@ -20,7 +21,7 @@ import { ConfigModule } from '@nestjs/config';
     ConfigModule.forRoot({
       isGlobal: true, // Make env variables accessible globally
     }),
-    DatabaseModule, NotificationModule, UsersModule, AuthModule, AddressesModule, CategoriesModule, ServicesModule, SchedulesModule, BookingsModule, PaymentsModule, ReviewsModule],
+    DatabaseModule, NotificationModule, UsersModule, AuthModule, AddressesModule, CategoriesModule, ServicesModule, SchedulesModule, BookingsModule, PaymentsModule, ReviewsModule, SavedServicesModule],
   controllers: [AppController],
   providers: [AppService],
 })
