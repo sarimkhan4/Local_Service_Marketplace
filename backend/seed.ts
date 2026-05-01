@@ -18,6 +18,89 @@ import { Notification } from './src/entities/notification.entity';
 import { BookingService } from './src/entities/booking-service.entity';
 import { NotificationType } from './src/common/enums/notification_type.enum';
 
+// Pakistani Data Arrays
+const pakistaniFirstNames = [
+  'Muhammad', 'Ahmed', 'Ali', 'Omar', 'Abdul', 'Bilal', 'Usman', 'Hassan', 'Zain', 'Saad',
+  'Hamza', 'Fahad', 'Talha', 'Zubair', 'Yasir', 'Imran', 'Kamran', 'Adnan', 'Tariq', 'Nadeem',
+  'Waqar', 'Shahid', 'Faisal', 'Irfan', 'Salman', 'Noman', 'Rizwan', 'Babar', 'Haris', 'Junaid',
+  'Ahsan', 'Mujtaba', 'Zohaib', 'Danish', 'Umair', 'Sami', 'Farhan', 'Kashif', 'Moeen', 'Saqib',
+  'Fatima', 'Ayesha', 'Khadija', 'Aisha', 'Mariam', 'Zainab', 'Sana', 'Sadia', 'Hina', 'Kiran',
+  'Nadia', 'Saima', 'Uzma', 'Rabia', 'Amina', 'Sofia', 'Iqra', 'Areeba', 'Maham', 'Zara',
+  'Alina', 'Anum', 'Alishba', 'Dua', 'Eman', 'Fiza', 'Javeria', 'Kainat', 'Laiba', 'Mehak'
+];
+
+const pakistaniLastNames = [
+  'Khan', 'Ahmed', 'Ali', 'Malik', 'Sheikh', 'Siddiqui', 'Hussain', 'Raza', 'Qureshi', 'Butt',
+  'Chaudhary', 'Gill', 'Bhatti', 'Rajput', 'Mughal', 'Mirza', 'Dar', 'Wattoo', 'Sial', 'Langah',
+  'Khokhar', 'Gujjar', 'Jutt', 'Arain', 'Memon', 'Kazmi', 'Naqvi', 'Zaidi', 'Rizvi', 'Abidi',
+  'Haidri', 'Shah', 'Soomro', 'Bhutto', 'Jamot', 'Magsi', 'Rind', 'Marri', 'Bugti', 'Mengal',
+  'Kakar', 'Achakzai', 'Yousafzai', 'Khattak', 'Wazir', 'Bangash', 'Orakzai', 'Afridi', 'Shinwari',
+  'Mohmand', 'Ghilzai', 'Tarin', 'Tanoli', 'Swati', 'Yusufzai', 'Durrani', 'Hotak', 'Barakzai'
+];
+
+const pakistaniCities = [
+  'Karachi', 'Lahore', 'Faisalabad', 'Rawalpindi', 'Gujranwala', 'Peshawar', 'Multan', 'Hyderabad',
+  'Islamabad', 'Quetta', 'Sialkot', 'Bahawalpur', 'Sargodha', 'Sukkur', 'Larkana', 'Sheikhupura',
+  'Jhang', 'Rahim Yar Khan', 'Gujrat', 'Mardan', 'Kasur', 'Okara', 'Mingora', 'Nawabshah',
+  'Abbottabad', 'Kohat', 'Layyah', 'Vehari', 'Dera Ghazi Khan', 'Hafizabad', 'Chiniot', 'Mianwali',
+  'Bhakkar', 'Kohistan', 'Haripur', 'Manshera', 'Chakwal', 'Bannu', 'Tank', 'Lakki Marwat',
+  'Kohlu', 'Zhob', 'Killa Saifullah', 'Loralai', 'Ziarat', 'Pishin', 'Qila Abdullah', 'Chaman'
+];
+
+const pakistaniProvinces = [
+  'Punjab', 'Sindh', 'Khyber Pakhtunkhwa', 'Balochistan', 'Gilgit-Baltistan', 'Azad Kashmir'
+];
+
+const pakistaniAreas = [
+  'DHA', 'Clifton', 'Gulshan', 'Johar', 'Nazimabad', 'North Nazimabad', 'PECHS', 'Gulistan-e-Jauhar',
+  'Bahria Town', 'Model Town', 'Gulberg', 'Iqbal Town', 'Samnabad', 'Shadman', 'Muslim Town',
+  'Cantonment', 'Defence', 'Askari', 'Wapda Town', 'Valencia', 'Lake City', 'Bahria Orchard',
+  'Green Town', 'Madina Town', 'Jinnah Colony', 'Satellite Town', 'Civil Lines', 'Garden Town',
+  'Faisal Town', 'Muslim Town', 'Shah Jamal', 'Afghan Colony', 'Bilal Town', 'Karwan Bazar'
+];
+
+// Helper functions
+function getRandomPakistaniName(): string {
+  const firstName = pakistaniFirstNames[Math.floor(Math.random() * pakistaniFirstNames.length)];
+  const lastName = pakistaniLastNames[Math.floor(Math.random() * pakistaniLastNames.length)];
+  return `${firstName} ${lastName}`;
+}
+
+function getRandomPakistaniPhone(): string {
+  const prefixes = ['0300', '0301', '0302', '0303', '0304', '0305', '0306', '0307', '0308', '0309',
+                    '0310', '0311', '0312', '0313', '0314', '0315', '0316', '0317', '0318', '0319',
+                    '0320', '0321', '0322', '0323', '0324', '0325', '0326', '0327', '0328', '0329',
+                    '0330', '0331', '0332', '0333', '0334', '0335', '0336', '0337', '0338', '0339',
+                    '0340', '0341', '0342', '0343', '0344', '0345', '0346', '0347', '0348', '0349'];
+  const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+  const suffix = Math.floor(Math.random() * 10000000).toString().padStart(7, '0');
+  return prefix + suffix;
+}
+
+function getRandomPakistaniEmail(name: string): string {
+  const domains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'live.com'];
+  const cleanName = name.toLowerCase().replace(/\s+/g, '.');
+  const randomNum = Math.floor(Math.random() * 999);
+  const domain = domains[Math.floor(Math.random() * domains.length)];
+  return `${cleanName}${randomNum}@${domain}`;
+}
+
+function getRandomPakistaniAddress(): {street: string, city: string, state: string, zipCode: string} {
+  const area = pakistaniAreas[Math.floor(Math.random() * pakistaniAreas.length)];
+  const houseNo = Math.floor(Math.random() * 9999) + 1;
+  const block = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+  const city = pakistaniCities[Math.floor(Math.random() * pakistaniCities.length)];
+  const province = pakistaniProvinces[Math.floor(Math.random() * pakistaniProvinces.length)];
+  const zipCode = Math.floor(Math.random() * 90000) + 10000;
+  
+  return {
+    street: `House #${houseNo}, Block ${block}, ${area}`,
+    city: city,
+    state: province,
+    zipCode: zipCode.toString()
+  };
+}
+
 async function seed() {
   const dataSource = new DataSource({
     type: 'mysql',
@@ -30,21 +113,7 @@ async function seed() {
   });
 
   await dataSource.initialize();
-  console.log('Connected. Wiping old data to ensure unique realistic seeds...');
-  await dataSource.query('SET FOREIGN_KEY_CHECKS = 0');
-  await dataSource.query('TRUNCATE TABLE schedules');
-  await dataSource.query('TRUNCATE TABLE reviews');
-  await dataSource.query('TRUNCATE TABLE payments');
-  await dataSource.query('TRUNCATE TABLE notifications');
-  await dataSource.query('TRUNCATE TABLE booking_services');
-  await dataSource.query('TRUNCATE TABLE bookings');
-  await dataSource.query('TRUNCATE TABLE provider_services');
-  await dataSource.query('TRUNCATE TABLE addresses');
-  await dataSource.query('TRUNCATE TABLE users');
-  await dataSource.query('TRUNCATE TABLE services');
-  await dataSource.query('TRUNCATE TABLE categories');
-  await dataSource.query('SET FOREIGN_KEY_CHECKS = 1');
-  console.log('Old data cleared!');
+  console.log('Connected. Ready to seed data without affecting existing data...');
   
   // 1. Categories
   const categories: Category[] = [];
@@ -52,7 +121,7 @@ async function seed() {
   for (const name of catNames) {
     let cat = await dataSource.manager.findOne(Category, { where: { categoryName: name } });
     if (!cat) {
-      cat = dataSource.manager.create(Category, { categoryName: name, description: faker.lorem.sentence() });
+      cat = dataSource.manager.create(Category, { categoryName: name, description: `Professional ${name.toLowerCase()} services for homes and offices` });
       await dataSource.manager.save(cat);
     }
     categories.push(cat);
@@ -60,24 +129,41 @@ async function seed() {
 
   // 2. Services
   const services: Service[] = [];
-  for (let i = 0; i < 20; i++) {
+  const serviceNames = [
+    'Home Cleaning', 'Office Cleaning', 'Deep Cleaning', 'Carpet Cleaning',
+    'Pipe Repair', 'Drain Cleaning', 'Water Tank Installation', 'Bathroom Fixtures',
+    'Wiring Installation', 'Circuit Repair', 'Generator Service', 'Electrical Panel',
+    'House Painting', 'Wall Painting', 'Exterior Painting', 'Polish Work',
+    'Garden Maintenance', 'Lawn Care', 'Tree Cutting', 'Landscaping Design',
+    'Termite Control', 'Cockroach Control', 'Mosquito Control', 'General Fumigation',
+    'Roof Repair', 'Roof Installation', 'Waterproofing', 'Leak Repair',
+    'AC Installation', 'AC Repair', 'AC Service', 'Ventilation',
+    'Home Shifting', 'Office Relocation', 'Vehicle Transport', 'Packing Services',
+    'Washing Machine Repair', 'Refrigerator Repair', 'Microwave Repair', 'AC Installation'
+  ];
+  
+  for (let i = 0; i < serviceNames.length; i++) {
     const category = categories[Math.floor(Math.random() * categories.length)];
-    const s = dataSource.manager.create(Service, {
-      name: faker.commerce.productName() + ' ' + faker.commerce.productAdjective() + ' Service',
-      description: faker.lorem.sentences(2),
-      category: category,
-    });
-    await dataSource.manager.save(s);
+    let s = await dataSource.manager.findOne(Service, { where: { name: serviceNames[i] } });
+    if (!s) {
+      s = dataSource.manager.create(Service, {
+        name: serviceNames[i],
+        description: `Professional ${serviceNames[i].toLowerCase()} service with quality assurance`,
+        category: category,
+      });
+      await dataSource.manager.save(s);
+    }
     services.push(s);
   }
 
-  // 3. Customers
+  // 3. Customers (Pakistani Data)
   const customers: Customer[] = [];
-  for (let i = 0; i < 15; i++) {
+  for (let i = 0; i < 350; i++) {
+    const name = getRandomPakistaniName();
     const c = dataSource.manager.create(Customer, {
-      name: faker.person.fullName(),
-      email: faker.internet.email(),
-      phone: faker.string.numeric(10),
+      name: name,
+      email: getRandomPakistaniEmail(name),
+      phone: getRandomPakistaniPhone(),
       password: 'password123',
       role: 'customer'
     });
@@ -85,13 +171,14 @@ async function seed() {
     customers.push(c);
   }
 
-  // 4. Providers
+  // 4. Providers (Pakistani Data)
   const providers: Provider[] = [];
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 50; i++) {
+    const name = getRandomPakistaniName();
     const p = dataSource.manager.create(Provider, {
-      name: faker.person.fullName(),
-      email: faker.internet.email(),
-      phone: faker.string.numeric(10),
+      name: name,
+      email: getRandomPakistaniEmail(name),
+      phone: getRandomPakistaniPhone(),
       password: 'password123',
       role: 'provider',
       experience: faker.number.int({ min: 1, max: 20 }),
@@ -101,7 +188,7 @@ async function seed() {
   }
 
   // 5. Provider Services
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 150; i++) {
     const p = providers[Math.floor(Math.random() * providers.length)];
     const s = services[Math.floor(Math.random() * services.length)];
     
@@ -117,15 +204,16 @@ async function seed() {
     }
   }
 
-  // 6. Addresses
+  // 6. Addresses (Pakistani Data)
   const addresses: Address[] = [];
   for(const user of [...customers, ...providers]) {
+     const address = getRandomPakistaniAddress();
      const addr = dataSource.manager.create(Address, {
          user: user,
-         street: faker.location.streetAddress(),
-         city: faker.location.city(),
-         state: faker.location.state(),
-         zipCode: faker.location.zipCode()
+         street: address.street,
+         city: address.city,
+         state: address.state,
+         zipCode: address.zipCode
      });
      await dataSource.manager.save(addr);
      addresses.push(addr);
@@ -158,7 +246,7 @@ async function seed() {
 
   // 9. Bookings
   const statuses = ['PENDING', 'CONFIRMED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'];
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 200; i++) {
     const customer = customers[Math.floor(Math.random() * customers.length)];
     const provider = providers[Math.floor(Math.random() * providers.length)];
     const address = addresses.find(a => a.user.userId === customer.userId) || addresses[0];
