@@ -48,7 +48,7 @@
         <!-- Form Options (Native Checkbox) -->
         <div class="form-options mb-5 flex justify-content-between align-items-center">
           <div class="flex align-items-center gap-2">
-            <input type="checkbox" id="remember" name="remember" [(ngModel)]="loginForm.value.rememberMe" />
+            <input type="checkbox" id="remember" formControlName="rememberMe" />
             <label for="remember" class="text-sm font-medium text-gray-600 m-0 cursor-pointer">
               Remember me
             </label>

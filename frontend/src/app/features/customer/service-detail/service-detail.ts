@@ -87,28 +87,37 @@ export class ServiceDetail implements OnInit {
       this.loadingProviders.set(true);
       
       try {
-        // Load provider reviews for this service
-        await this.loadProviderReviews();
+        // Load providers for this service using the correct endpoint
+        const providers = await lastValueFrom(this.apiService.getServiceProviders(this.service.id));
         
-        // Load providers for this service
-        const providers = await lastValueFrom(this.apiService.getProviderServices(this.service.id));
-        
-        if (providers && Array.isArray(providers)) {
-          // Map providers with dynamic ratings based on reviews
+        if (providers && Array.isArray(providers) && providers.length > 0) {
+          // Map providers initially with default ratings
           this.service.providers = providers.map((ps: any) => {
             const providerId = ps.provider?.userId?.toString() || '0';
-            const providerReviews = this.getProviderReviews(providerId);
-            const avgRating = this.calculateAverageRating(providerReviews);
             
             return {
               id: providerId,
               name: ps.provider?.name || 'Unknown',
               companyName: ps.provider?.companyName || 'Independent',
-              rating: avgRating,
-              reviews: providerReviews.length,
+              rating: 4.0,
+              reviews: 0,
               yearsExperience: ps.provider?.experience || 0,
               price: Number(ps.price),
               bio: ps.provider?.bio || 'Local professional ready to help.'
+            };
+          });
+
+          // Now load provider reviews and update ratings
+          await this.loadProviderReviews();
+
+          // Update providers with actual review data
+          this.service.providers = this.service.providers.map(provider => {
+            const reviews = this.getProviderReviews(provider.id);
+            const avgRating = this.calculateAverageRating(reviews);
+            return {
+              ...provider,
+              rating: avgRating,
+              reviews: reviews.length
             };
           });
         }

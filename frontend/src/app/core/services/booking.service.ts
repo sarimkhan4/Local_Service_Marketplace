@@ -152,23 +152,28 @@ export class BookingService {
       const results = await Promise.all(reviewPromises);
       const validReviews = results
         .filter((r: any): r is any => r && r.reviewId)
-        .map((r: any) => ({
-          id: r.reviewId.toString(),
-          bookingId: r.booking?.bookingId?.toString() || '',
-          serviceId: r.booking?.services?.[0]?.id?.toString(),
-          providerId: r.provider?.userId?.toString(),
-          customerId: r.customer?.userId?.toString(),
-          customerName: r.customer?.name || 'Anonymous',
-          customerInitials: this.getInitials(r.customer?.name || 'AN'),
-          customerColor: this.getRandomColor(r.customer?.name),
-          rating: r.rating,
-          comment: r.comment || '',
-          createdAt: new Date(r.createdAt),
-          serviceName: r.booking?.services?.[0]?.name || 'Service',
-          providerName: r.provider?.name || 'Provider',
-          providerInitials: this.getInitials(r.provider?.name || 'PR'),
-          providerColor: this.getRandomColor(r.provider?.name)
-        }));
+        .map((r: any) => {
+          const customerName = r.booking?.customer?.name || r.customer?.name || 'Anonymous';
+          const providerName = r.booking?.provider?.name || r.provider?.name || 'Provider';
+          
+          return {
+            id: r.reviewId.toString(),
+            bookingId: r.booking?.bookingId?.toString() || r.bookingId?.toString() || '',
+            serviceId: r.booking?.services?.[0]?.id?.toString(),
+            providerId: r.booking?.provider?.userId?.toString() || r.provider?.userId?.toString(),
+            customerId: r.booking?.customer?.userId?.toString() || r.customer?.userId?.toString(),
+            customerName: customerName,
+            customerInitials: this.getInitials(customerName),
+            customerColor: this.getRandomColor(customerName),
+            rating: r.rating,
+            comment: r.comment || '',
+            createdAt: new Date(r.createdAt),
+            serviceName: r.booking?.services?.[0]?.name || 'Service',
+            providerName: providerName,
+            providerInitials: this.getInitials(providerName),
+            providerColor: this.getRandomColor(providerName)
+          };
+        });
       this._reviews.set(validReviews);
     } catch (e) {
       console.error('[BookingService] Failed to load reviews', e);
@@ -179,31 +184,52 @@ export class BookingService {
   /** Load all reviews for a specific provider */
   async loadProviderReviews(providerId: string) {
     try {
+      console.log(`[BookingService] Loading reviews for provider ID: ${providerId}`);
       const response: any = await lastValueFrom(this.apiService.getProviderReviews(providerId));
-      const reviews = (response || []).map((r: any) => ({
-        id: r.reviewId?.toString() || Math.random().toString(36).substring(2, 9),
-        bookingId: r.booking?.bookingId?.toString() || '',
-        serviceId: r.booking?.services?.[0]?.id?.toString(),
-        providerId: r.provider?.userId?.toString() || providerId,
-        customerId: r.customer?.userId?.toString(),
-        customerName: r.customer?.name || 'Anonymous',
-        customerInitials: this.getInitials(r.customer?.name || 'AN'),
-        customerColor: this.getRandomColor(r.customer?.name),
-        rating: r.rating,
-        comment: r.comment || '',
-        createdAt: new Date(r.createdAt || Date.now()),
-        serviceName: r.booking?.services?.[0]?.name || 'Service',
-        providerName: r.provider?.name || 'Provider',
-        providerInitials: this.getInitials(r.provider?.name || 'PR'),
-        providerColor: this.getRandomColor(r.provider?.name)
-      }));
+      console.log(`[BookingService] Raw API response:`, response);
+      
+      const reviews = (response || []).map((r: any) => {
+        // Extract provider ID from nested booking.provider structure
+        const mappedProviderId = r.booking?.provider?.userId?.toString() || 
+                                r.provider?.userId?.toString() || 
+                                providerId;
+        
+        // Customer data is nested under booking.customer
+        const customerName = r.booking?.customer?.name || r.customer?.name || 'Anonymous';
+        const providerName = r.booking?.provider?.name || r.provider?.name || 'Provider';
+        
+        return {
+          id: r.reviewId?.toString() || Math.random().toString(36).substring(2, 9),
+          bookingId: r.booking?.bookingId?.toString() || r.bookingId?.toString() || '',
+          serviceId: r.booking?.services?.[0]?.id?.toString(),
+          providerId: mappedProviderId,
+          customerId: r.booking?.customer?.userId?.toString() || r.customer?.userId?.toString(),
+          customerName: customerName,
+          customerInitials: this.getInitials(customerName),
+          customerColor: this.getRandomColor(customerName),
+          rating: r.rating,
+          comment: r.comment || '',
+          createdAt: new Date(r.createdAt || Date.now()),
+          serviceName: r.booking?.services?.[0]?.name || 'Service',
+          providerName: providerName,
+          providerInitials: this.getInitials(providerName),
+          providerColor: this.getRandomColor(providerName)
+        };
+      });
+      
+      // Sort reviews by date (newest first)
+      reviews.sort((a: Review, b: Review) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      
       this._reviews.update(current => {
         const existingIds = new Set(current.map(r => r.id));
         const newReviews = reviews.filter((r: Review) => !existingIds.has(r.id));
         return [...current, ...newReviews];
       });
+      
+      console.log(`[BookingService] Successfully loaded ${reviews.length} reviews for provider ${providerId}`);
     } catch (e) {
-      console.error('[BookingService] Failed to load provider reviews', e);
+      console.error('[BookingService] Failed to load provider reviews:', e);
+      throw e;
     }
   }
 

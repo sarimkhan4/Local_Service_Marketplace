@@ -86,6 +86,16 @@ export class ServicesService {
   }
 
   /**
+   * Fetch all providers that offer a specific service (with custom prices)
+   */
+  async getProvidersByService(serviceId: number): Promise<ProviderService[]> {
+    return this.providerServiceRepository.find({
+      where: { service: { serviceId } },
+      relations: ['provider', 'service', 'service.category']
+    });
+  }
+
+  /**
    * Fetch all provider services globally (for customer browsing)
    */
   async getAllProviderServices(): Promise<ProviderService[]> {

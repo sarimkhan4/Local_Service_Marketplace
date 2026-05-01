@@ -350,20 +350,31 @@ export class Bookings implements OnInit {
     } catch (error: any) {
       console.error('Review submission error:', error);
       
+      // Handle 409 Conflict: review already exists for this booking
+      if (error.status === 409 || 
+          error.error?.message?.includes('already exists') || 
+          error.error?.message?.includes('Review already exists')) {
+        
+        // Close dialog and refresh reviews so UI reflects the existing review
+        this.showReviewDialog = false;
+        const bookingIds = this.bookings().map(b => b.id);
+        await this.bookingService.loadReviewsForBookings(bookingIds);
+        
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Review Already Exists',
+          detail: 'You have already submitted a review for this booking.',
+          life: 4000
+        });
+        return;
+      }
+      
       let errorMessage = 'Failed to submit your review. Please try again.';
       
       if (error.status === 400) {
         errorMessage = error.error?.message || 'Invalid review data provided.';
-      } else if (error.status === 409) {
-        errorMessage = 'You have already submitted a review for this booking.';
       } else if (error.status === 500) {
         errorMessage = 'Server error occurred. Please try again later.';
-      }
-      
-      // Handle specific case where error message indicates duplicate review
-      if (error.error?.message?.includes('already exists') || 
-          error.error?.message?.includes('Review already exists')) {
-        errorMessage = 'You have already submitted a review for this booking.';
       }
       
       this.messageService.add({

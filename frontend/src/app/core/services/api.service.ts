@@ -28,6 +28,10 @@ export class ApiService {
     return this.http.get(`${this.baseUrl}/services/provider/${providerId}`);
   }
 
+  getServiceProviders(serviceId: string) {
+    return this.http.get(`${this.baseUrl}/services/${serviceId}/providers`);
+  }
+
   // -- BOOKINGS --
   createBooking(data: any) {
     return this.http.post(`${this.baseUrl}/bookings`, data);

@@ -1,5 +1,5 @@
 import { Injectable, Inject, ConflictException } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { Review } from '../../entities/review.entity';
 
 /**
@@ -45,20 +45,33 @@ export class ReviewsService {
    * Get a review by booking ID
    */
   async getReviewByBooking(bookingId: number): Promise<Review | null> {
-    return this.reviewRepository.findOneBy({ bookingId });
+    return this.reviewRepository.findOne({
+      where: { bookingId },
+      relations: ['booking', 'booking.provider', 'booking.customer'],
+    });
   }
 
   /**
    * Get all reviews for a specific provider
    */
   async getProviderReviews(providerId: number): Promise<Review[]> {
-    return this.reviewRepository.find({
-      where: {
-        booking: {
-          provider: { userId: providerId }
-        }
-      },
-      relations: ['booking', 'booking.provider', 'booking.customer', 'booking.services']
-    });
+    console.log(`[ReviewsService] Fetching reviews for provider ID: ${providerId}`);
+    
+    try {
+      const reviews = await this.reviewRepository
+        .createQueryBuilder('review')
+        .leftJoinAndSelect('review.booking', 'booking')
+        .leftJoinAndSelect('booking.provider', 'provider')
+        .leftJoinAndSelect('booking.customer', 'customer')
+        .where('provider.userId = :providerId', { providerId })
+        .orderBy('review.createdAt', 'DESC')
+        .getMany();
+      
+      console.log(`[ReviewsService] Found ${reviews.length} reviews for provider ${providerId}`);
+      return reviews;
+    } catch (error) {
+      console.error('[ReviewsService] Error fetching provider reviews:', error);
+      throw error;
+    }
   }
 }

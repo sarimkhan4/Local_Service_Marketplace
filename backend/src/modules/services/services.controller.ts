@@ -33,6 +33,13 @@ export class ServicesController {
   }
 
   @IsPublic()
+  @Get(':serviceId/providers')
+  getProvidersByService(@Param('serviceId') serviceId: string) {
+    if (isNaN(+serviceId)) return [];
+    return this.servicesService.getProvidersByService(+serviceId);
+  }
+
+  @IsPublic()
   @Get(':id')
   getService(@Param('id') id: string) {
     if (isNaN(+id)) return null; // Simple guard
