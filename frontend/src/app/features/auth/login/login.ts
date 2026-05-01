@@ -1,7 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth';
 import { DataService } from '../../../core/services/data.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
@@ -22,6 +23,7 @@ import { MessageService } from 'primeng/api';
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     RouterModule,
     CardModule,
     ButtonModule,
@@ -36,38 +38,26 @@ import { MessageService } from 'primeng/api';
   host: { 'class': 'auth-page' }
 })
 export class Login {
-  email = '';
-  password = '';
-  rememberMe: boolean = false;
+  loginForm: FormGroup;
   isLoading = false;
-  validationErrors: { email?: string; password?: string } = {};
 
   private authService = inject(AuthService);
   private router = inject(Router);
   private dataService = inject(DataService);
   private errorHandler = inject(ErrorHandlerService);
   private messageService = inject(MessageService);
-  private validator = new FormValidator();
+  private fb = inject(FormBuilder);
 
-  private validateForm(): boolean {
-    this.validationErrors = {};
-    this.validator.clearErrors();
-
-    const emailResult = validateEmail(this.email);
-    if (!emailResult.valid) {
-      this.validationErrors.email = emailResult.errors[0];
-    }
-
-    const passwordResult = validateRequired(this.password, 'Password');
-    if (!passwordResult.valid) {
-      this.validationErrors.password = passwordResult.errors[0];
-    }
-
-    return Object.keys(this.validationErrors).length === 0;
+  constructor() {
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      rememberMe: [false]
+    });
   }
 
   async onSubmit() {
-    if (!this.validateForm()) {
+    if (this.loginForm.invalid) {
       this.messageService.add({
         severity: 'warn',
         summary: 'Validation Error',
@@ -79,7 +69,10 @@ export class Login {
 
     this.isLoading = true;
     try {
-      await this.authService.login(this.email, this.password);
+      await this.authService.login(
+        this.loginForm.value.email, 
+        this.loginForm.value.password
+      );
       
       this.messageService.add({
         severity: 'success',
