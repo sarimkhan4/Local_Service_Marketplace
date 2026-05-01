@@ -26,12 +26,11 @@
   cursor: pointer;
 }
 
-
 .logo-text {
   font-size: 2rem;
-  font-family: 'Fira Sans';
+  font-family: 'Fira Sans', cursive;
   color: #ffffff;
-  font-weight: 300;
+  font-weight: 200;
   letter-spacing: 0.3rem;
   text-transform: uppercase;
 }
@@ -217,8 +216,8 @@
 
 .menu-links a {
   color: #000;
-  font-family: 'Junge';
-
+  font-family: 'Fira Sans';
+  font-weight: 200;
   text-decoration: none;
   font-size: 5rem;
   text-transform: uppercase;
@@ -262,7 +261,7 @@
   text-align: center;
   transform: translateY(30%);
   font-family: 'Fira Sans';
-  font-weight: 200;
+  font-weight: 100;
   letter-spacing: 0.1rem;
 
 }

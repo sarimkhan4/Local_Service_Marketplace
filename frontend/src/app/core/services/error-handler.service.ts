@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, Optional } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -13,7 +13,7 @@ export interface ErrorDetails {
   providedIn: 'root'
 })
 export class ErrorHandlerService {
-  private messageService = inject(MessageService);
+  private messageService = inject(MessageService, { optional: true });
 
   /**
    * Handle HTTP errors and display user-friendly messages
@@ -50,12 +50,16 @@ export class ErrorHandlerService {
    * Show success message
    */
   showSuccess(detail: string, summary: string = 'Success'): void {
-    this.messageService.add({
-      severity: 'success',
-      summary,
-      detail,
-      life: 3000
-    });
+    if (this.messageService) {
+      this.messageService.add({
+        severity: 'success',
+        summary,
+        detail,
+        life: 3000
+      });
+    } else {
+      console.log(`[${summary}] ${detail}`);
+    }
   }
 
   /**
@@ -66,26 +70,33 @@ export class ErrorHandlerService {
       ? { message: error }
       : error;
 
-    // Show main error message
-    this.messageService.add({
-      severity: 'error',
-      summary: 'Error',
-      detail: details.message,
-      life: 5000
-    });
-
-    // Show additional validation details if present
-    if (details.details && details.details.length > 0) {
-      details.details.forEach((detail, index) => {
-        setTimeout(() => {
-          this.messageService.add({
-            severity: 'warn',
-            summary: 'Validation Error',
-            detail,
-            life: 4000
-          });
-        }, index * 200);
+    if (this.messageService) {
+      // Show main error message
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: details.message,
+        life: 5000
       });
+
+      // Show additional validation details if present
+      if (details.details && details.details.length > 0) {
+        details.details.forEach((detail, index) => {
+          setTimeout(() => {
+            this.messageService?.add({
+              severity: 'warn',
+              summary: 'Validation Error',
+              detail,
+              life: 4000
+            });
+          }, index * 200);
+        });
+      }
+    } else {
+      console.error(`[Error] ${details.message}`);
+      if (details.details) {
+        details.details.forEach(detail => console.error(`[Validation Error] ${detail}`));
+      }
     }
   }
 
@@ -93,24 +104,32 @@ export class ErrorHandlerService {
    * Show warning message
    */
   showWarning(detail: string, summary: string = 'Warning'): void {
-    this.messageService.add({
-      severity: 'warn',
-      summary,
-      detail,
-      life: 4000
-    });
+    if (this.messageService) {
+      this.messageService.add({
+        severity: 'warn',
+        summary,
+        detail,
+        life: 4000
+      });
+    } else {
+      console.warn(`[${summary}] ${detail}`);
+    }
   }
 
   /**
    * Show info message
    */
   showInfo(detail: string, summary: string = 'Info'): void {
-    this.messageService.add({
-      severity: 'info',
-      summary,
-      detail,
-      life: 3000
-    });
+    if (this.messageService) {
+      this.messageService.add({
+        severity: 'info',
+        summary,
+        detail,
+        life: 3000
+      });
+    } else {
+      console.info(`[${summary}] ${detail}`);
+    }
   }
 
   /**

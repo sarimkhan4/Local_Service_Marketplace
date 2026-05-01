@@ -35,13 +35,12 @@
 
 .letter {
   font-size: 30rem;
-  font-family: 'Laro';
+  font-family: 'Fira Sans';
   letter-spacing: 0.2rem;
   line-height: 1;
+  font-weight: 100;
   /* Black text becomes transparent when the parent has mix-blend-mode: screen */
   color: black;
-  display: inline-block;
-  will-change: transform;
 }
 
 
@@ -49,6 +48,7 @@
 .start-high {
   transform: translateY(-400px);
   opacity: 0;
+  
 }
 
 /* O and A start lower than the center */
@@ -237,6 +237,9 @@
   color: black;
   display: inline-block;
   will-change: transform;
+  font-family: 'Fira Sans';
+  font-weight: 200;
+  letter-spacing: 0.1rem;
 }
 
 
@@ -1027,7 +1030,7 @@
   width: 100%;
   /* Force hardware acceleration for smooth text scaling */
   will-change: font-size;
-   font-family: 'Junge';
+   font-family: 'Fira Sans';
   font-weight: 100;
   margin-bottom: 50px;
   letter-spacing: 0.09rem;

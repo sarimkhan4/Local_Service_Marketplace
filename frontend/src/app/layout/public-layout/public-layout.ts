@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, NgZone } from '@angular/core';
+import { Component, AfterViewInit, NgZone, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterModule } from '@angular/router';
@@ -12,17 +12,25 @@ import { gsap } from 'gsap';
   templateUrl: './public-layout.html',
   styleUrl: './public-layout.css',
 })
-export class PublicLayout implements AfterViewInit {
+export class PublicLayout implements AfterViewInit, OnInit {
   menuOpen = false;
   menuTimeline: gsap.core.Timeline | null = null;
   isAuthPage = false;
 
-  constructor(private ngZone: NgZone, private router: Router) {
+  constructor(private ngZone: NgZone, private router: Router) {}
+
+  ngOnInit() {
+    // Set initial isAuthPage based on current URL
+    const currentUrl = this.router.url;
+    this.isAuthPage = currentUrl.startsWith('/login') || currentUrl.startsWith('/signup');
+    
     // Detect navigation to auth routes to hide navbar/footer
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         const url = event.urlAfterRedirects || event.url;
-        this.isAuthPage = url.startsWith('/login') || url.startsWith('/signup');
+        this.ngZone.run(() => {
+          this.isAuthPage = url.startsWith('/login') || url.startsWith('/signup');
+        });
       }
     });
   }

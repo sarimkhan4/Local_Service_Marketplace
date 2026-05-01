@@ -4,6 +4,7 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 1.5rem;
+  font-family: 'Fira Sans', sans-serif;
 }
 
 /* Header */
@@ -13,7 +14,7 @@
 
 .saved-page header h1 {
   font-size: 1.875rem;
-  font-weight: 600;
+  font-weight: 300;
   color: #0f172a;
   margin: 0;
 }
@@ -23,6 +24,7 @@
   color: #4b5563;
   margin: 0.5rem 0 0 0;
   line-height: 1.5;
+  font-weight: 200;
 }
 
 /* Empty State */
@@ -47,7 +49,7 @@
 
 .saved-empty h2 {
   font-size: 1.25rem;
-  font-weight: 600;
+  font-weight: 300;
   color: #0f172a;
   margin: 0 0 0.5rem 0;
 }
@@ -70,9 +72,10 @@
   border-radius: 0.5rem;
   color: #374151;
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 300;
   cursor: pointer;
   transition: background-color 0.2s, border-color 0.2s;
+  font-family: 'Fira Sans', sans-serif;
 }
 
 .saved-empty button:hover {
@@ -171,7 +174,7 @@
 .saved-grid .h-full .p-4:first-child h3 {
   margin: 0;
   font-size: 1.125rem;
-  font-weight: 700;
+  font-weight: 300;
   color: #0f172a;
 }
 
@@ -209,7 +212,7 @@
   padding: 0.25rem 0.5rem;
   border-radius: 0.25rem;
   font-size: 0.75rem;
-  font-weight: 500;
+  font-weight: 200;
   color: #0f766e;
 }
 
@@ -236,11 +239,11 @@
 }
 
 .font-bold {
-  font-weight: 700;
+  font-weight: 300;
 }
 
 .font-medium {
-  font-weight: 500;
+  font-weight: 200;
 }
 
 .text-sm {
@@ -286,7 +289,7 @@
   border: none;
   border-radius: 0.5rem;
   color: white;
-  font-weight: 700;
+  font-weight: 300;
   font-size: 0.875rem;
   cursor: pointer;
   display: flex;
@@ -295,6 +298,7 @@
   gap: 0.5rem;
   background: #0d9488;
   transition: background-color 0.2s;
+  font-family: 'Fira Sans', sans-serif;
 }
 
 .saved-grid .h-full .p-4:last-child button:first-child:hover {

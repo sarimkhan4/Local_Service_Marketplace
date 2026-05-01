@@ -4,6 +4,7 @@
   min-height: 100vh;
   width: 100vw;
   background-color: #ffffff;
+  font-family: 'Fira Sans', sans-serif;
 }
 
 /* ===== IMAGE SIDE ===== */
@@ -56,17 +57,19 @@
 
 .auth-header h2 {
   font-size: 2rem;
-  font-weight: 700;
+  font-weight: 300;
   color: #0f172a;
   margin-bottom: 0.35rem;
   letter-spacing: -0.02em;
+  font-family: 'Fira Sans', sans-serif;
 }
 
 .auth-header p {
   color: #94a3b8;
-  font-weight: 400;
+  font-weight: 200;
   font-size: 0.95rem;
   margin-bottom: 0;
+  font-family: 'Fira Sans', sans-serif;
 }
 
 /* ===== ROLE SELECTOR ===== */
@@ -95,11 +98,12 @@
 .form-group label,
 .field label {
   font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: 300;
   color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   display: block;
+  font-family: 'Fira Sans', sans-serif;
 }
 
 /* ===== PrimeNG Input Overrides for Transparent Look ===== */
@@ -114,6 +118,8 @@
   color: #0f172a;
   box-shadow: none;
   transition: border-color 0.2s ease;
+  font-family: 'Fira Sans', sans-serif;
+  font-weight: 200;
 }
 
 :host ::ng-deep .p-inputtext:focus,
@@ -146,6 +152,8 @@
   font-size: 0.95rem;
   color: #0f172a;
   box-shadow: none;
+  font-family: 'Fira Sans', sans-serif;
+  font-weight: 200;
 }
 
 :host ::ng-deep .p-password-input:focus {
@@ -163,6 +171,8 @@
   font-size: 0.95rem;
   color: #0f172a;
   box-shadow: none;
+  font-family: 'Fira Sans', sans-serif;
+  font-weight: 200;
 }
 
 :host ::ng-deep .p-inputnumber-input:focus {
@@ -175,11 +185,12 @@
   background: transparent;
   border: 1.5px solid #e2e8f0;
   color: #64748b;
-  font-weight: 600;
+  font-weight: 300;
   font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   transition: all 0.2s ease;
+  font-family: 'Fira Sans', sans-serif;
 }
 
 :host ::ng-deep .p-selectbutton .p-button.p-highlight,
@@ -195,18 +206,19 @@
   border: 1.5px solid #0f172a;
   color: #0f172a;
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 300;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   padding: 0.85rem 1.5rem;
   transition: background-color 0.25s ease, color 0.25s ease;
   box-shadow: none;
+  font-family: 'Fira Sans', sans-serif;
 }
 
 :host ::ng-deep .p-button:hover {
-  background-color: #0f172a;
+  background-color: #000000;
   color: #ffffff;
-  border-color: #0f172a;
+  border-color: #000000;
 }
 
 :host ::ng-deep .p-button:focus {
@@ -223,12 +235,15 @@
   margin: 0;
   font-size: 0.9rem;
   color: #94a3b8;
+  font-family: 'Fira Sans', sans-serif;
+  font-weight: 200;
 }
 
 .auth-footer a {
   color: #0f172a;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 300;
+  font-family: 'Fira Sans', sans-serif;
 }
 
 .auth-footer a:hover {

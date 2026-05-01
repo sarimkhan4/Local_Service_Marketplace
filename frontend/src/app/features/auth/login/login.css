@@ -4,6 +4,7 @@
   min-height: 100vh;
   width: 100vw;
   background-color: #ffffff;
+  font-family: 'Fira Sans', sans-serif;
 }
 
 /* ===== IMAGE SIDE ===== */
@@ -58,17 +59,19 @@
 
 .auth-header h2 {
   font-size: 2rem;
-  font-weight: 700;
+  font-weight: 300;
   color: #0f172a;
   margin-bottom: 0.35rem;
   letter-spacing: -0.02em;
+  font-family: 'Fira Sans', sans-serif;
 }
 
 .auth-header p {
   color: #94a3b8;
-  font-weight: 400;
+  font-weight: 200;
   font-size: 0.95rem;
   margin-bottom: 0;
+  font-family: 'Fira Sans', sans-serif;
 }
 
 /* ===== FORM ===== */
@@ -91,11 +94,12 @@
 .form-group label,
 .field label {
   font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: 300;
   color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   display: block;
+  font-family: 'Fira Sans', sans-serif;
 }
 
 /* ===== INPUT WRAPPER ===== */
@@ -124,6 +128,8 @@
   outline: none;
   border-radius: 0;
   transition: border-color 0.2s ease;
+  font-family: 'Fira Sans', sans-serif;
+  font-weight: 200;
 }
 
 .input-wrapper .custom-input::placeholder {
@@ -155,6 +161,8 @@
   font-size: 0.85rem;
   color: #64748b;
   cursor: pointer;
+  font-family: 'Fira Sans', sans-serif;
+  font-weight: 200;
 }
 
 .form-options input[type="checkbox"] {
@@ -165,7 +173,8 @@
   color: #0f172a;
   text-decoration: none;
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: 200;
+  font-family: 'Fira Sans', sans-serif;
 }
 
 .forgot-link:hover {
@@ -178,12 +187,13 @@
   border: 1.5px solid #0f172a;
   color: #0f172a;
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 300;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   padding: 0.85rem 1.5rem;
   cursor: pointer;
   transition: background-color 0.25s ease, color 0.25s ease;
+  font-family: 'Fira Sans', sans-serif;
 }
 
 .custom-btn:hover {
@@ -201,12 +211,15 @@
   margin: 0;
   font-size: 0.9rem;
   color: #94a3b8;
+  font-family: 'Fira Sans', sans-serif;
+  font-weight: 200;
 }
 
 .auth-footer a {
   color: #0f172a;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 300;
+  font-family: 'Fira Sans', sans-serif;
 }
 
 .auth-footer a:hover {

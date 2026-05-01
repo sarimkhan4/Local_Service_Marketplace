@@ -6,6 +6,7 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 1rem;
+  font-family: 'Fira Sans', sans-serif;
 }
 
 .availability-header {
@@ -187,5 +188,5 @@
 
 .availability-empty span {
   color: #0d9488;
-  font-weight: 600;
+  font-weight: 300;
 }
