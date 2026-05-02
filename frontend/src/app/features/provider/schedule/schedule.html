@@ -56,20 +56,19 @@
   <!-- ── Filters Row ── -->
   <div class="schedule-filter-shell">
     <div class="schedule-filter-row">
-      <!-- View mode tabs (p-selectbutton v21) -->
       <p-selectbutton
         [(ngModel)]="viewMode"
+        (ngModelChange)="onViewModeChanged($event)"
         [options]="viewOptions"
         optionLabel="label"
         optionValue="value"
         [allowEmpty]="false">
       </p-selectbutton>
 
-      <!-- Status filter (p-select) -->
       <p-select
         [options]="statusOptions"
         [ngModel]="statusFilter()"
-        (ngModelChange)="statusFilter.set($event)"
+        (ngModelChange)="onStatusFilterChanged($event)"
         optionLabel="label"
         optionValue="value"
         style="min-width:170px;">
@@ -81,101 +80,104 @@
     </div>
   </div>
 
-  <!-- ── Booking List (p-dataview v21) ── -->
+  <!-- ── Booking list (card rows) ── -->
   <div class="schedule-list-shell">
-    <p-dataview [value]="filteredBookings()" [paginator]="true" [rows]="8">
-
-      <ng-template #list let-items>
-        <div *ngFor="let booking of items; let first = first">
+    <ng-container *ngIf="filteredBookings().length > 0; else scheduleEmpty">
+      <div class="schedule-booking-list">
+        <article
+          class="schedule-booking-card"
+          *ngFor="let booking of pagedBookings(); trackBy: trackByBookingId">
           <div
-            class="flex flex-column md:flex-row md:align-items-center gap-4 p-4"
-            [ngClass]="{ 'border-top-1 surface-border': !first }">
+            class="schedule-booking-date"
+            [class.date-today]="isToday(booking.date)">
+            <span class="schedule-booking-date-dow">{{ calendarSlot(booking).dow }}</span>
+            <span class="schedule-booking-date-num">{{ calendarSlot(booking).dom }}</span>
+            <span class="schedule-booking-date-mon">{{ calendarSlot(booking).sub }}</span>
+          </div>
 
-            <!-- Date block -->
-            <div class="date-block flex flex-column align-items-center justify-content-center p-3 flex-shrink-0"
-                 [ngClass]="{ 'date-today': isToday(booking.date) }">
-              <span class="text-xs font-semibold uppercase text-500">{{formatDate(booking.date).split(',')[0]}}</span>
-              <span class="text-2xl font-bold text-900">{{booking.date.split('-')[2]}}</span>
-              <span class="text-xs text-500">{{formatDate(booking.date).split(' ')[1]}} {{formatDate(booking.date).split(' ')[2].replace(',','')}}</span>
-            </div>
-
-            <!-- Time + Service info -->
-            <div class="flex flex-column gap-2 flex-1 min-w-0">
-              <div class="flex align-items-center gap-3 flex-wrap">
-                <p-tag [value]="booking.status" [severity]="getStatusSeverity(booking.status)"></p-tag>
-                <p-chip *ngIf="isToday(booking.date)" label="Today" icon="pi pi-calendar" styleClass="chip-today-sm"></p-chip>
-                <span class="text-400 text-xs"><i class="pi pi-clock mr-1"></i>{{formatTime(booking.time)}} · {{formatDuration(booking.duration)}}</span>
-              </div>
-
-              <span class="text-900 font-semibold text-base">{{booking.serviceName}}</span>
-
-              <!-- Customer row -->
-              <div class="flex align-items-center gap-2">
-                <p-avatar
-                  [label]="booking.customerInitials"
-                  shape="circle"
-                  [style]="{'background': booking.avatarColor, 'color': '#fff', 'font-weight': '700', 'font-size': '0.65rem', 'width': '1.75rem', 'height': '1.75rem'}">
-                </p-avatar>
-                <span class="text-600 text-sm">{{booking.customerName}}</span>
-                <span class="text-200">·</span>
-                <i class="pi pi-map-marker text-400" style="font-size:.7rem;"></i>
-                <span class="text-400 text-xs" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:200px;">{{booking.address}}</span>
-              </div>
-
-              <span *ngIf="booking.notes" class="text-400 text-xs italic">
-                <i class="pi pi-comment mr-1"></i>{{booking.notes}}
+          <div class="schedule-booking-main">
+            <div class="schedule-booking-meta">
+              <p-tag [value]="booking.status" [severity]="getStatusSeverity(booking.status)"></p-tag>
+              <p-chip *ngIf="isToday(booking.date)" label="Today" icon="pi pi-calendar" styleClass="chip-today-sm"></p-chip>
+              <span class="schedule-booking-time text-500">
+                <i class="pi pi-clock mr-1"></i>{{ formatTime(booking.time) }} · {{ formatDuration(booking.duration) }}
               </span>
             </div>
-
-            <!-- Price + Actions -->
-            <div class="flex flex-column align-items-end gap-3 flex-shrink-0">
-              <span class="text-2xl font-bold" style="color:#0d9488;">${{booking.price}}</span>
-              <div class="flex gap-2">
-                <p-button
-                  icon="pi pi-eye"
-                  severity="secondary"
-                  [outlined]="true"
-                  size="small"
-                  pTooltip="View Details"
-                  (click)="openDetail(booking)">
-                </p-button>
-                <p-button
-                  *ngIf="booking.status === 'Pending'"
-                  icon="pi pi-check"
-                  size="small"
-                  pTooltip="Confirm"
-                  [style]="{'background':'#0d9488','border-color':'#0d9488'}"
-                  (click)="confirmBooking(booking.id)">
-                </p-button>
-                <p-button
-                  *ngIf="booking.status === 'Confirmed'"
-                  icon="pi pi-verified"
-                  size="small"
-                  pTooltip="Mark Complete"
-                  [style]="{'background':'#6366f1','border-color':'#6366f1'}"
-                  (click)="completeBooking(booking.id)">
-                </p-button>
+            <h2 class="schedule-booking-service">{{ booking.serviceName }}</h2>
+            <div class="schedule-booking-customer">
+              <p-avatar
+                [label]="booking.customerInitials"
+                shape="circle"
+                [style]="{'background': booking.avatarColor, 'color': '#fff', 'font-weight': '700', 'font-size': '0.65rem', 'width': '2rem', 'height': '2rem'}">
+              </p-avatar>
+              <div class="schedule-booking-customer-text">
+                <span class="schedule-booking-name">{{ booking.customerName }}</span>
+                <span class="schedule-booking-address">
+                  <i class="pi pi-map-marker"></i>
+                  {{ booking.address }}
+                </span>
               </div>
             </div>
+            <p *ngIf="booking.notes" class="schedule-booking-notes text-500 text-sm m-0">
+              <i class="pi pi-comment mr-1"></i>{{ booking.notes }}
+            </p>
           </div>
-        </div>
-      </ng-template>
 
-      <ng-template #empty>
-        <div class="flex flex-column align-items-center justify-content-center py-8 gap-3">
-          <i class="pi pi-calendar text-5xl text-200"></i>
-          <span class="text-600 font-medium">No bookings match your filter.</span>
-          <p-button label="Show All" severity="secondary" [outlined]="true" (click)="viewMode = 'all'; statusFilter.set('All')"></p-button>
-        </div>
-      </ng-template>
+          <div class="schedule-booking-aside">
+            <span class="schedule-booking-price">${{ booking.price }}</span>
+            <div class="schedule-booking-actions">
+              <p-button
+                icon="pi pi-eye"
+                severity="secondary"
+                [outlined]="true"
+                size="small"
+                pTooltip="View details"
+                (click)="openDetail(booking)">
+              </p-button>
+              <p-button
+                *ngIf="booking.status === 'Pending'"
+                icon="pi pi-check"
+                size="small"
+                pTooltip="Confirm"
+                [style]="{'background':'#0d9488','border-color':'#0d9488'}"
+                (click)="confirmBooking(booking.id)">
+              </p-button>
+              <p-button
+                *ngIf="booking.status === 'Confirmed'"
+                icon="pi pi-verified"
+                size="small"
+                pTooltip="Mark complete"
+                [style]="{'background':'#6366f1','border-color':'#6366f1'}"
+                (click)="completeBooking(booking.id)">
+              </p-button>
+            </div>
+          </div>
+        </article>
+      </div>
 
-    </p-dataview>
+      <p-paginator
+        *ngIf="filteredBookings().length > schRows"
+        [rows]="schRows"
+        [totalRecords]="filteredBookings().length"
+        [first]="schPageFirst()"
+        (onPageChange)="onSchPageChange($event)"
+        styleClass="border-noround border-top-1 surface-border bg-transparent">
+      </p-paginator>
+    </ng-container>
+
+    <ng-template #scheduleEmpty>
+      <div class="flex flex-column align-items-center justify-content-center py-8 gap-3">
+        <i class="pi pi-calendar text-5xl text-200"></i>
+        <span class="text-600 font-medium">No bookings match your filter.</span>
+        <p-button label="Show all" severity="secondary" [outlined]="true" (click)="viewMode = 'all'; onStatusFilterChanged('All')"></p-button>
+      </div>
+    </ng-template>
   </div>
 
 </div>
 
 <!-- ═══════════════════════════════════════════════════
-     BOOKING DETAIL DIALOG (p-dialog v21 API)
+     BOOKING DETAIL DIALOG
      ═══════════════════════════════════════════════════ -->
 <p-dialog
   [(visible)]="showDetailDialog"
@@ -207,10 +209,8 @@
     </div>
   </ng-template>
 
-  <!-- Dialog Body -->
   <div *ngIf="selectedBooking" class="flex flex-column gap-4">
 
-    <!-- Service + Price row -->
     <div class="flex align-items-center justify-content-between p-3 border-round-lg" style="background:var(--surface-50);">
       <div>
         <div class="text-400 text-xs mb-1">SERVICE</div>
@@ -222,7 +222,6 @@
       </div>
     </div>
 
-    <!-- Detail rows -->
     <div class="flex flex-column gap-3">
 
       <div class="flex align-items-center gap-3">
@@ -260,21 +259,20 @@
 
     <p-divider styleClass="my-1"></p-divider>
 
-    <!-- Quick Action Buttons inside dialog -->
     <div *ngIf="selectedBooking.status !== 'Completed' && selectedBooking.status !== 'Cancelled'"
          class="flex flex-column gap-2">
-      <div class="text-400 text-xs uppercase font-medium mb-1">Quick Actions</div>
+      <div class="text-400 text-xs uppercase font-medium mb-1">Quick actions</div>
       <div class="flex gap-2 flex-wrap">
         <p-button
           *ngIf="selectedBooking.status === 'Pending'"
-          label="Confirm Booking"
+          label="Confirm booking"
           icon="pi pi-check"
           [style]="{'background':'#0d9488','border-color':'#0d9488','flex':'1'}"
           (click)="confirmBooking(selectedBooking.id)">
         </p-button>
         <p-button
           *ngIf="selectedBooking.status === 'Confirmed'"
-          label="Mark as Completed"
+          label="Mark as completed"
           icon="pi pi-verified"
           [style]="{'background':'#6366f1','border-color':'#6366f1','flex':'1'}"
           (click)="completeBooking(selectedBooking.id); showDetailDialog = false">

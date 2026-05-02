@@ -29,19 +29,24 @@
             <tr>
               <th style="color: #64748b; font-weight: 500;">Image</th>
               <th pSortableColumn="client" style="color: #64748b; font-weight: 500;">Client <p-sortIcon field="client"></p-sortIcon></th>
+              <th pSortableColumn="service" style="color: #64748b; font-weight: 500;">Service <p-sortIcon field="service"></p-sortIcon></th>
               <th pSortableColumn="amount" style="color: #64748b; font-weight: 500;">Price <p-sortIcon field="amount"></p-sortIcon></th>
               <th style="color: #64748b; font-weight: 500;">View</th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-apt>
             <tr>
-              <td style="width: 15%;"><img [src]="apt.image" width="32" height="32" alt="Client Avatar" /></td>
-              <td style="width: 35%;">{{ apt.service }}</td>
-              <td style="width: 35%; font-weight: 600;">{{ apt.amount }}</td>
-              <td style="width: 15%;">
+              <td style="width: 10%;"><img [src]="apt.image" width="32" height="32" alt="" /></td>
+              <td style="width: 26%;">{{ apt.client }}</td>
+              <td style="width: 28%;">{{ apt.service }}</td>
+              <td style="width: 26%; font-weight: 600;">{{ apt.amount }}</td>
+              <td style="width: 10%;">
                 <button pButton pRipple type="button" icon="pi pi-search" class="p-button-rounded p-button-text p-button-success"></button>
               </td>
             </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr><td colspan="5" class="text-center text-500 py-4">No recent bookings.</td></tr>
           </ng-template>
         </p-table>
       </div>
@@ -50,7 +55,11 @@
     <div class="app-dash-col flex-1">
       <div class="app-dash-card p-4 h-full">
         <h5 class="m-0 text-xl font-medium text-900 mb-4">Revenue Stream</h5>
-        <p-chart type="line" [data]="chartData" [options]="chartOptions" height="300px"></p-chart>
+        @if (showChart) {
+          <p-chart type="line" [data]="chartData" [options]="chartOptions" height="300px"></p-chart>
+        } @else {
+          <div class="flex align-items-center justify-content-center" style="height:300px;"><span class="text-500 text-sm">Loading chart…</span></div>
+        }
       </div>
     </div>
   </div>
@@ -65,6 +74,7 @@
         </div>
 
         <ul class="list-none p-0 m-0">
+          <li *ngIf="popularServices.length === 0" class="text-500 text-sm py-3 text-center m-0">No completed service stats yet.</li>
           <li class="provider-service-row" *ngFor="let s of popularServices">
             <div class="flex align-items-center w-full min-w-0">
               <div>
@@ -92,8 +102,8 @@
         </div>
 
         <span class="block text-600 font-medium mb-3">TODAY</span>
-        <ul class="list-none p-0 m-0 mb-4">
-          <li class="flex align-items-center py-2 border-bottom-1 surface-border" *ngFor="let notif of notifications.slice(0,2)">
+        <ul class="list-none p-0 m-0 mb-4" *ngIf="notificationsToday().length > 0; else noTodayNotifs">
+          <li class="flex align-items-center py-2 border-bottom-1 surface-border" *ngFor="let notif of notificationsToday()">
             <div [class]="'w-3rem h-3rem flex align-items-center justify-content-center bg-' + notif.color + '-100 mr-3 flex-shrink-0'">
               <i [class]="'pi ' + notif.icon + ' text-xl text-' + notif.color + '-500'"></i>
             </div>
@@ -102,10 +112,13 @@
             </span>
           </li>
         </ul>
+        <ng-template #noTodayNotifs>
+          <p class="text-500 text-sm py-2 m-0 mb-4 border-bottom-1 surface-border">Nothing for today.</p>
+        </ng-template>
 
-        <span class="block text-600 font-medium mb-3">YESTERDAY</span>
-        <ul class="list-none p-0 m-0">
-          <li class="flex align-items-center py-2 border-bottom-1 surface-border" *ngFor="let notif of notifications.slice(2)">
+        <span class="block text-600 font-medium mb-3">EARLIER</span>
+        <ul class="list-none p-0 m-0" *ngIf="notificationsEarlier().length > 0; else noEarlierNotifs">
+          <li class="flex align-items-center py-2 border-bottom-1 surface-border" *ngFor="let notif of notificationsEarlier()">
             <div [class]="'w-3rem h-3rem flex align-items-center justify-content-center bg-' + notif.color + '-100 mr-3 flex-shrink-0'">
               <i [class]="'pi ' + notif.icon + ' text-xl text-' + notif.color + '-500'"></i>
             </div>
@@ -114,6 +127,9 @@
             </span>
           </li>
         </ul>
+        <ng-template #noEarlierNotifs>
+          <p class="text-500 text-sm py-2 m-0">No older items in this list.</p>
+        </ng-template>
       </div>
     </div>
   </div>

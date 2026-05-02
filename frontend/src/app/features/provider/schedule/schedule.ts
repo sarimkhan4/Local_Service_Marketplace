@@ -13,12 +13,14 @@ import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { TextareaModule } from 'primeng/textarea';
-import { DataViewModule } from 'primeng/dataview';
 import { ChipModule } from 'primeng/chip';
 import { AvatarModule } from 'primeng/avatar';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { DividerModule } from 'primeng/divider';
 import { BadgeModule } from 'primeng/badge';
+import { PaginatorModule } from 'primeng/paginator';
+import { TooltipModule } from 'primeng/tooltip';
+import { RippleModule } from 'primeng/ripple';
 
 export type BookingStatus = 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled';
 
@@ -40,13 +42,15 @@ export interface ScheduleBooking {
 interface ProviderBookingApiResponse {
   bookingId: number | string;
   date: string;
-  status: 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED' | string;
+  status: string;
   totalAmount: number | string;
   customer?: {
+    name?: string;
     firstName?: string;
     lastName?: string;
   };
   services?: Array<{
+    duration?: number;
     service?: {
       name?: string;
     };
@@ -57,20 +61,48 @@ interface ProviderBookingApiResponse {
   };
 }
 
+function apiToScheduleStatus(raw: string | undefined): BookingStatus {
+  const s = String(raw ?? '')
+    .trim()
+    .toUpperCase()
+    .replace(/\s+/g, '_');
+  if (s === 'PENDING') return 'Pending';
+  if (s === 'CONFIRMED' || s === 'IN_PROGRESS') return 'Confirmed';
+  if (s === 'COMPLETED' || s === 'COMPLETE') return 'Completed';
+  if (s === 'CANCELLED' || s === 'CANCELED') return 'Cancelled';
+  return 'Pending';
+}
+
+function customerDisplay(c: ProviderBookingApiResponse['customer']): { name: string; initials: string } {
+  const fromParts = `${c?.firstName ?? ''} ${c?.lastName ?? ''}`.trim();
+  const nameField = typeof c?.name === 'string' ? c.name.trim() : '';
+  const name = fromParts || nameField || 'Customer';
+  const parts = name.split(/\s+/).filter(Boolean);
+  const initials =
+    parts.length >= 2
+      ? `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase()
+      : (name.slice(0, 2).toUpperCase() || '?');
+  return { name, initials };
+}
+
 @Component({
   selector: 'app-schedule',
   standalone: true,
   imports: [
     CommonModule, FormsModule,
     ButtonModule, TagModule, DialogModule, InputTextModule,
-    SelectModule, TextareaModule, DataViewModule, ChipModule,
-    AvatarModule, SelectButtonModule, DividerModule, BadgeModule
+    SelectModule, TextareaModule, ChipModule,
+    AvatarModule, SelectButtonModule, DividerModule, BadgeModule,
+    PaginatorModule, TooltipModule, RippleModule
   ],
   templateUrl: './schedule.html',
   styleUrl: './schedule.css'
 })
 export class Schedule {
   private titleService = inject(Title);
+
+  readonly schRows = 8;
+  schPageFirst = signal(0);
 
   // ── View filter ──
   viewMode: 'all' | 'today' | 'upcoming' | 'past' = 'all';
@@ -90,7 +122,6 @@ export class Schedule {
     { label: 'Cancelled', value: 'Cancelled' }
   ];
 
-  // ── Mock bookings (ER: Booking → Schedule) ──
   bookings = signal<ScheduleBooking[]>([]);
 
   private apiService = inject(ApiService);
@@ -105,21 +136,32 @@ export class Schedule {
     if (!user) return;
     try {
       const data = await lastValueFrom(this.apiService.getProviderBookings(user.id)) as ProviderBookingApiResponse[];
-      const mapped = data.map((b): ScheduleBooking => ({
-        id: b.bookingId.toString(),
-        customerName: `${b.customer?.firstName ?? ''} ${b.customer?.lastName ?? ''}`.trim() || 'Customer',
-        customerInitials: `${b.customer?.firstName?.[0] || ''}${b.customer?.lastName?.[0] || ''}`.toUpperCase() || 'CU',
-        avatarColor: '#14b8a6',
-        serviceName: b.services?.[0]?.service?.name || 'Multiple Services',
-        date: new Date(b.date).toISOString().split('T')[0],
-        time: new Date(b.date).toTimeString().substring(0, 5),
-        duration: 120,
-        status: b.status === 'PENDING' ? 'Pending' : (b.status === 'CONFIRMED' ? 'Confirmed' : (b.status === 'COMPLETED' ? 'Completed' : 'Cancelled')),
-        notes: '',
-        price: Number(b.totalAmount),
-        address: `${b.address?.street ?? ''}${b.address?.street && b.address?.city ? ', ' : ''}${b.address?.city ?? ''}`.trim() || 'Address not set',
-      }));
+      const mapped = data.map((b): ScheduleBooking => {
+        const { name, initials } = customerDisplay(b.customer);
+        const slot = new Date(b.date);
+        const duration =
+          Number((b as { durationMinutes?: number }).durationMinutes) ||
+          Number(b.services?.[0]?.duration) ||
+          120;
+        return {
+          id: b.bookingId.toString(),
+          customerName: name,
+          customerInitials: initials,
+          avatarColor: '#14b8a6',
+          serviceName: b.services?.[0]?.service?.name || 'Multiple Services',
+          date: slot.toISOString().split('T')[0],
+          time: slot.toTimeString().substring(0, 5),
+          duration,
+          status: apiToScheduleStatus(b.status),
+          notes: '',
+          price: Number(b.totalAmount),
+          address:
+            `${b.address?.street ?? ''}${b.address?.street && b.address?.city ? ', ' : ''}${b.address?.city ?? ''}`.trim() ||
+            'Address not set',
+        };
+      });
       this.bookings.set(mapped);
+      this.schPageFirst.set(0);
     } catch (err) {
       console.error('Failed to load schedule bookings', err);
     }
@@ -150,32 +192,62 @@ export class Schedule {
     return list.sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
   });
 
+  pagedBookings = computed(() => {
+    const list = this.filteredBookings();
+    const first = this.schPageFirst();
+    return list.slice(first, first + this.schRows);
+  });
+
   constructor() {
     this.titleService.setTitle('Servicio | Provider Schedule');
   }
 
+  onViewModeChanged(v: typeof this.viewMode) {
+    this.viewMode = v;
+    this.schPageFirst.set(0);
+  }
+
+  onStatusFilterChanged(v: BookingStatus | 'All') {
+    this.statusFilter.set(v);
+    this.schPageFirst.set(0);
+  }
+
+  onSchPageChange(event: { first?: number }) {
+    this.schPageFirst.set(event.first ?? 0);
+  }
+
+  trackByBookingId(_: number, b: ScheduleBooking): string {
+    return b.id;
+  }
+
   // ── Helpers ──
   today(): string { return new Date().toISOString().split('T')[0]; }
-  futureDate(days: number): string {
-    const d = new Date(); d.setDate(d.getDate() + days);
-    return d.toISOString().split('T')[0];
-  }
-  pastDate(days: number): string {
-    const d = new Date(); d.setDate(d.getDate() - days);
-    return d.toISOString().split('T')[0];
-  }
   formatDate(dateStr: string): string {
-    const d = new Date(dateStr + 'T00:00:00');
+    const d = new Date(dateStr + 'T12:00:00');
     return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  }
+
+  /** Stable local calendar parts for list date tile (avoid UTC day shift). */
+  calendarSlot(booking: ScheduleBooking): { dow: string; dom: string; sub: string } {
+    const d = new Date(booking.date + 'T12:00:00');
+    return {
+      dow: d.toLocaleDateString('en-US', { weekday: 'short' }),
+      dom: String(d.getDate()),
+      sub: d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+    };
   }
   formatTime(time: string): string {
     const [h, m] = time.split(':');
-    const hr = parseInt(h);
-    return `${hr > 12 ? hr - 12 : hr}:${m} ${hr >= 12 ? 'PM' : 'AM'}`;
+    const hr = parseInt(h, 10);
+    const ampm = hr >= 12 ? 'PM' : 'AM';
+    const h12 = hr % 12 || 12;
+    return `${h12}:${m} ${ampm}`;
   }
   formatDuration(mins: number): string {
     if (mins < 60) return `${mins} min`;
-    return `${Math.floor(mins / 60)}h ${mins % 60 > 0 ? (mins % 60) + 'm' : ''}`.trim();
+    const h = Math.floor(mins / 60);
+    const r = mins % 60;
+    return r > 0 ? `${h}h ${r}m` : `${h}h`;
   }
   isToday(dateStr: string): boolean { return dateStr === this.today(); }
 

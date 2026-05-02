@@ -10,6 +10,7 @@ import { PopoverModule } from 'primeng/popover';
 import { TagModule } from 'primeng/tag';
 import { DividerModule } from 'primeng/divider';
 import { TooltipModule } from 'primeng/tooltip';
+import { RippleModule } from 'primeng/ripple';
 import { MenuItem } from 'primeng/api';
 
 import { NotificationService } from '../../core/services/notification.service';
@@ -23,7 +24,7 @@ import { ThemeService } from '../../core/services/theme.service';
   imports: [
     CommonModule, RouterOutlet, RouterModule,
     MenuModule, AvatarModule, ButtonModule, BadgeModule,
-    PopoverModule, TagModule, DividerModule, TooltipModule
+    PopoverModule, TagModule, DividerModule, TooltipModule, RippleModule
   ],
   templateUrl: './customer-layout.html',
   styleUrl: '../app-shell-layout.css',

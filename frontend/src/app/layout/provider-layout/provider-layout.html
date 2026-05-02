@@ -1,26 +1,22 @@
 <div class="layout-wrapper flex flex-column h-screen overflow-hidden bg-gray-50 app-shell">
-  
-  <!-- TOPBAR -->
-  <header class="layout-topbar flex align-items-center justify-content-between px-4 surface-card border-bottom-1 surface-border">
-    <!-- <div class="flex align-items-center relative z-2">
-      <button pButton pRipple type="button" icon="pi pi-bars" class="p-button-rounded p-button-text p-button-plain mr-3 text-700 topbar-icon-btn" (click)="toggleSidebar()"></button>
-      <div class="logo-icon mr-2 flex align-items-center justify-content-center">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="26" height="26" fill="currentColor" class="text-teal-500">
-          <path d="M12 2L2 22h20L12 2zm0 4.5l6.5 13h-13L12 6.5z"/>
-        </svg>
-      </div>
-      <span class="text-xl font-medium text-700 app-shell-brand">Local Service Management</span>
-      <span class="ml-3 text-sm font-bold text-teal-600 bg-teal-100 px-2 py-1 border-round-xl hidden md:inline">PRO</span>
-    </div> -->
 
-    <div class="flex align-items-center gap-2 relative z-2">
+  <!-- TOPBAR: brand left (matches customer), actions right -->
+  <header class="layout-topbar flex align-items-center justify-content-between px-4 surface-card border-bottom-1 surface-border">
+    <div class="flex align-items-center gap-2 relative z-2 min-w-0 flex-1">
+      <button pButton pRipple type="button" icon="pi pi-bars" class="p-button-rounded p-button-text p-button-plain text-700 topbar-icon-btn flex-shrink-0" (click)="toggleSidebar()" aria-label="Toggle menu"></button>
+      <span class="text-xl font-medium text-700 app-shell-brand">Local Service Marketplace</span>
+      <span class="ml-1 text-xs font-bold text-teal-600 bg-teal-100 px-2 py-1 border-round-xl hidden sm:inline-flex flex-shrink-0">PRO</span>
+    </div>
+
+    <div class="flex align-items-center gap-2 relative z-2 flex-shrink-0">
       <button
         pButton
         pRipple
         type="button"
         [icon]="topbarThemeIcon()"
         class="p-button-rounded p-button-text p-button-plain text-600 topbar-icon-btn"
-        (click)="toggleTheme()">
+        (click)="toggleTheme()"
+        aria-label="Toggle theme">
       </button>
 
       <div class="relative">
@@ -29,7 +25,8 @@
           icon="pi pi-bell"
           class="p-button-rounded p-button-text p-button-plain text-600 topbar-icon-btn"
           pTooltip="Notifications" tooltipPosition="bottom"
-          (click)="notifPanel.toggle($event)">
+          (click)="notifPanel.toggle($event)"
+          aria-label="Notifications">
         </button>
         <p-badge
           *ngIf="notifService.providerUnreadCount() > 0"
@@ -40,9 +37,8 @@
         </p-badge>
       </div>
 
-      <button pButton pRipple type="button" icon="pi pi-user" class="p-button-rounded p-button-text p-button-plain text-900 surface-200 topbar-icon-btn" (click)="profileMenu.toggle($event)"></button>
+      <button pButton pRipple type="button" icon="pi pi-user" class="p-button-rounded p-button-text p-button-plain text-900 surface-200 topbar-icon-btn" (click)="profileMenu.toggle($event)" aria-label="Account"></button>
 
-      <!-- Profile Menu -->
       <p-menu #profileMenu [model]="profileMenuItems" [popup]="true" appendTo="body" styleClass="w-full md:w-15rem mt-2">
         <ng-template pTemplate="end">
           <button pRipple class="relative overflow-hidden w-full p-link flex align-items-center p-2 pl-3 text-color hover:surface-200 border-noround border-top-1 surface-border mt-2">
@@ -57,7 +53,6 @@
     </div>
   </header>
 
-  <!-- BODY -->
   <div class="flex flex-1 overflow-hidden relative">
     <aside class="layout-sidebar w-16rem surface-card overflow-y-auto px-3 py-4 flex-shrink-0" [class.sidebar-hidden]="!sidebarVisible">
       <p-menu [model]="menuItems" styleClass="app-shell-nav"></p-menu>

@@ -81,7 +81,7 @@ export class ServiceDetail implements OnInit {
     this.service = this.dataService.getServiceById(id);
     
     if (this.service) {
-      this.titleService.setTitle('Local Service Management | ' + this.service.title);
+      this.titleService.setTitle('Local Service Marketplace | ' + this.service.title);
       
       // Start skeleton loader
       this.loadingProviders.set(true);

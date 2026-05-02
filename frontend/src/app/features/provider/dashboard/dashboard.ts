@@ -1,5 +1,7 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
+import { NavigationEnd, Router } from '@angular/router';
 
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
@@ -7,10 +9,12 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
 import { ChartModule } from 'primeng/chart';
+import { RippleModule } from 'primeng/ripple';
 
 import { ApiService } from '../../../core/services/api.service';
 import { AuthService } from '../../../core/services/auth';
 import { lastValueFrom } from 'rxjs';
+import { filter, pairwise } from 'rxjs/operators';
 
 function normStatus(s: unknown): string {
   return String(s ?? '')
@@ -34,13 +38,17 @@ function categoryLabelFromBooking(b: any): string {
 
 @Component({
   selector: 'app-provider-dashboard',
-  imports: [CommonModule, TableModule, ButtonModule, ProgressBarModule, MenuModule, ChartModule],
+  imports: [CommonModule, TableModule, ButtonModule, ProgressBarModule, MenuModule, ChartModule, RippleModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
 export class ProviderDashboard implements OnInit {
   chartData: object = {};
   chartOptions: object = {};
+  /** Recreate PrimeNG Chart after navigating back so Chart.js binds fresh data */
+  showChart = true;
+
+  dashboardPath = '/app/provider/dashboard';
 
   menuItems: MenuItem[] = [
     { label: 'View Details', icon: 'pi pi-search' },
@@ -55,9 +63,26 @@ export class ProviderDashboard implements OnInit {
 
   private apiService = inject(ApiService);
   private authService = inject(AuthService);
+  private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
+  private destroyRef = inject(DestroyRef);
 
   constructor() {
     this.initChartOptions();
+    this.router.events
+      .pipe(
+        filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+        pairwise(),
+        filter(
+          ([prev, cur]) =>
+            cur.urlAfterRedirects.includes(this.dashboardPath) &&
+            !prev.urlAfterRedirects.includes(this.dashboardPath),
+        ),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => {
+        void this.loadDashboardData();
+      });
   }
 
   async ngOnInit() {
@@ -69,6 +94,9 @@ export class ProviderDashboard implements OnInit {
     if (!userId) return;
 
     try {
+      this.showChart = false;
+      this.cdr.detectChanges();
+
       const [bookingsRaw, notifsRaw]: any = await Promise.all([
         lastValueFrom(this.apiService.getProviderBookings(userId)),
         lastValueFrom(this.apiService.getUserNotifications(userId)),
@@ -77,16 +105,26 @@ export class ProviderDashboard implements OnInit {
       const bookings = bookingsRaw || [];
       const notifs = notifsRaw || [];
 
+      const clientLabel = (c: any): string => {
+        const nm = typeof c?.name === 'string' ? c.name.trim() : '';
+        if (nm) return nm;
+        const fl = `${c?.firstName ?? ''} ${c?.lastName ?? ''}`.trim();
+        return fl || 'Unknown Client';
+      };
+
       this.appointments = bookings
         .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
         .slice(0, 5)
-        .map((b: any) => ({
+        .map((b: any) => {
+          const label = clientLabel(b.customer);
+          return {
           id: b.bookingId,
-          client: b.customer?.name || 'Unknown Client',
+          client: label,
           service: serviceLabelFromBooking(b),
           amount: '$' + Number(b.totalAmount).toFixed(2),
-          image: `https://ui-avatars.com/api/?name=${encodeURIComponent(b.customer?.name || 'C')}&background=random`,
-        }));
+          image: `https://ui-avatars.com/api/?name=${encodeURIComponent(label)}&background=random`,
+          };
+        });
 
       const pendingBookings = bookings.filter((b: any) =>
         ['PENDING', 'CONFIRMED', 'IN_PROGRESS'].includes(normStatus(b.status)),
@@ -135,12 +173,11 @@ export class ProviderDashboard implements OnInit {
       const serviceMap: { [key: string]: { category: string; count: number } } = {};
       completedBookings.forEach((b: any) => {
         const name = serviceLabelFromBooking(b);
-        if (name && name !== 'General Service') {
-          serviceMap[name] = {
-            category: categoryLabelFromBooking(b),
-            count: (serviceMap[name]?.count || 0) + 1,
-          };
-        }
+        if (!name) return;
+        serviceMap[name] = {
+          category: categoryLabelFromBooking(b),
+          count: (serviceMap[name]?.count || 0) + 1,
+        };
       });
 
       const totalSrvs = Math.max(1, completedBookings.length);
@@ -175,10 +212,23 @@ export class ProviderDashboard implements OnInit {
       }
 
       this.chartData = this.buildRevenueBookingChart(bookings);
+
+      this.showChart = true;
+      this.cdr.detectChanges();
     } catch (e) {
       console.error('Failed to load dashboard data', e);
       this.chartData = this.emptyChart();
+      this.showChart = true;
+      this.cdr.detectChanges();
     }
+  }
+
+  notificationsToday(): typeof this.notifications {
+    return this.notifications.slice(0, 2);
+  }
+
+  notificationsEarlier(): typeof this.notifications {
+    return this.notifications.slice(2);
   }
 
   /** Last 6 months: completed revenue + booking counts per month */
