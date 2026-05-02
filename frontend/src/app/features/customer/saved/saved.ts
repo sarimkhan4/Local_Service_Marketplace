@@ -1,4 +1,4 @@
-import { Component, inject, computed, OnInit } from '@angular/core';
+import { Component, inject, computed, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Title } from '@angular/platform-browser';
@@ -29,7 +29,7 @@ export class SavedPros implements OnInit {
 
   // Access explicitly tracking computed Signal array for DOM reflow
   savedServices = computed(() => this.dataService.savedServices());
-  loading = false;
+  loading = signal(false);
 
   constructor() {
     this.titleService.setTitle('Servicio | Saved Services');
@@ -40,7 +40,7 @@ export class SavedPros implements OnInit {
   }
 
   async loadSavedServices() {
-    this.loading = true;
+    this.loading.set(true);
     try {
       await this.dataService.loadSavedServices();
     } catch (error) {
@@ -51,7 +51,7 @@ export class SavedPros implements OnInit {
         life: 3000
       });
     } finally {
-      this.loading = false;
+      this.loading.set(false);
     }
   }
 

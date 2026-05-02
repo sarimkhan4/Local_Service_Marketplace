@@ -252,16 +252,16 @@
 
 
 .hero-text {
-  font-size: 40rem;
+  font-size: 7rem;
   /* Massive scaling text */
   margin: 0;
   line-height: 0.8;
   letter-spacing: 0.9rem;
   text-transform: uppercase;
   text-align: center;
-  transform: translateY(30%);
+  transform: translateY(0%);
   font-family: 'Fira Sans';
-  font-weight: 100;
+  font-weight: 200;
   letter-spacing: 0.1rem;
 
 }

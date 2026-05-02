@@ -108,9 +108,11 @@ export class Bookings implements OnInit {
 
   async ngOnInit() {
     await this.loadBookings();
-    // Load reviews for all bookings
-    const bookingIds = this.bookings().map(b => b.id);
-    await this.bookingService.loadReviewsForBookings(bookingIds);
+    // Load reviews only for real bookings (skip sample/demo entries)
+    const realBookingIds = this.bookings()
+      .map(b => b.id)
+      .filter(id => !isNaN(Number(id)));
+    await this.bookingService.loadReviewsForBookings(realBookingIds);
   }
 
   async loadBookings() {
