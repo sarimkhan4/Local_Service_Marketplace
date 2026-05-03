@@ -1,111 +1,128 @@
-/* Services Page - Colorful & Animated Styling */
+/* Provider services — flat header and table, matches customer portal */
 
-.services-page {
-  display: grid;
-  gap: 1.5rem;
-  max-width: 1400px;
+.customer-page {
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 1rem;
   font-family: 'Fira Sans', sans-serif;
+  color: #0f172a;
 }
 
-.services-page::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 5px;
-  background: linear-gradient(90deg, #0d9488, #14b8a6, #06b6d4, #6366f1);
+.customer-page__title {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
-.services-header {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 1rem 1.5rem;
-  align-items: start;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
-  padding: 1.5rem;
-  border-radius: 1rem;
-  box-shadow: 0 10px 40px -10px rgba(99, 102, 241, 0.4);
+.customer-page__subtitle {
+  margin: 0.35rem 0 0;
+  font-size: 0.9375rem;
+  color: #64748b;
+  line-height: 1.5;
+  max-width: 40rem;
 }
 
-.services-header h1 {
-  color: white !important;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.provider-services__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
 }
 
-.services-header p {
-  color: rgba(255, 255, 255, 0.9) !important;
-}
-
-@media (max-width: 640px) {
-  .services-header {
-    grid-template-columns: 1fr;
-  }
-}
-
-.services-header-actions {
+.provider-services__actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.75rem;
-  justify-content: flex-end;
+  gap: 0.5rem;
 }
 
-@media (max-width: 640px) {
-  .services-header-actions {
-    justify-content: flex-start;
-  }
+.provider-services__badge {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+  border-radius: 8px;
+  background: #e0f2fe;
+  color: #0369a1;
 }
 
-.services-table-wrap {
+.provider-services__table-shell {
   border: 1px solid #e2e8f0;
-  overflow: hidden;
   background: #fff;
-  border-radius: 1rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
 }
 
-/* Table row animations */
-.services-table-wrap tr {
-  transition: all 0.2s ease;
+.provider-services__group-cell {
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 0;
 }
 
-.services-table-wrap tr:hover {
-  background: linear-gradient(90deg, #f5f3ff 0%, #f0f9ff 50%, #ecfdf5 100%);
-  transform: scale(1.002);
+.provider-services__group-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1rem;
+  font-weight: 600;
+  color: #0f172a;
 }
 
-/* Group header styling */
-.services-table-wrap [pRowGroupHeader] {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
+.provider-services__group-inner .pi-folder-open {
+  color: #64748b;
 }
 
-.services-table-wrap [pRowGroupHeader] i {
-  color: #6366f1 !important;
-  animation: folder-bounce 2s ease-in-out infinite;
+.provider-services__desc {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
 }
 
-@keyframes folder-bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
+.provider-services__title {
+  font-weight: 600;
+  color: #0f172a;
 }
 
-/* Checkbox animation */
-.services-table-wrap p-checkbox {
-  transition: transform 0.2s ease;
+.provider-services__title--on {
+  color: #0f766e;
 }
 
-.services-table-wrap p-checkbox:hover {
-  transform: scale(1.1);
+.provider-services__text {
+  font-size: 0.875rem;
+  color: #64748b;
+  line-height: 1.4;
+  max-width: 450px;
 }
 
-/* Price input styling */
-.services-table-wrap p-inputNumber {
-  transition: all 0.3s ease;
+.provider-services__empty {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: #64748b;
 }
 
-.services-table-wrap p-inputNumber:focus {
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+.provider-services-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.provider-services-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.provider-services-field label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #334155;
+}
+
+.w-9rem {
+  width: 9rem;
+}
+
+.text-center {
+  text-align: center;
 }

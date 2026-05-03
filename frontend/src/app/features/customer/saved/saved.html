@@ -1,94 +1,74 @@
-<div class="saved-page">
-  <header>
-    <h1 class="m-0 text-3xl font-semibold text-900">Saved Services</h1>
-    <p class="text-600 mt-2 mb-0 line-height-3">Manage and access your saved services and providers here.</p>
+<div class="customer-page customer-saved">
+  <header class="customer-page__header">
+    <h1 class="customer-page__title">Saved pros</h1>
+    <p class="customer-page__subtitle">Services and providers you’ve bookmarked for quick access.</p>
   </header>
 
-  <!-- Messages will be shown as toast notifications -->
-
-  <!-- Loading State -->
-  <div *ngIf="loading()" class="flex align-items-center justify-content-center py-8">
-    <i class="pi pi-spin pi-spinner text-2xl text-400"></i>
-    <span class="ml-2 text-600">Loading saved services...</span>
+  <div *ngIf="loading()" class="customer-saved__loading">
+    <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
+    <span>Loading saved items…</span>
   </div>
 
-  <!-- Empty State -->
-  <div *ngIf="!loading() && savedServices().length === 0"
-    class="saved-empty surface-card p-8 border-1 surface-border border-round flex flex-column align-items-center justify-content-center text-center mt-4">
-    <i class="pi pi-heart text-5xl text-400 mb-3"></i>
-    <h2 class="text-900 font-semibold text-xl m-0">No Saved Services</h2>
-    <p class="text-600 m-0 mb-4 line-height-3">You haven't saved any services or providers yet. Explore services to find
-      professionals.</p>
-    <button
-      class="p-2 px-4 border-1 surface-border border-round bg-white text-700 font-semibold cursor-pointer flex align-items-center gap-2 hover:surface-100 transition-colors"
-      routerLink="/app/customer/services">
-      <i class="pi pi-search"></i>
-      Explore Services
-    </button>
+  <div *ngIf="!loading() && savedServices().length === 0" class="customer-saved-empty">
+    <i class="pi pi-heart" aria-hidden="true"></i>
+    <h2>Nothing saved yet</h2>
+    <p>Browse services and save providers or listings you want to return to.</p>
+    <a class="customer-saved-btn customer-saved-btn--outline" routerLink="/app/customer/services">
+      <i class="pi pi-search" aria-hidden="true"></i>
+      Explore services
+    </a>
   </div>
 
-  <!-- Grid Layout -->
-  <div class="saved-grid grid mt-4" *ngIf="!loading() && savedServices().length > 0">
-    <div class="col-12 md:col-6 lg:col-4" *ngFor="let saved of savedServices()">
-      <!-- Card Container -->
-      <div class="h-full border-1 surface-border border-round surface-card flex flex-column overflow-hidden">
-
-        <!-- Custom Header -->
-        <div class="p-4 border-bottom-1 surface-border flex align-items-center justify-content-between bg-teal-50">
-          <div class="flex gap-3 align-items-center">
-            <div class="flex align-items-center justify-content-center border-circle flex-shrink-0"
-              [style]="{'background':'linear-gradient(135deg,#14b8a6,#0891b2)', 'color':'#fff', 'font-weight':'700', 'width':'40px', 'height':'40px'}">
-              {{ getInitials(saved.provider?.name || saved.service?.name || 'Unknown') }}
-            </div>
-            <div>
-              <h3 class="m-0 text-900 font-bold text-lg p-0">
-                {{ saved.provider?.name || saved.service?.name }}
-              </h3>
-              <span class="text-sm text-600">
-                {{ saved.provider?.companyName || saved.service?.category?.categoryName }}
-              </span>
-            </div>
+  <ul *ngIf="!loading() && savedServices().length > 0" class="customer-saved-grid">
+    <li *ngFor="let saved of savedServices()" class="customer-saved-card">
+      <div class="customer-saved-card__header">
+        <div class="customer-saved-card__identity">
+          <div class="customer-saved-card__avatar" aria-hidden="true">
+            {{ getInitials(saved.provider?.name || saved.service?.name || 'Unknown') }}
           </div>
-        </div>
-
-        <!-- Card Body -->
-        <div class="p-4 flex flex-column gap-3 flex-1">
-          <div class="flex align-items-center justify-content-between flex-wrap gap-2">
-            <span class="text-700 font-medium bg-teal-100 text-teal-700 px-2 py-1 text-xs border-round">
-              {{ saved.service?.category?.categoryName || 'Service' }}
-            </span>
-            <div class="flex align-items-center gap-1">
-              <i class="pi pi-calendar text-xs"></i>
-              <span class="text-500 text-sm">{{ saved.createdAt | date:'short' }}</span>
-            </div>
+          <div class="customer-saved-card__headings">
+            <h3 class="customer-saved-card__name">{{ saved.provider?.name || saved.service?.name }}</h3>
+            <p class="customer-saved-card__sub">
+              {{ saved.provider?.companyName || saved.service?.category?.categoryName }}
+            </p>
           </div>
-
-          <p class="text-600 line-height-3 m-0 text-sm">
-            {{ saved.notes || (saved.service?.description || saved.provider?.bio || 'No description available') }}
-          </p>
-
-          <div *ngIf="saved.notes" class="text-xs text-500 italic">
-            <i class="pi pi-sticky-note mr-1"></i>Personal note
-          </div>
-        </div>
-
-        <!-- Card Footer -->
-        <div class="p-4 pt-0 flex gap-2">
-          <button
-            class="flex-1 p-3 border-none border-round text-white font-bold cursor-pointer flex align-items-center justify-content-center gap-2"
-            style="background: #0d9488;"
-            [routerLink]="saved.service ? ['/app/customer/service-detail', saved.service.serviceId] : ['/app/customer/services']">
-            <i class="pi pi-eye"></i>
-            View Details
-          </button>
-          <button
-            class="p-3 border-1 border-red-500 text-red-500 bg-transparent border-round cursor-pointer hover:bg-red-50 transition-colors"
-            (click)="unsave(saved.savedServiceId.toString())" 
-            [attr.aria-label]="'Remove saved service'">
-            <i class="pi pi-heart-fill"></i>
-          </button>
         </div>
       </div>
-    </div>
-  </div>
+
+      <div class="customer-saved-card__body">
+        <div class="customer-saved-card__meta">
+          <span class="customer-saved-card__tag">
+            {{ saved.service?.category?.categoryName || 'Service' }}
+          </span>
+          <span class="customer-saved-card__date">
+            <i class="pi pi-calendar" aria-hidden="true"></i>
+            {{ saved.createdAt | date: 'short' }}
+          </span>
+        </div>
+        <p class="customer-saved-card__desc">
+          {{ saved.notes || (saved.service?.description || saved.provider?.bio || 'No description available.') }}
+        </p>
+        <p *ngIf="saved.notes" class="customer-saved-card__note">
+          <i class="pi pi-sticky-note" aria-hidden="true"></i>
+          Personal note
+        </p>
+      </div>
+
+      <div class="customer-saved-card__footer">
+        <a
+          class="customer-saved-btn customer-saved-btn--primary"
+          [routerLink]="saved.service ? ['/app/customer/services', saved.service.serviceId] : ['/app/customer/services']">
+          <i class="pi pi-eye" aria-hidden="true"></i>
+          View details
+        </a>
+        <button
+          type="button"
+          class="customer-saved-btn customer-saved-btn--danger-ghost"
+          (click)="unsave(saved.savedServiceId.toString())"
+          aria-label="Remove from saved">
+          <i class="pi pi-heart-fill" aria-hidden="true"></i>
+        </button>
+      </div>
+    </li>
+  </ul>
 </div>

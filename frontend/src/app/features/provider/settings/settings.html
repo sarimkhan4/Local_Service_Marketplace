@@ -1,64 +1,74 @@
 <p-toast></p-toast>
-<div class="provider-settings-page">
-  <header>
-    <h1 class="m-0 text-3xl font-semibold text-900">Provider Settings</h1>
-    <p class="text-600 mt-1 mb-0">Manage your professional information and business boundaries.</p>
+<div class="customer-page provider-settings">
+  <header class="customer-page__header">
+    <h1 class="customer-page__title">Provider settings</h1>
+    <p class="customer-page__subtitle">Professional profile and business details your customers see.</p>
   </header>
 
-  <section class="provider-settings-panel">
-    <div class="provider-settings-profile">
-      <p-avatar *ngIf="!photoUrl" icon="pi pi-briefcase" size="xlarge" shape="square"
-        [style]="{'width':'72px', 'height': '72px', 'font-size': '1.75rem', 'background':'#1b2435', 'color':'#cbd5e1'}">
-      </p-avatar>
-      <p-avatar *ngIf="photoUrl" [image]="photoUrl" size="xlarge" shape="square"
-        [style]="{'width':'72px', 'height': '72px'}">
-      </p-avatar>
-      <div class="flex flex-column gap-2">
-        <p-fileUpload 
-            mode="basic" 
-            name="demo[]" 
-            chooseIcon="pi pi-upload" 
-            url="https://www.primefaces.org/cdn/api/upload.php" 
-            accept="image/*" 
-            maxFileSize="2000000" 
-            (onUpload)="onBasicUploadAuto($event)" 
-            [auto]="true" 
-            chooseLabel="Upload Logo">
-        </p-fileUpload>
-        <span class="text-500 text-sm">Max size 2MB (JPG/PNG).</span>
+  <div class="provider-settings__layout">
+    <section class="customer-panel provider-settings__section" aria-labelledby="prov-settings-profile">
+      <h2 id="prov-settings-profile" class="customer-panel__title">Profile &amp; branding</h2>
+      <div class="provider-settings__profile">
+        <p-avatar
+          *ngIf="!photoUrl"
+          icon="pi pi-briefcase"
+          size="xlarge"
+          shape="square"
+          [style]="{ width: '72px', height: '72px', fontSize: '1.5rem', background: '#f1f5f9', color: '#475569' }">
+        </p-avatar>
+        <p-avatar
+          *ngIf="photoUrl"
+          [image]="photoUrl"
+          size="xlarge"
+          shape="square"
+          [style]="{ width: '72px', height: '72px' }">
+        </p-avatar>
+        <div class="provider-settings__upload">
+          <p-fileUpload
+            mode="basic"
+            name="demo[]"
+            chooseIcon="pi pi-upload"
+            url="https://www.primefaces.org/cdn/api/upload.php"
+            accept="image/*"
+            maxFileSize="2000000"
+            (onUpload)="onBasicUploadAuto($event)"
+            [auto]="true"
+            chooseLabel="Upload logo">
+          </p-fileUpload>
+          <span class="provider-settings__hint">PNG or JPG, max 2MB.</span>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <div class="provider-settings-form">
-      <div class="provider-settings-field">
-        <label class="text-700 font-medium text-sm">First & Last Name</label>
-        <input pInputText type="text" [value]="providerName" disabled />
+    <section class="customer-panel provider-settings__section" aria-labelledby="prov-settings-business">
+      <h2 id="prov-settings-business" class="customer-panel__title">Business details</h2>
+      <div class="provider-settings__form">
+        <div class="provider-settings__field">
+          <label for="prov-name">First &amp; last name</label>
+          <input pInputText id="prov-name" type="text" [value]="providerName" disabled />
+        </div>
+        <div class="provider-settings__field">
+          <label for="prov-company">Company name</label>
+          <input pInputText id="prov-company" type="text" [value]="companyName" />
+        </div>
+        <div class="provider-settings__field">
+          <label for="prov-email">Email</label>
+          <input pInputText id="prov-email" type="email" [value]="providerEmail" disabled />
+        </div>
+        <div class="provider-settings__field">
+          <label for="prov-exp">Years of experience</label>
+          <input pInputText id="prov-exp" type="number" [value]="experience" />
+        </div>
+        <div class="provider-settings__field provider-settings__field--full">
+          <label for="prov-bio">Bio</label>
+          <textarea pTextarea id="prov-bio" rows="4" style="resize: none">{{ description }}</textarea>
+        </div>
       </div>
+    </section>
 
-      <div class="provider-settings-field">
-        <label class="text-700 font-medium text-sm">Company Name</label>
-        <input pInputText type="text" [value]="companyName" />
-      </div>
-
-      <div class="provider-settings-field">
-        <label class="text-700 font-medium text-sm">Email Address</label>
-        <input pInputText type="email" [value]="providerEmail" disabled />
-      </div>
-
-      <div class="provider-settings-field">
-        <label class="text-700 font-medium text-sm">Years of Experience</label>
-        <input pInputText type="number" [value]="experience" />
-      </div>
-
-      <div class="provider-settings-field provider-settings-field-full">
-        <label class="text-700 font-medium text-sm">Bio / Description</label>
-        <textarea pTextarea rows="4" style="resize:none;">{{description}}</textarea>
-      </div>
-    </div>
-
-    <div class="provider-settings-actions">
-      <p-button label="Deactivate Agency" icon="pi pi-trash" severity="danger" [text]="true"></p-button>
-      <p-button label="Update Records" icon="pi pi-save" [style]="{'background':'#0d9488','border-color':'#0d9488'}"></p-button>
-    </div>
-  </section>
+    <footer class="provider-settings__footer">
+      <p-button label="Deactivate agency" icon="pi pi-trash" severity="danger" [text]="true"></p-button>
+      <p-button label="Update records" icon="pi pi-save"></p-button>
+    </footer>
+  </div>
 </div>

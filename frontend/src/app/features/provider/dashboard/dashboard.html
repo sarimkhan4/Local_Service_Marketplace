@@ -1,137 +1,150 @@
-<div class="app-dash-page pt-3 provider-dash-page">
-  <div class="app-dash-grid mb-4">
-    <div class="app-dash-col" *ngFor="let stat of stats">
-      <div class="app-dash-card p-4">
-        <div class="flex justify-content-between mb-3">
-          <div>
-            <span class="block text-500 font-medium mb-3">{{ stat.label }}</span>
-            <div class="text-900 font-bold text-2xl">{{ stat.value }}</div>
+<div class="customer-page provider-dashboard">
+  <header class="customer-page__header">
+    <h1 class="customer-page__title">Dashboard</h1>
+    <p class="customer-page__subtitle">Overview of jobs, revenue, and recent client activity.</p>
+  </header>
+
+  <section class="customer-page__section" aria-label="Summary statistics">
+    <div class="customer-stat-grid">
+      <article class="customer-stat-card" *ngFor="let stat of stats">
+        <div class="customer-stat-card__top">
+          <div class="customer-stat-card__label-block">
+            <span class="customer-stat-card__label">{{ stat.label }}</span>
+            <p class="customer-stat-card__value">{{ stat.value }}</p>
           </div>
-          <div class="app-dash-icon-box bg-{{ stat.color }}-100">
-            <i class="{{ stat.icon }} text-{{ stat.color }}-500 text-xl"></i>
+          <div class="customer-stat-card__icon" [ngClass]="'customer-stat-card__icon--' + stat.color">
+            <i [class]="stat.icon"></i>
           </div>
         </div>
-        <span class="text-green-500 font-medium mr-1">{{ stat.detailValue }}</span>
-        <span class="text-500">{{ stat.detailText }}</span>
-      </div>
+        <footer class="customer-stat-card__footer">
+          <span class="customer-stat-card__detail">{{ stat.detailValue }}</span>
+          <span class="customer-stat-card__detail-label">{{ stat.detailText }}</span>
+        </footer>
+      </article>
     </div>
-  </div>
+  </section>
 
-  <div class="app-dash-grid mb-4">
-    <div class="app-dash-col flex-2">
-      <div class="app-dash-card p-4 h-full">
-        <div class="flex justify-content-between align-items-center mb-4">
-          <h5 class="m-0 text-xl font-medium text-900">Recent Bookings</h5>
-        </div>
-        
-        <p-table [value]="appointments" [paginator]="true" [rows]="5" responsiveLayout="scroll" styleClass="p-datatable-sm app-dashboard-table border-none">
-          <ng-template pTemplate="header">
-            <tr>
-              <th style="color: #64748b; font-weight: 500;">Image</th>
-              <th pSortableColumn="client" style="color: #64748b; font-weight: 500;">Client <p-sortIcon field="client"></p-sortIcon></th>
-              <th pSortableColumn="service" style="color: #64748b; font-weight: 500;">Service <p-sortIcon field="service"></p-sortIcon></th>
-              <th pSortableColumn="amount" style="color: #64748b; font-weight: 500;">Price <p-sortIcon field="amount"></p-sortIcon></th>
-              <th style="color: #64748b; font-weight: 500;">View</th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-apt>
-            <tr>
-              <td style="width: 10%;"><img [src]="apt.image" width="32" height="32" alt="" /></td>
-              <td style="width: 26%;">{{ apt.client }}</td>
-              <td style="width: 28%;">{{ apt.service }}</td>
-              <td style="width: 26%; font-weight: 600;">{{ apt.amount }}</td>
-              <td style="width: 10%;">
-                <button pButton pRipple type="button" icon="pi pi-search" class="p-button-rounded p-button-text p-button-success"></button>
-              </td>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="emptymessage">
-            <tr><td colspan="5" class="text-center text-500 py-4">No recent bookings.</td></tr>
-          </ng-template>
-        </p-table>
-      </div>
-    </div>
+  <div class="provider-dashboard__grid">
+    <section class="customer-panel provider-dashboard__wide" aria-labelledby="prov-recent-bookings">
+      <h2 id="prov-recent-bookings" class="customer-panel__title">Recent bookings</h2>
+      <p-table
+        [value]="appointments"
+        [paginator]="true"
+        [rows]="5"
+        responsiveLayout="scroll"
+        styleClass="p-datatable-sm provider-dash-table">
+        <ng-template pTemplate="header">
+          <tr>
+            <th scope="col"></th>
+            <th scope="col" pSortableColumn="client">Client <p-sortIcon field="client"></p-sortIcon></th>
+            <th scope="col" pSortableColumn="service">Service <p-sortIcon field="service"></p-sortIcon></th>
+            <th scope="col" pSortableColumn="amount">Price <p-sortIcon field="amount"></p-sortIcon></th>
+            <th scope="col"><span class="visually-hidden">Actions</span></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-apt>
+          <tr>
+            <td><img [src]="apt.image" width="32" height="32" alt="" /></td>
+            <td>{{ apt.client }}</td>
+            <td>{{ apt.service }}</td>
+            <td>{{ apt.amount }}</td>
+            <td>
+              <button type="button" class="customer-icon-btn" aria-label="View booking">
+                <i class="pi pi-search"></i>
+              </button>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="5" class="provider-dash-empty">No recent bookings.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </section>
 
-    <div class="app-dash-col flex-1">
-      <div class="app-dash-card p-4 h-full">
-        <h5 class="m-0 text-xl font-medium text-900 mb-4">Revenue Stream</h5>
-        @if (showChart) {
+    <section class="customer-panel" aria-labelledby="prov-revenue-chart">
+      <h2 id="prov-revenue-chart" class="customer-panel__title">Revenue &amp; completed jobs</h2>
+      @if (showChart) {
+        <div class="customer-panel__chart">
           <p-chart type="line" [data]="chartData" [options]="chartOptions" height="300px"></p-chart>
-        } @else {
-          <div class="flex align-items-center justify-content-center" style="height:300px;"><span class="text-500 text-sm">Loading chart…</span></div>
-        }
-      </div>
-    </div>
+        </div>
+      } @else {
+        <div class="provider-chart-placeholder">Loading chart…</div>
+      }
+    </section>
   </div>
 
-  <div class="app-dash-grid">
-    <div class="app-dash-col flex-1">
-      <div class="app-dash-card p-4 h-full">
-        <div class="provider-card-head mb-4">
-          <h5 class="m-0 text-xl font-medium text-900">Best Performing Services</h5>
-          <button pButton pRipple type="button" icon="pi pi-ellipsis-v" class="p-button-rounded p-button-text p-button-plain provider-head-action" (click)="menu.toggle($event)"></button>
-          <p-menu #menu [popup]="true" [model]="menuItems"></p-menu>
-        </div>
-
-        <ul class="list-none p-0 m-0">
-          <li *ngIf="popularServices.length === 0" class="text-500 text-sm py-3 text-center m-0">No completed service stats yet.</li>
-          <li class="provider-service-row" *ngFor="let s of popularServices">
-            <div class="flex align-items-center w-full min-w-0">
-              <div>
-                <span class="block text-900 font-medium mb-1">{{ s.name }}</span>
-                <span class="text-600 text-sm">{{ s.category }}</span>
-              </div>
-            </div>
-            <div class="provider-progress-wrap">
-              <div class="surface-300 overflow-hidden w-6rem provider-progress-track" style="height: 8px;">
-                <div [class]="'bg-' + s.color + '-500 h-full'" [style.width]="s.progress + '%'"></div>
-              </div>
-              <span [class]="'text-' + s.color + '-500 ml-3 font-medium text-sm'">{{ s.revenue }}</span>
-            </div>
-          </li>
-        </ul>
+  <div class="provider-dashboard__grid provider-dashboard__grid--split">
+    <section class="customer-panel">
+      <div class="customer-panel__head">
+        <h2 class="customer-panel__title customer-panel__title--inline">Top services</h2>
+        <button type="button" class="customer-icon-btn" (click)="menu.toggle($event)" aria-label="More options">
+          <i class="pi pi-ellipsis-v"></i>
+        </button>
+        <p-menu #menu [popup]="true" [model]="menuItems"></p-menu>
       </div>
-    </div>
-
-    <div class="app-dash-col flex-1">
-      <div class="app-dash-card p-4 h-full">
-        <div class="provider-card-head mb-4">
-          <h5 class="m-0 text-xl font-medium text-900">Notifications</h5>
-          <button pButton pRipple type="button" icon="pi pi-ellipsis-v" class="p-button-rounded p-button-text p-button-plain provider-head-action" (click)="menu2.toggle($event)"></button>
-          <p-menu #menu2 [popup]="true" [model]="menuItems"></p-menu>
-        </div>
-
-        <span class="block text-600 font-medium mb-3">TODAY</span>
-        <ul class="list-none p-0 m-0 mb-4" *ngIf="notificationsToday().length > 0; else noTodayNotifs">
-          <li class="flex align-items-center py-2 border-bottom-1 surface-border" *ngFor="let notif of notificationsToday()">
-            <div [class]="'w-3rem h-3rem flex align-items-center justify-content-center bg-' + notif.color + '-100 mr-3 flex-shrink-0'">
-              <i [class]="'pi ' + notif.icon + ' text-xl text-' + notif.color + '-500'"></i>
+      <ul class="provider-top-services">
+        <li *ngIf="popularServices.length === 0" class="provider-top-services__empty">No completed service stats yet.</li>
+        <li class="provider-top-services__row" *ngFor="let s of popularServices">
+          <div class="provider-top-services__info">
+            <span class="provider-top-services__name">{{ s.name }}</span>
+            <span class="provider-top-services__cat">{{ s.category }}</span>
+          </div>
+          <div class="provider-top-services__meter">
+            <div class="provider-top-services__track">
+              <div
+                class="provider-top-services__fill"
+                [class]="'provider-top-services__fill--' + s.color"
+                [style.width.%]="s.progress"></div>
             </div>
-            <span class="text-700 line-height-3 text-sm">
-              {{ notif.text }} <span class="text-green-500 font-medium" *ngIf="notif.amount">{{ notif.amount }}</span> {{ notif.suffix }}
-            </span>
-          </li>
-        </ul>
-        <ng-template #noTodayNotifs>
-          <p class="text-500 text-sm py-2 m-0 mb-4 border-bottom-1 surface-border">Nothing for today.</p>
-        </ng-template>
+            <span class="provider-top-services__pct">{{ s.revenue }}</span>
+          </div>
+        </li>
+      </ul>
+    </section>
 
-        <span class="block text-600 font-medium mb-3">EARLIER</span>
-        <ul class="list-none p-0 m-0" *ngIf="notificationsEarlier().length > 0; else noEarlierNotifs">
-          <li class="flex align-items-center py-2 border-bottom-1 surface-border" *ngFor="let notif of notificationsEarlier()">
-            <div [class]="'w-3rem h-3rem flex align-items-center justify-content-center bg-' + notif.color + '-100 mr-3 flex-shrink-0'">
-              <i [class]="'pi ' + notif.icon + ' text-xl text-' + notif.color + '-500'"></i>
-            </div>
-            <span class="text-700 line-height-3 text-sm">
-              {{ notif.text }} <span class="text-green-500 font-medium" *ngIf="notif.amount">{{ notif.amount }}</span>
-            </span>
-          </li>
-        </ul>
-        <ng-template #noEarlierNotifs>
-          <p class="text-500 text-sm py-2 m-0">No older items in this list.</p>
-        </ng-template>
+    <section class="customer-panel">
+      <div class="customer-panel__head">
+        <h2 class="customer-panel__title customer-panel__title--inline">Notifications</h2>
+        <button type="button" class="customer-icon-btn" (click)="menu2.toggle($event)" aria-label="More options">
+          <i class="pi pi-ellipsis-v"></i>
+        </button>
+        <p-menu #menu2 [popup]="true" [model]="menuItems"></p-menu>
       </div>
-    </div>
+
+      <p class="customer-panel__kicker">Today</p>
+      <ul class="customer-activity-list" *ngIf="notificationsToday().length > 0; else noTodayNotifs">
+        <li class="customer-activity-list__item" *ngFor="let notif of notificationsToday()">
+          <div class="customer-activity-list__icon" [ngClass]="'customer-activity-list__icon--' + notif.color">
+            <i class="pi {{ notif.icon }}"></i>
+          </div>
+          <p class="customer-activity-list__text">
+            {{ notif.text }}
+            <span class="customer-activity-list__amount" *ngIf="notif.amount">{{ notif.amount }}</span>
+            {{ notif.suffix }}
+          </p>
+        </li>
+      </ul>
+      <ng-template #noTodayNotifs>
+        <p class="provider-notif-hint">Nothing for today.</p>
+      </ng-template>
+
+      <p class="customer-panel__kicker">Earlier</p>
+      <ul class="customer-activity-list" *ngIf="notificationsEarlier().length > 0; else noEarlierNotifs">
+        <li class="customer-activity-list__item" *ngFor="let notif of notificationsEarlier()">
+          <div class="customer-activity-list__icon" [ngClass]="'customer-activity-list__icon--' + notif.color">
+            <i class="pi {{ notif.icon }}"></i>
+          </div>
+          <p class="customer-activity-list__text">
+            {{ notif.text }}
+            <span class="customer-activity-list__amount" *ngIf="notif.amount">{{ notif.amount }}</span>
+          </p>
+        </li>
+      </ul>
+      <ng-template #noEarlierNotifs>
+        <p class="provider-notif-hint">No older items.</p>
+      </ng-template>
+    </section>
   </div>
-
 </div>

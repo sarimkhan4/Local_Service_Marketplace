@@ -1,64 +1,69 @@
-<div class="app-dashboard-page">
-  <!-- Stats Row -->
-  <div class="app-dash-grid stats-row">
-    <div class="stat-col" *ngFor="let stat of stats">
-      <div class="card mb-0">
-        <div class="card-header">
-          <div>
-            <span class="label-muted">{{ stat.label }}</span>
-            <div class="stat-value">{{ stat.value }}</div>
+<div class="customer-page customer-dashboard">
+  <header class="customer-page__header">
+    <h1 class="customer-page__title">Dashboard</h1>
+    <p class="customer-page__subtitle">Summary of your bookings, spending, and recent activity.</p>
+  </header>
+
+  <section class="customer-page__section" aria-label="Summary statistics">
+    <div class="customer-stat-grid">
+      <article class="customer-stat-card" *ngFor="let stat of stats">
+        <div class="customer-stat-card__top">
+          <div class="customer-stat-card__label-block">
+            <span class="customer-stat-card__label">{{ stat.label }}</span>
+            <p class="customer-stat-card__value">{{ stat.value }}</p>
           </div>
-          <div class="icon-box bg-{{ stat.color }}-tint">
-            <i class="{{ stat.icon }} icon-{{ stat.color }}"></i>
+          <div class="customer-stat-card__icon" [ngClass]="'customer-stat-card__icon--' + stat.color">
+            <i class="{{ stat.icon }}"></i>
           </div>
         </div>
-        <div class="stat-footer">
-          <span class="detail-accent">{{ stat.detailValue }}</span>
-          <span class="label-muted">{{ stat.detailText }}</span>
-        </div>
-      </div>
+        <footer class="customer-stat-card__footer">
+          <span class="customer-stat-card__detail">{{ stat.detailValue }}</span>
+          <span class="customer-stat-card__detail-label">{{ stat.detailText }}</span>
+        </footer>
+      </article>
     </div>
-  </div>
+  </section>
 
-  <div class="app-dash-grid main-row">
-    <div class="main-col left-col">
-      <!-- Lively Chart -->
-      <div class="card mb-card">
-        <div class="card-title">Live Overview</div>
-        <div class="chart-container" style="height: 450px; position: relative;">
-          <p-chart type="bar" [data]="livelyChartData" [options]="livelyChartOptions" height="450px"></p-chart>
+  <div class="customer-dashboard__grid">
+    <div class="customer-dashboard__primary">
+      <section class="customer-panel" aria-labelledby="dash-chart-overview">
+        <h2 id="dash-chart-overview" class="customer-panel__title">Activity by week</h2>
+        <div class="customer-panel__chart">
+          <p-chart type="bar" [data]="livelyChartData" [options]="livelyChartOptions" height="420px"></p-chart>
         </div>
-      </div>
+      </section>
 
-      <!-- Recent Bookings Table -->
-      <div class="card mb-card">
-        <div class="card-title">Your Recent Bookings</div>
-        <div class="table-responsive">
-          <table class="app-dashboard-table">
+      <section class="customer-panel" aria-labelledby="dash-recent-bookings">
+        <h2 id="dash-recent-bookings" class="customer-panel__title">Recent bookings</h2>
+        <div class="customer-table-wrap">
+          <table class="customer-table">
             <thead>
               <tr>
-                <th>Provider</th>
-                <th>Service</th>
-                <th>Price</th>
-                <th>Status</th>
+                <th scope="col">Provider</th>
+                <th scope="col">Service</th>
+                <th scope="col">Price</th>
+                <th scope="col">Status</th>
               </tr>
             </thead>
             <tbody>
-              <!-- Data Rows -->
               <ng-container *ngIf="!loading()">
                 <tr *ngFor="let apt of appointments">
-                  <td class="provider-cell">
-                    <img [src]="apt.image" class="avatar-circle" width="36" alt="avatar" />
-                    <span class="provider-name">{{ apt.provider }}</span>
+                  <td>
+                    <div class="customer-table__provider">
+                      <img [src]="apt.image" class="customer-table__avatar" width="36" height="36" alt="" />
+                      <span class="customer-table__provider-name">{{ apt.provider }}</span>
+                    </div>
                   </td>
                   <td>{{ apt.service }}</td>
-                  <td class="price-cell">{{ apt.amount }}</td>
+                  <td>{{ apt.amount }}</td>
                   <td>
-                    <span class="status-badge" [ngClass]="{
-                        'status-completed': apt.status === 'Completed',
-                        'status-confirmed': apt.status === 'Confirmed' || apt.status === 'In Progress',
-                        'status-pending': apt.status === 'Pending',
-                        'status-cancelled': apt.status === 'Cancelled'
+                    <span
+                      class="customer-badge"
+                      [ngClass]="{
+                        'customer-badge--completed': apt.status === 'Completed',
+                        'customer-badge--confirmed': apt.status === 'Confirmed' || apt.status === 'In Progress',
+                        'customer-badge--pending': apt.status === 'Pending',
+                        'customer-badge--cancelled': apt.status === 'Cancelled'
                       }">
                       {{ apt.status }}
                     </span>
@@ -67,62 +72,54 @@
               </ng-container>
 
               <ng-container *ngIf="loading()">
-                <tr *ngFor="let item of [1,2,3]">
+                <tr *ngFor="let item of [1, 2, 3]">
                   <td>
-                    <div class="flex align-items-center">
-                      <div class="skeleton-circle mr-2" style="width: 36px; height: 36px;"></div>
-                      <div class="skeleton-line" style="width: 8rem; height: 1.5rem;"></div>
+                    <div class="customer-skeleton-row">
+                      <div class="customer-skeleton customer-skeleton--circle"></div>
+                      <div class="customer-skeleton customer-skeleton--line customer-skeleton--line-md"></div>
                     </div>
                   </td>
-                  <td>
-                    <div class="skeleton-line" style="width: 6rem; height: 1.5rem;"></div>
-                  </td>
-                  <td>
-                    <div class="skeleton-line" style="width: 4rem; height: 1.5rem;"></div>
-                  </td>
-                  <td>
-                    <div class="skeleton-line" style="width: 5rem; height: 2rem; border-radius: 16px;"></div>
-                  </td>
+                  <td><div class="customer-skeleton customer-skeleton--line customer-skeleton--line-sm"></div></td>
+                  <td><div class="customer-skeleton customer-skeleton--line customer-skeleton--line-xs"></div></td>
+                  <td><div class="customer-skeleton customer-skeleton--pill"></div></td>
                 </tr>
               </ng-container>
             </tbody>
           </table>
-        </div> 
-      </div>
+        </div>
+      </section>
     </div>
 
-    <div class="main-col right-col">
-      <!-- Activity Widget -->
-      <div class="card mb-card">
-        <div class="widget-header">
-          <span class="card-title">Activity & Updates</span>
-          <button type="button" class="menu-btn-plain">
+    <aside class="customer-dashboard__aside" aria-label="Sidebar widgets">
+      <section class="customer-panel">
+        <div class="customer-panel__head">
+          <h2 class="customer-panel__title customer-panel__title--inline">Activity</h2>
+          <button type="button" class="customer-icon-btn" aria-label="More options">
             <i class="pi pi-ellipsis-v"></i>
           </button>
         </div>
-
-        <span class="section-label">RECENT</span>
-        <ul class="notif-list">
-          <li class="notif-item" *ngFor="let notif of notifications">
-            <div class="notif-icon-wrap bg-{{ notif.color }}-tint">
-              <i class="pi {{ notif.icon }} notif-icon icon-{{ notif.color }}"></i>
+        <p class="customer-panel__kicker">Recent</p>
+        <ul class="customer-activity-list">
+          <li class="customer-activity-list__item" *ngFor="let notif of notifications">
+            <div class="customer-activity-list__icon" [ngClass]="'customer-activity-list__icon--' + notif.color">
+              <i class="pi {{ notif.icon }}"></i>
             </div>
-            <span class="notif-text">
+            <p class="customer-activity-list__text">
               {{ notif.text }}
-              <span class="notif-amount" *ngIf="notif.amount">{{ notif.amount }}</span>
+              <span class="customer-activity-list__amount" *ngIf="notif.amount">{{ notif.amount }}</span>
               <span *ngIf="notif.suffix"> {{ notif.suffix }}</span>
-            </span>
+            </p>
           </li>
         </ul>
-      </div>
+        <p *ngIf="notifications.length === 0" class="customer-empty-hint">No recent notifications.</p>
+      </section>
 
-      <!-- Chart Placeholder for Spending Trends -->
-      <div class="card mb-card">
-        <div class="card-title">Spending Trends</div>
-        <div class="chart-container" style="height: 350px; position: relative;">
-          <p-chart type="doughnut" [data]="chartData" [options]="chartOptions" fill="false" height="350px" ></p-chart>
+      <section class="customer-panel" aria-labelledby="dash-spend-split">
+        <h2 id="dash-spend-split" class="customer-panel__title">Spending by category</h2>
+        <div class="customer-panel__chart customer-panel__chart--compact">
+          <p-chart type="doughnut" [data]="chartData" [options]="chartOptions" height="320px"></p-chart>
         </div>
-      </div>
-    </div>
+      </section>
+    </aside>
   </div>
 </div>

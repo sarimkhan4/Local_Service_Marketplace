@@ -1,131 +1,125 @@
-<div class="schedule-page">
-
-  <!-- ── Page Header ── -->
-  <div class="schedule-page-header">
+<div class="customer-page provider-schedule">
+  <header class="customer-page__header provider-schedule__header-row">
     <div>
-      <h1 class="text-3xl font-bold text-900 m-0">My Schedule</h1>
-      <p class="text-500 text-sm mt-1 mb-0">Manage your upcoming and past bookings in one place.</p>
+      <h1 class="customer-page__title">My schedule</h1>
+      <p class="customer-page__subtitle">Upcoming and past bookings in one place.</p>
     </div>
-    <p-chip label="Today" [icon]="'pi pi-calendar'" styleClass="chip-today"></p-chip>
+    <span class="provider-schedule__chip"><i class="pi pi-calendar" aria-hidden="true"></i> Today</span>
+  </header>
+
+  <section class="provider-schedule__stats" aria-label="Schedule summary">
+    <article class="provider-schedule-stat">
+      <div class="provider-schedule-stat__icon provider-schedule-stat__icon--teal">
+        <i class="pi pi-calendar" aria-hidden="true"></i>
+      </div>
+      <div>
+        <p class="provider-schedule-stat__label">Today’s bookings</p>
+        <p class="provider-schedule-stat__value">{{ todayCount() }}</p>
+      </div>
+    </article>
+    <article class="provider-schedule-stat">
+      <div class="provider-schedule-stat__icon provider-schedule-stat__icon--amber">
+        <i class="pi pi-clock" aria-hidden="true"></i>
+      </div>
+      <div>
+        <p class="provider-schedule-stat__label">Pending</p>
+        <p class="provider-schedule-stat__value">{{ pendingCount() }}</p>
+      </div>
+    </article>
+    <article class="provider-schedule-stat">
+      <div class="provider-schedule-stat__icon provider-schedule-stat__icon--green">
+        <i class="pi pi-check-circle" aria-hidden="true"></i>
+      </div>
+      <div>
+        <p class="provider-schedule-stat__label">Confirmed</p>
+        <p class="provider-schedule-stat__value">{{ confirmedCount() }}</p>
+      </div>
+    </article>
+    <article class="provider-schedule-stat">
+      <div class="provider-schedule-stat__icon provider-schedule-stat__icon--slate">
+        <i class="pi pi-dollar" aria-hidden="true"></i>
+      </div>
+      <div>
+        <p class="provider-schedule-stat__label">Revenue earned</p>
+        <p class="provider-schedule-stat__value">${{ totalRevenue() }}</p>
+      </div>
+    </article>
+  </section>
+
+  <div class="provider-schedule__toolbar">
+    <p-selectbutton
+      [(ngModel)]="viewMode"
+      (ngModelChange)="onViewModeChanged($event)"
+      [options]="viewOptions"
+      optionLabel="label"
+      optionValue="value"
+      [allowEmpty]="false">
+    </p-selectbutton>
+    <p-select
+      [options]="statusOptions"
+      [ngModel]="statusFilter()"
+      (ngModelChange)="onStatusFilterChanged($event)"
+      optionLabel="label"
+      optionValue="value"
+      [style]="{ minWidth: '170px' }">
+    </p-select>
+    <span class="provider-schedule__count">
+      <strong>{{ filteredBookings().length }}</strong> bookings
+    </span>
   </div>
 
-  <!-- ── 4 Stat Cards ── -->
-  <div class="stats-grid">
-
-    <div class="schedule-stat-card">
-      <div class="schedule-stat-icon">
-        <i class="pi pi-calendar text-xl" style="color:#0d9488;"></i>
-      </div>
-      <div>
-        <div class="text-400 text-xs uppercase font-medium mb-1">Today's Bookings</div>
-        <div class="text-3xl font-bold text-900">{{todayCount()}}</div>
-      </div>
-    </div>
-
-    <div class="schedule-stat-card">
-      <div class="schedule-stat-icon" style="background:#fefce8;border-color:#fef08a;">
-        <i class="pi pi-clock text-xl" style="color:#d97706;"></i>
-      </div>
-      <div>
-        <div class="text-400 text-xs uppercase font-medium mb-1">Pending</div>
-        <div class="text-3xl font-bold text-900">{{pendingCount()}}</div>
-      </div>
-    </div>
-
-    <div class="schedule-stat-card">
-      <div class="schedule-stat-icon" style="background:#ecfdf5;border-color:#bbf7d0;">
-        <i class="pi pi-check-circle text-xl" style="color:#059669;"></i>
-      </div>
-      <div>
-        <div class="text-400 text-xs uppercase font-medium mb-1">Confirmed</div>
-        <div class="text-3xl font-bold text-900">{{confirmedCount()}}</div>
-      </div>
-    </div>
-
-    <div class="schedule-stat-card">
-      <div class="schedule-stat-icon" style="background:#eef2ff;border-color:#c7d2fe;">
-        <i class="pi pi-dollar text-xl" style="color:#6366f1;"></i>
-      </div>
-      <div>
-        <div class="text-400 text-xs uppercase font-medium mb-1">Revenue Earned</div>
-        <div class="text-3xl font-bold text-900">${{totalRevenue()}}</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── Filters Row ── -->
-  <div class="schedule-filter-shell">
-    <div class="schedule-filter-row">
-      <p-selectbutton
-        [(ngModel)]="viewMode"
-        (ngModelChange)="onViewModeChanged($event)"
-        [options]="viewOptions"
-        optionLabel="label"
-        optionValue="value"
-        [allowEmpty]="false">
-      </p-selectbutton>
-
-      <p-select
-        [options]="statusOptions"
-        [ngModel]="statusFilter()"
-        (ngModelChange)="onStatusFilterChanged($event)"
-        optionLabel="label"
-        optionValue="value"
-        style="min-width:170px;">
-      </p-select>
-
-      <span class="schedule-filter-count text-500 text-sm">
-        Showing <strong class="text-900">{{filteredBookings().length}}</strong> bookings
-      </span>
-    </div>
-  </div>
-
-  <!-- ── Booking list (card rows) ── -->
-  <div class="schedule-list-shell">
+  <section class="provider-schedule__list-shell" aria-label="Bookings">
     <ng-container *ngIf="filteredBookings().length > 0; else scheduleEmpty">
-      <div class="schedule-booking-list">
+      <div class="provider-schedule-list">
         <article
-          class="schedule-booking-card"
+          class="provider-schedule-card"
           *ngFor="let booking of pagedBookings(); trackBy: trackByBookingId">
-          <div
-            class="schedule-booking-date"
-            [class.date-today]="isToday(booking.date)">
-            <span class="schedule-booking-date-dow">{{ calendarSlot(booking).dow }}</span>
-            <span class="schedule-booking-date-num">{{ calendarSlot(booking).dom }}</span>
-            <span class="schedule-booking-date-mon">{{ calendarSlot(booking).sub }}</span>
+          <div class="provider-schedule-card__date" [class.provider-schedule-card__date--today]="isToday(booking.date)">
+            <span class="provider-schedule-card__dow">{{ calendarSlot(booking).dow }}</span>
+            <span class="provider-schedule-card__dom">{{ calendarSlot(booking).dom }}</span>
+            <span class="provider-schedule-card__sub">{{ calendarSlot(booking).sub }}</span>
           </div>
 
-          <div class="schedule-booking-main">
-            <div class="schedule-booking-meta">
+          <div class="provider-schedule-card__main">
+            <div class="provider-schedule-card__meta">
               <p-tag [value]="booking.status" [severity]="getStatusSeverity(booking.status)"></p-tag>
-              <p-chip *ngIf="isToday(booking.date)" label="Today" icon="pi pi-calendar" styleClass="chip-today-sm"></p-chip>
-              <span class="schedule-booking-time text-500">
-                <i class="pi pi-clock mr-1"></i>{{ formatTime(booking.time) }} · {{ formatDuration(booking.duration) }}
+              <span *ngIf="isToday(booking.date)" class="provider-schedule__pill">Today</span>
+              <span class="provider-schedule-card__time">
+                <i class="pi pi-clock" aria-hidden="true"></i>
+                {{ formatTime(booking.time) }} · {{ formatDuration(booking.duration) }}
               </span>
             </div>
-            <h2 class="schedule-booking-service">{{ booking.serviceName }}</h2>
-            <div class="schedule-booking-customer">
+            <h2 class="provider-schedule-card__service">{{ booking.serviceName }}</h2>
+            <div class="provider-schedule-card__customer">
               <p-avatar
                 [label]="booking.customerInitials"
                 shape="circle"
-                [style]="{'background': booking.avatarColor, 'color': '#fff', 'font-weight': '700', 'font-size': '0.65rem', 'width': '2rem', 'height': '2rem'}">
+                [style]="{
+                  background: booking.avatarColor,
+                  color: '#fff',
+                  fontWeight: '600',
+                  fontSize: '0.65rem',
+                  width: '2rem',
+                  height: '2rem'
+                }">
               </p-avatar>
-              <div class="schedule-booking-customer-text">
-                <span class="schedule-booking-name">{{ booking.customerName }}</span>
-                <span class="schedule-booking-address">
-                  <i class="pi pi-map-marker"></i>
+              <div class="provider-schedule-card__customer-text">
+                <span class="provider-schedule-card__name">{{ booking.customerName }}</span>
+                <span class="provider-schedule-card__address">
+                  <i class="pi pi-map-marker" aria-hidden="true"></i>
                   {{ booking.address }}
                 </span>
               </div>
             </div>
-            <p *ngIf="booking.notes" class="schedule-booking-notes text-500 text-sm m-0">
-              <i class="pi pi-comment mr-1"></i>{{ booking.notes }}
+            <p *ngIf="booking.notes" class="provider-schedule-card__notes">
+              <i class="pi pi-comment" aria-hidden="true"></i>
+              {{ booking.notes }}
             </p>
           </div>
 
-          <div class="schedule-booking-aside">
-            <span class="schedule-booking-price">${{ booking.price }}</span>
-            <div class="schedule-booking-actions">
+          <div class="provider-schedule-card__aside">
+            <span class="provider-schedule-card__price">${{ booking.price }}</span>
+            <div class="provider-schedule-card__actions">
               <p-button
                 icon="pi pi-eye"
                 severity="secondary"
@@ -139,7 +133,7 @@
                 icon="pi pi-check"
                 size="small"
                 pTooltip="Confirm"
-                [style]="{'background':'#0d9488','border-color':'#0d9488'}"
+                styleClass="schedule-btn-teal"
                 (click)="confirmBooking(booking.id)">
               </p-button>
               <p-button
@@ -147,7 +141,7 @@
                 icon="pi pi-verified"
                 size="small"
                 pTooltip="Mark complete"
-                [style]="{'background':'#6366f1','border-color':'#6366f1'}"
+                styleClass="schedule-btn-slate"
                 (click)="completeBooking(booking.id)">
               </p-button>
             </div>
@@ -166,19 +160,15 @@
     </ng-container>
 
     <ng-template #scheduleEmpty>
-      <div class="flex flex-column align-items-center justify-content-center py-8 gap-3">
-        <i class="pi pi-calendar text-5xl text-200"></i>
-        <span class="text-600 font-medium">No bookings match your filter.</span>
+      <div class="provider-schedule-empty">
+        <i class="pi pi-calendar" aria-hidden="true"></i>
+        <span>No bookings match your filter.</span>
         <p-button label="Show all" severity="secondary" [outlined]="true" (click)="viewMode = 'all'; onStatusFilterChanged('All')"></p-button>
       </div>
     </ng-template>
-  </div>
-
+  </section>
 </div>
 
-<!-- ═══════════════════════════════════════════════════
-     BOOKING DETAIL DIALOG
-     ═══════════════════════════════════════════════════ -->
 <p-dialog
   [(visible)]="showDetailDialog"
   [modal]="true"
@@ -187,103 +177,78 @@
   [style]="{ width: '32rem' }"
   [breakpoints]="{ '768px': '95vw' }"
   appendTo="body">
-
   <ng-template #header>
-    <div class="flex align-items-center gap-3">
+    <div class="provider-schedule-dialog__head">
       <p-avatar
         [label]="selectedBooking?.customerInitials"
         shape="circle"
         size="large"
-        [style]="{'background': selectedBooking?.avatarColor, 'color': '#fff', 'font-weight': '700'}">
+        [style]="{ background: selectedBooking?.avatarColor, color: '#fff', fontWeight: '600' }">
       </p-avatar>
       <div>
-        <div class="text-900 font-bold text-lg">{{selectedBooking?.customerName}}</div>
-        <div class="text-400 text-xs">Booking #{{selectedBooking?.id}}</div>
+        <div class="provider-schedule-dialog__name">{{ selectedBooking?.customerName }}</div>
+        <div class="provider-schedule-dialog__id">Booking #{{ selectedBooking?.id }}</div>
       </div>
-      <p-tag *ngIf="selectedBooking"
-             [value]="selectedBooking.status"
-             [severity]="getStatusSeverity(selectedBooking.status)"
-             [rounded]="true"
-             class="ml-auto">
+      <p-tag
+        *ngIf="selectedBooking"
+        [value]="selectedBooking.status"
+        [severity]="getStatusSeverity(selectedBooking.status)"
+        [rounded]="true">
       </p-tag>
     </div>
   </ng-template>
 
-  <div *ngIf="selectedBooking" class="flex flex-column gap-4">
-
-    <div class="flex align-items-center justify-content-between p-3 border-round-lg" style="background:var(--surface-50);">
+  <div *ngIf="selectedBooking" class="provider-schedule-dialog__body">
+    <div class="provider-schedule-dialog__summary">
       <div>
-        <div class="text-400 text-xs mb-1">SERVICE</div>
-        <div class="text-900 font-semibold">{{selectedBooking.serviceName}}</div>
+        <div class="provider-schedule-dialog__kicker">Service</div>
+        <div class="provider-schedule-dialog__strong">{{ selectedBooking.serviceName }}</div>
       </div>
-      <div class="text-right">
-        <div class="text-400 text-xs mb-1">PRICE</div>
-        <div class="text-2xl font-bold" style="color:#0d9488;">${{selectedBooking.price}}</div>
-      </div>
-    </div>
-
-    <div class="flex flex-column gap-3">
-
-      <div class="flex align-items-center gap-3">
-        <i class="pi pi-calendar text-teal-600 w-1rem"></i>
-        <div>
-          <div class="text-400 text-xs">DATE &amp; TIME</div>
-          <div class="text-900 text-sm font-medium">{{formatDate(selectedBooking.date)}} at {{formatTime(selectedBooking.time)}}</div>
-        </div>
-      </div>
-
-      <div class="flex align-items-center gap-3">
-        <i class="pi pi-clock text-teal-600 w-1rem"></i>
-        <div>
-          <div class="text-400 text-xs">DURATION</div>
-          <div class="text-900 text-sm font-medium">{{formatDuration(selectedBooking.duration)}}</div>
-        </div>
-      </div>
-
-      <div class="flex align-items-center gap-3">
-        <i class="pi pi-map-marker text-teal-600 w-1rem"></i>
-        <div>
-          <div class="text-400 text-xs">ADDRESS</div>
-          <div class="text-900 text-sm font-medium">{{selectedBooking.address}}</div>
-        </div>
-      </div>
-
-      <div *ngIf="selectedBooking.notes" class="flex align-items-start gap-3">
-        <i class="pi pi-comment text-teal-600 w-1rem mt-1"></i>
-        <div>
-          <div class="text-400 text-xs">CUSTOMER NOTES</div>
-          <div class="text-700 text-sm font-medium italic">{{selectedBooking.notes}}</div>
-        </div>
+      <div class="provider-schedule-dialog__summary-price">
+        <div class="provider-schedule-dialog__kicker">Price</div>
+        <div class="provider-schedule-dialog__amount">${{ selectedBooking.price }}</div>
       </div>
     </div>
+
+    <dl class="provider-schedule-dialog__dl">
+      <div class="provider-schedule-dialog__row">
+        <dt><i class="pi pi-calendar" aria-hidden="true"></i> Date &amp; time</dt>
+        <dd>{{ formatDate(selectedBooking.date) }} at {{ formatTime(selectedBooking.time) }}</dd>
+      </div>
+      <div class="provider-schedule-dialog__row">
+        <dt><i class="pi pi-clock" aria-hidden="true"></i> Duration</dt>
+        <dd>{{ formatDuration(selectedBooking.duration) }}</dd>
+      </div>
+      <div class="provider-schedule-dialog__row">
+        <dt><i class="pi pi-map-marker" aria-hidden="true"></i> Address</dt>
+        <dd>{{ selectedBooking.address }}</dd>
+      </div>
+      <div *ngIf="selectedBooking.notes" class="provider-schedule-dialog__row">
+        <dt><i class="pi pi-comment" aria-hidden="true"></i> Notes</dt>
+        <dd>{{ selectedBooking.notes }}</dd>
+      </div>
+    </dl>
 
     <p-divider styleClass="my-1"></p-divider>
 
-    <div *ngIf="selectedBooking.status !== 'Completed' && selectedBooking.status !== 'Cancelled'"
-         class="flex flex-column gap-2">
-      <div class="text-400 text-xs uppercase font-medium mb-1">Quick actions</div>
-      <div class="flex gap-2 flex-wrap">
+    <div *ngIf="selectedBooking.status !== 'Completed' && selectedBooking.status !== 'Cancelled'" class="provider-schedule-dialog__actions">
+      <div class="provider-schedule-dialog__kicker">Quick actions</div>
+      <div class="provider-schedule-dialog__buttons">
         <p-button
           *ngIf="selectedBooking.status === 'Pending'"
           label="Confirm booking"
           icon="pi pi-check"
-          [style]="{'background':'#0d9488','border-color':'#0d9488','flex':'1'}"
+          styleClass="schedule-btn-teal w-full sm:w-auto"
           (click)="confirmBooking(selectedBooking.id)">
         </p-button>
         <p-button
           *ngIf="selectedBooking.status === 'Confirmed'"
           label="Mark as completed"
           icon="pi pi-verified"
-          [style]="{'background':'#6366f1','border-color':'#6366f1','flex':'1'}"
+          styleClass="schedule-btn-slate w-full sm:w-auto"
           (click)="completeBooking(selectedBooking.id); showDetailDialog = false">
         </p-button>
-        <p-button
-          label="Cancel"
-          icon="pi pi-times"
-          severity="danger"
-          [outlined]="true"
-          (click)="cancelBooking(selectedBooking.id)">
-        </p-button>
+        <p-button label="Cancel booking" icon="pi pi-times" severity="danger" [outlined]="true" (click)="cancelBooking(selectedBooking.id)"></p-button>
       </div>
     </div>
   </div>
@@ -291,5 +256,4 @@
   <ng-template #footer>
     <p-button label="Close" severity="secondary" [text]="true" (click)="showDetailDialog = false"></p-button>
   </ng-template>
-
 </p-dialog>

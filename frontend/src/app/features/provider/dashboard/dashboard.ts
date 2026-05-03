@@ -4,12 +4,9 @@ import { CommonModule } from '@angular/common';
 import { NavigationEnd, Router } from '@angular/router';
 
 import { TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';
-import { ProgressBarModule } from 'primeng/progressbar';
 import { MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
 import { ChartModule } from 'primeng/chart';
-import { RippleModule } from 'primeng/ripple';
 
 import { ApiService } from '../../../core/services/api.service';
 import { AuthService } from '../../../core/services/auth';
@@ -38,7 +35,7 @@ function categoryLabelFromBooking(b: any): string {
 
 @Component({
   selector: 'app-provider-dashboard',
-  imports: [CommonModule, TableModule, ButtonModule, ProgressBarModule, MenuModule, ChartModule, RippleModule],
+  imports: [CommonModule, TableModule, MenuModule, ChartModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -275,8 +272,8 @@ export class ProviderDashboard implements OnInit {
         {
           label: 'Completed bookings (count)',
           data: counts,
-          borderColor: '#6366f1',
-          backgroundColor: 'rgba(99, 102, 241, 0.08)',
+          borderColor: '#475569',
+          backgroundColor: 'rgba(71, 85, 105, 0.08)',
           tension: 0.25,
           fill: false,
           pointRadius: 2,
@@ -299,7 +296,7 @@ export class ProviderDashboard implements OnInit {
         {
           label: 'Completed bookings (count)',
           data: [0],
-          borderColor: '#6366f1',
+          borderColor: '#475569',
           yAxisID: 'y1',
         },
       ],

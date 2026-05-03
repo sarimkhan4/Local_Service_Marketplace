@@ -255,15 +255,15 @@ export class CustomerDashboard implements OnInit, OnDestroy {
           type: 'bar',
           label: 'Completed spend ($)',
           data: spendByWeek.map((x) => Math.round(x * 100) / 100),
-          backgroundColor: '#14b8a6',
-          borderRadius: 4,
+          backgroundColor: '#0d9488',
+          borderRadius: 2,
         },
         {
           type: 'bar',
           label: 'Bookings in week',
           data: bookingsByWeek,
-          backgroundColor: '#c7d2fe',
-          borderRadius: 4,
+          backgroundColor: '#cbd5e1',
+          borderRadius: 2,
         },
       ],
     };
@@ -273,8 +273,8 @@ export class CustomerDashboard implements OnInit, OnDestroy {
     return {
       labels: ['—'],
       datasets: [
-        { type: 'bar', label: 'Completed spend ($)', data: [0], backgroundColor: '#14b8a6' },
-        { type: 'bar', label: 'Bookings in week', data: [0], backgroundColor: '#c7d2fe' },
+        { type: 'bar', label: 'Completed spend ($)', data: [0], backgroundColor: '#0d9488' },
+        { type: 'bar', label: 'Bookings in week', data: [0], backgroundColor: '#cbd5e1' },
       ],
     };
   }
@@ -290,7 +290,7 @@ export class CustomerDashboard implements OnInit, OnDestroy {
     const entries = [...byCat.entries()].filter(([, v]) => v > 0);
     if (!entries.length) return this.emptyDoughnut();
 
-    const palette = ['#008FFB', '#00E396', '#FEB019', '#775DD0'];
+    const palette = ['#0d9488', '#475569', '#64748b', '#94a3b8'];
     const labels = entries.map(([k]) => k);
     const data = entries.map(([, v]) => Math.round(v * 100) / 100);
 

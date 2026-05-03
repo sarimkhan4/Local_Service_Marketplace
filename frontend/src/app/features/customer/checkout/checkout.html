@@ -1,158 +1,138 @@
-<div class="checkout-page">
-
-  <div *ngIf="success()" class="checkout-success surface-card border-1 surface-border">
-    <div class="inline-flex align-items-center justify-content-center border-1 surface-border mb-2" style="width:100px;height:100px;background:#dcfce7;">
-      <i class="pi pi-check text-6xl text-green-500"></i>
+<div class="customer-page customer-checkout">
+  <div *ngIf="success()" class="customer-checkout-success" role="status">
+    <div class="customer-checkout-success__icon" aria-hidden="true">
+      <i class="pi pi-check"></i>
     </div>
-    <h1 class="text-900 font-bold text-4xl m-0">Payment Successful!</h1>
-    <p class="text-600 text-lg m-0 mb-3">Your booking has been confirmed and providers have been notified.</p>
-    <!-- Replaced p-button with standard button -->
-    <button 
-      class="p-3 border-none border-round text-white font-bold cursor-pointer flex align-items-center justify-content-center gap-2" 
-      style="background:#0d9488; font-size: 1.25rem;" 
-      (click)="goToBookings()">
-      <i class="pi pi-calendar"></i>
-      View My Bookings
+    <h1 class="customer-checkout-success__title">Payment successful</h1>
+    <p class="customer-checkout-success__text">Your booking is confirmed. Providers have been notified.</p>
+    <button type="button" class="customer-checkout-btn customer-checkout-btn--primary" (click)="goToBookings()">
+      <i class="pi pi-calendar" aria-hidden="true"></i>
+      View my bookings
     </button>
   </div>
 
-  <div *ngIf="!success()">
-    <div class="checkout-intro mb-4">
-      <h1 class="text-3xl font-bold text-900 m-0">Checkout</h1>
-      <p class="text-500 m-0">Review your cart and complete payment.</p>
-    </div>
+  <ng-container *ngIf="!success()">
+    <header class="customer-page__header">
+      <h1 class="customer-page__title">Checkout</h1>
+      <p class="customer-page__subtitle">Review your cart and complete payment.</p>
+    </header>
 
-    <div class="grid">
-      <div class="col-12 lg:col-7 xl:col-8 flex flex-column gap-4">
-
-        <div class="surface-card p-4 border-1 surface-border">
-          <h2 class="text-xl font-semibold m-0 mb-3 border-bottom-1 surface-border pb-3">
-            Services in Cart <span class="text-500 text-sm font-normal">({{ cartItems().length }} items)</span>
+    <div class="customer-checkout__grid">
+      <div class="customer-checkout__main">
+        <section class="customer-checkout-panel" aria-labelledby="checkout-cart-heading">
+          <h2 id="checkout-cart-heading" class="customer-checkout-panel__title">
+            Cart
+            <span class="customer-checkout-panel__count">{{ cartItems().length }} items</span>
           </h2>
 
-          <div *ngIf="cartItems().length === 0" class="checkout-empty flex flex-column align-items-center py-5">
-            <i class="pi pi-shopping-cart text-5xl text-300"></i>
-            <span class="text-500 font-medium mb-3">Your cart is empty.</span>
-            <button 
-              class="p-2 px-4 border-1 surface-border border-round bg-white text-700 cursor-pointer" 
-              routerLink="/app/customer/services">
-              Browse Services
-            </button>
+          <div *ngIf="cartItems().length === 0" class="customer-checkout-empty">
+            <i class="pi pi-shopping-cart" aria-hidden="true"></i>
+            <p>Your cart is empty.</p>
+            <a class="customer-checkout-btn customer-checkout-btn--outline" routerLink="/app/customer/services">Browse services</a>
           </div>
 
-          <div *ngFor="let item of cartItems(); let i = index" class="flex flex-column sm:flex-row align-items-start sm:align-items-center gap-4 py-3 border-bottom-1 surface-border">
-            <div class="flex-1 min-w-0">
-              <span class="text-900 font-bold block mb-1">{{ item.service.title }}</span>
-              <span class="text-600 text-sm block mb-1"><i class="pi pi-building text-xs mr-1"></i> {{ item.provider.companyName }}</span>
-              <span class="text-500 text-sm block"><i class="pi pi-calendar text-xs mr-1"></i> {{ item.date | date:'medium' }}</span>
-            </div>
-            <div class="flex align-items-center gap-4 w-full sm:w-auto mt-2 sm:mt-0 justify-content-between sm:justify-content-end">
-              <span class="text-xl font-bold" style="color:#0d9488;">${{ item.provider.price }}</span>
-              <button 
-                class="p-button-danger p-button-text p-2 border-none bg-transparent text-red-500 cursor-pointer" 
-                (click)="removeItem(i)">
-                <i class="pi pi-trash"></i>
-              </button>
-            </div>
-          </div>
-        </div>
+          <ul *ngIf="cartItems().length > 0" class="customer-checkout-cart">
+            <li *ngFor="let item of cartItems(); let i = index" class="customer-checkout-cart__row">
+              <div class="customer-checkout-cart__info">
+                <span class="customer-checkout-cart__title">{{ item.service.title }}</span>
+                <span class="customer-checkout-cart__line">
+                  <i class="pi pi-building" aria-hidden="true"></i> {{ item.provider.companyName }}
+                </span>
+                <span class="customer-checkout-cart__line customer-checkout-cart__line--muted">
+                  <i class="pi pi-calendar" aria-hidden="true"></i> {{ item.date | date: 'medium' }}
+                </span>
+              </div>
+              <div class="customer-checkout-cart__actions">
+                <span class="customer-checkout-cart__price">${{ item.provider.price }}</span>
+                <button type="button" class="customer-checkout-icon-danger" (click)="removeItem(i)" aria-label="Remove item">
+                  <i class="pi pi-trash" aria-hidden="true"></i>
+                </button>
+              </div>
+            </li>
+          </ul>
+        </section>
 
-        <!-- Address Selection -->
-        <div *ngIf="cartItems().length > 0" class="surface-card p-4 border-1 surface-border">
-          <h2 class="text-xl font-semibold m-0 mb-3 border-bottom-1 surface-border pb-3">Service Address</h2>
-          <label class="text-700 font-medium block mb-2">Select where the service will take place</label>
-          
-          <select 
-            class="w-full p-3 border-1 surface-border border-round text-700 outline-none mb-2"
-            [(ngModel)]="selectedAddressId">
-            <option value="" disabled selected>Select an Address</option>
+        <section *ngIf="cartItems().length > 0" class="customer-checkout-panel" aria-labelledby="checkout-address-heading">
+          <h2 id="checkout-address-heading" class="customer-checkout-panel__title">Service address</h2>
+          <label class="customer-checkout-label" for="checkout-address">Where should the service take place?</label>
+          <select
+            id="checkout-address"
+            class="customer-checkout-select"
+            [ngModel]="selectedAddressId()"
+            (ngModelChange)="selectedAddressId.set($event)">
+            <option value="" disabled>Select an address</option>
             <option *ngFor="let addr of addresses()" [value]="addr.id">
-              {{ addr.label }}: {{ addr.street }}, {{ addr.city }} {{ addr.isDefault ? '(Default)' : '' }}
+              {{ addr.label }}: {{ addr.street }}, {{ addr.city }}{{ addr.isDefault ? ' (Default)' : '' }}
             </option>
           </select>
+          <p *ngIf="addresses().length === 0" class="customer-checkout-hint">
+            <i class="pi pi-info-circle" aria-hidden="true"></i>
+            Add an address in settings before booking.
+          </p>
+        </section>
 
-          <div *ngIf="addresses().length === 0" class="flex align-items-center gap-2 mt-2">
-            <i class="pi pi-info-circle text-orange-500"></i>
-            <span class="text-500 text-sm">Please add an address in your account settings.</span>
-          </div>
-        </div>
-
-        <!-- Payment Selection -->
-        <div *ngIf="cartItems().length > 0" class="surface-card p-4 border-1 surface-border">
-          <h2 class="text-xl font-semibold m-0 mb-3 border-bottom-1 surface-border pb-3">Payment Method</h2>
-          <label class="text-700 font-medium block mb-2">Select how you want to pay</label>
-          
-          <select 
-            class="w-full p-3 border-1 surface-border border-round text-700 outline-none mb-4"
-            [(ngModel)]="selectedPaymentMethod">
-            <option value="" disabled selected>Select a Payment Method</option>
-            <option *ngFor="let method of paymentMethods" [value]="method.value">
-              {{ method.label }}
-            </option>
+        <section *ngIf="cartItems().length > 0" class="customer-checkout-panel" aria-labelledby="checkout-pay-heading">
+          <h2 id="checkout-pay-heading" class="customer-checkout-panel__title">Payment method</h2>
+          <label class="customer-checkout-label" for="checkout-payment">How would you like to pay?</label>
+          <select
+            id="checkout-payment"
+            class="customer-checkout-select"
+            [ngModel]="selectedPaymentMethod()"
+            (ngModelChange)="selectedPaymentMethod.set($event)">
+            <option value="" disabled>Select a payment method</option>
+            <option *ngFor="let method of paymentMethods" [value]="method.value">{{ method.label }}</option>
           </select>
 
-          <!-- Card Details Form -->
-          <div *ngIf="selectedPaymentMethod() === 'Credit Card'" class="p-4 surface-50 border-1 surface-border mt-4">
-            <div class="grid">
-              <div class="col-12 flex flex-column gap-2 mb-3">
-                <label for="cc" class="font-medium">Card Number</label>
-                <input id="cc" type="text" 
-                  class="p-3 border-1 surface-border border-round outline-none" 
-                  placeholder="0000 0000 0000 0000" [(ngModel)]="cardNumber">
+          <div *ngIf="selectedPaymentMethod() === 'Credit Card'" class="customer-checkout-cardform">
+            <div class="customer-checkout-field">
+              <label for="cc">Card number</label>
+              <input id="cc" type="text" class="customer-checkout-input" placeholder="0000 0000 0000 0000" [ngModel]="cardNumber()" (ngModelChange)="cardNumber.set($event)" />
+            </div>
+            <div class="customer-checkout-fieldrow">
+              <div class="customer-checkout-field">
+                <label for="exp">Expiry</label>
+                <input id="exp" type="text" class="customer-checkout-input" placeholder="MM/YY" [ngModel]="expiryDate()" (ngModelChange)="expiryDate.set($event)" />
               </div>
-              <div class="col-6 flex flex-column gap-2">
-                <label for="exp" class="font-medium">Expiry Date</label>
-                <input id="exp" type="text" 
-                  class="p-3 border-1 surface-border border-round outline-none" 
-                  placeholder="MM/YY" [(ngModel)]="expiryDate">
-              </div>
-              <div class="col-6 flex flex-column gap-2">
-                <label for="cvv" class="font-medium">CVV</label>
-                <input id="cvv" type="text" 
-                  class="p-3 border-1 surface-border border-round outline-none" 
-                  placeholder="123" [(ngModel)]="cvv">
+              <div class="customer-checkout-field">
+                <label for="cvv">CVV</label>
+                <input id="cvv" type="text" class="customer-checkout-input" placeholder="123" [ngModel]="cvv()" (ngModelChange)="cvv.set($event)" />
               </div>
             </div>
           </div>
-        </div>
+        </section>
       </div>
 
-      <!-- Order Summary -->
-      <div class="col-12 lg:col-5 xl:col-4" *ngIf="cartItems().length > 0">
-        <div class="surface-card p-4 border-1 surface-border sticky top-0" style="top: 2rem;">
-          <h2 class="text-xl font-semibold m-0 mb-3 border-bottom-1 surface-border pb-3">Order Summary</h2>
-
-          <div class="flex justify-content-between mb-3 text-700">
-            <span>Subtotal</span>
-            <span class="font-medium">${{ subtotal() | number:'1.2-2' }}</span>
+      <aside *ngIf="cartItems().length > 0" class="customer-checkout__summary-wrap" aria-label="Order summary">
+        <div class="customer-checkout-summary">
+          <h2 class="customer-checkout-panel__title">Order summary</h2>
+          <dl class="customer-checkout-summary__lines">
+            <div class="customer-checkout-summary__row">
+              <dt>Subtotal</dt>
+              <dd>${{ subtotal() | number: '1.2-2' }}</dd>
+            </div>
+            <div class="customer-checkout-summary__row">
+              <dt>Platform fee / tax (8%)</dt>
+              <dd>${{ tax() | number: '1.2-2' }}</dd>
+            </div>
+          </dl>
+          <div class="customer-checkout-summary__total">
+            <span>Total</span>
+            <strong>${{ total() | number: '1.2-2' }}</strong>
           </div>
-          <div class="flex justify-content-between mb-3 text-700">
-            <span>Platform Fee / Tax (8%)</span>
-            <span class="font-medium">${{ tax() | number:'1.2-2' }}</span>
-          </div>
-
-          <hr class="border-top-1 border-none surface-border mb-4">
-
-          <div class="flex justify-content-between mb-4">
-            <span class="text-xl font-bold text-900">Total</span>
-            <span class="text-2xl font-bold" style="color:#0d9488;">${{ total() | number:'1.2-2' }}</span>
-          </div>
-
           <button
-            class="w-full p-3 border-none border-round text-white font-bold cursor-pointer flex align-items-center justify-content-center gap-2"
-            [class.opacity-50]="cartItems().length === 0 || !selectedPaymentMethod() || !selectedAddressId() || processing()"
+            type="button"
+            class="customer-checkout-btn customer-checkout-btn--primary customer-checkout-btn--block"
             [disabled]="cartItems().length === 0 || !selectedPaymentMethod() || !selectedAddressId() || processing()"
-            [style.background]="'#0d9488'"
             (click)="processPayment()">
-            <i [class]="processing() ? 'pi pi-spin pi-spinner' : 'pi pi-lock'"></i>
-            {{ processing() ? 'Processing...' : 'Pay & Confirm Booking' }}
+            <i [class]="processing() ? 'pi pi-spin pi-spinner' : 'pi pi-lock'" aria-hidden="true"></i>
+            {{ processing() ? 'Processing…' : 'Pay & confirm' }}
           </button>
-
-          <p class="text-500 text-xs text-center mt-3 line-height-3 m-0">
-            <i class="pi pi-shield mr-1"></i> Payments are secure and encrypted. Providers do not get paid until the job is completed.
+          <p class="customer-checkout-summary__note">
+            <i class="pi pi-shield" aria-hidden="true"></i>
+            Payments are processed securely. Providers are paid after job completion.
           </p>
         </div>
-      </div>
+      </aside>
     </div>
-  </div>
+  </ng-container>
 </div>

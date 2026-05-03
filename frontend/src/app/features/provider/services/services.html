@@ -1,85 +1,115 @@
 <p-toast></p-toast>
-<div class="services-page">
-    <div class="services-header">
-        <div>
-            <h1 class="m-0 text-3xl font-semibold text-900">Service Configuration</h1>
-            <p class="text-600 mt-2 mb-0 line-height-3">Select from the master catalog which services you offer and set your specific asking rates.</p>
-        </div>
-        <div class="services-header-actions gap-2 flex">
-            <p-button label="Add Custom Service" icon="pi pi-plus" (click)="showNewServiceDialog()" styleClass="p-button-outlined"></p-button>
-            <p-tag [value]="activeCount + ' Selected'" icon="pi pi-check" [style]="{'background':'#e0f2fe','color':'#0284c7', 'font-weight':'bold'}"></p-tag>
-            <p-button label="Save Configuration" icon="pi pi-save" (click)="saveConfiguration()"
-              [style]="{ 'background': '#0d9488', 'border-color': '#0d9488' }"></p-button>
-        </div>
+<div class="customer-page provider-services">
+  <header class="provider-services__header">
+    <div>
+      <h1 class="customer-page__title">Service configuration</h1>
+      <p class="customer-page__subtitle">Choose catalog services you offer and set your rates.</p>
     </div>
+    <div class="provider-services__actions">
+      <p-button label="Add custom service" icon="pi pi-plus" (click)="showNewServiceDialog()" [outlined]="true"></p-button>
+      <span class="provider-services__badge">{{ activeCount }} selected</span>
+      <p-button label="Save configuration" icon="pi pi-save" (click)="saveConfiguration()"></p-button>
+    </div>
+  </header>
 
-    <div class="services-table-wrap">
-        <p-table [value]="allViewModels" sortField="categoryName" sortMode="single" rowGroupMode="subheader" groupRowsBy="categoryName" [scrollable]="true" scrollHeight="75vh" styleClass="p-datatable-striped">
-            <ng-template pTemplate="header">
-                <tr>
-                    <th style="width: 5rem" class="text-center">Offer</th>
-                    <th style="min-width: 250px">Service Description</th>
-                    <th style="width: 16rem" class="text-center">Your Specific Price</th>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="groupheader" let-svc>
-                <tr pRowGroupHeader>
-                    <td colspan="3" class="surface-ground surface-border border-bottom-1">
-                        <div class="flex align-items-center gap-2 py-2">
-                            <i class="pi pi-folder-open text-700 text-xl"></i>
-                            <span class="font-bold text-800 text-lg">{{svc.categoryName}}</span>
-                        </div>
-                    </td>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-svc>
-                <tr>
-                    <td class="text-center">
-                        <p-checkbox [(ngModel)]="svc.isOffered" [binary]="true"></p-checkbox>
-                    </td>
-                    <td>
-                        <div class="flex flex-column gap-1">
-                            <span class="font-bold text-900" [ngClass]="{'text-teal-600': svc.isOffered}">{{svc.title}}</span>
-                            <span class="text-500 text-sm" style="max-width: 450px; line-height: 1.4;">{{svc.description}}</span>
-                        </div>
-                    </td>
-                    <td class="text-center">
-                        <div class="flex justify-content-center">
-                           <p-inputNumber [(ngModel)]="svc.providerPrice" mode="currency" currency="USD" locale="en-US" [disabled]="!svc.isOffered" styleClass="w-9rem" [min]="0"></p-inputNumber>
-                        </div>
-                    </td>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="emptymessage">
-                <tr>
-                    <td colspan="3" class="text-center p-6">No services found in the catalog.</td>
-                </tr>
-            </ng-template>
-        </p-table>
-    </div>
+  <section class="provider-services__table-shell" aria-label="Services catalog">
+    <p-table
+      [value]="allViewModels"
+      sortField="categoryName"
+      sortMode="single"
+      rowGroupMode="subheader"
+      groupRowsBy="categoryName"
+      [scrollable]="true"
+      scrollHeight="75vh"
+      styleClass="p-datatable-striped provider-services-table">
+      <ng-template pTemplate="header">
+        <tr>
+          <th scope="col" style="width: 5rem" class="text-center">Offer</th>
+          <th scope="col" style="min-width: 250px">Service</th>
+          <th scope="col" style="width: 16rem" class="text-center">Your price</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="groupheader" let-svc>
+        <tr pRowGroupHeader>
+          <td colspan="3" class="provider-services__group-cell">
+            <div class="provider-services__group-inner">
+              <i class="pi pi-folder-open" aria-hidden="true"></i>
+              <span>{{ svc.categoryName }}</span>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-svc>
+        <tr>
+          <td class="text-center">
+            <p-checkbox [(ngModel)]="svc.isOffered" [binary]="true"></p-checkbox>
+          </td>
+          <td>
+            <div class="provider-services__desc">
+              <span class="provider-services__title" [class.provider-services__title--on]="svc.isOffered">{{ svc.title }}</span>
+              <span class="provider-services__text">{{ svc.description }}</span>
+            </div>
+          </td>
+          <td class="text-center">
+            <p-inputNumber
+              [(ngModel)]="svc.providerPrice"
+              mode="currency"
+              currency="USD"
+              locale="en-US"
+              [disabled]="!svc.isOffered"
+              styleClass="w-9rem"
+              [min]="0"></p-inputNumber>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="3" class="provider-services__empty">No services found in the catalog.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </section>
 </div>
 
-<p-dialog header="Create New Custom Service" [(visible)]="displayNewServiceDialog" [modal]="true" [style]="{width: '450px'}" [breakpoints]="{'960px': '75vw', '640px': '100vw'}">
-    <div class="flex flex-column gap-3 mt-3">
-        <div class="flex flex-column gap-2">
-            <label class="font-semibold" for="cat">Category</label>
-            <p-select [options]="categories" [(ngModel)]="newServiceForm.categoryId" optionLabel="categoryName" optionValue="categoryId" placeholder="Select a Category" id="cat" appendTo="body"></p-select>
-        </div>
-        <div class="flex flex-column gap-2">
-            <label class="font-semibold" for="sname">Service Title</label>
-            <input pInputText id="sname" [(ngModel)]="newServiceForm.name" placeholder="e.g. Vintage Clock Repair" />
-        </div>
-        <div class="flex flex-column gap-2">
-            <label class="font-semibold" for="sdesc">Description</label>
-            <textarea pTextarea id="sdesc" [(ngModel)]="newServiceForm.description" rows="3" placeholder="Briefly describe what this service entails..."></textarea>
-        </div>
-        <div class="flex flex-column gap-2">
-            <label class="font-semibold" for="sprice">Your Price ($)</label>
-            <p-inputNumber id="sprice" [(ngModel)]="newServiceForm.price" mode="currency" currency="USD" locale="en-US" [min]="0"></p-inputNumber>
-        </div>
+<p-dialog
+  header="Create custom service"
+  [(visible)]="displayNewServiceDialog"
+  [modal]="true"
+  [style]="{ width: '450px' }"
+  [breakpoints]="{ '960px': '75vw', '640px': '100vw' }">
+  <div class="provider-services-dialog">
+    <div class="provider-services-field">
+      <label for="cat">Category</label>
+      <p-select
+        [options]="categories"
+        [(ngModel)]="newServiceForm.categoryId"
+        optionLabel="categoryName"
+        optionValue="categoryId"
+        placeholder="Select category"
+        inputId="cat"
+        appendTo="body"></p-select>
     </div>
-    <ng-template pTemplate="footer">
-        <p-button label="Cancel" icon="pi pi-times" (click)="displayNewServiceDialog = false" styleClass="p-button-text p-button-secondary"></p-button>
-        <p-button label="Create & Offer" icon="pi pi-check" (click)="saveNewService()"></p-button>
-    </ng-template>
+    <div class="provider-services-field">
+      <label for="sname">Title</label>
+      <input pInputText id="sname" [(ngModel)]="newServiceForm.name" placeholder="e.g. Vintage clock repair" />
+    </div>
+    <div class="provider-services-field">
+      <label for="sdesc">Description</label>
+      <textarea pTextarea id="sdesc" [(ngModel)]="newServiceForm.description" rows="3" placeholder="What this service includes"></textarea>
+    </div>
+    <div class="provider-services-field">
+      <label for="sprice">Your price ($)</label>
+      <p-inputNumber
+        inputId="sprice"
+        [(ngModel)]="newServiceForm.price"
+        mode="currency"
+        currency="USD"
+        locale="en-US"
+        [min]="0"></p-inputNumber>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancel" icon="pi pi-times" (click)="displayNewServiceDialog = false" [text]="true" severity="secondary"></p-button>
+    <p-button label="Create &amp; offer" icon="pi pi-check" (click)="saveNewService()"></p-button>
+  </ng-template>
 </p-dialog>

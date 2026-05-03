@@ -1,140 +1,125 @@
-<div class="notif-page">
-
-  <div class="notif-page-header flex justify-content-between align-items-center mb-4">
+<div class="customer-page customer-notif">
+  <header class="customer-notif__header">
     <div>
-      <h1 class="text-3xl font-bold text-900 m-0">Notifications</h1>
-      <p class="text-500 text-sm mt-2 mb-0 line-height-3">Stay updated on your bookings, providers, and activity.</p>
+      <h1 class="customer-page__title">Notifications</h1>
+      <p class="customer-page__subtitle">Updates on bookings, providers, and account activity.</p>
     </div>
-    <!-- Replaced p-button with standard button -->
     <button
-      class="p-2 px-3 border-1 surface-border border-round bg-transparent text-700 font-semibold cursor-pointer flex align-items-center gap-2 hover:surface-100 transition-colors"
+      type="button"
+      class="customer-notif__mark-all"
       [disabled]="notifService.customerUnreadCount() === 0"
-      [style.opacity]="notifService.customerUnreadCount() === 0 ? '0.5' : '1'"
       (click)="notifService.markAllCustomerRead()">
-      <i class="pi pi-check-circle"></i>
-      Mark All Read
+      <i class="pi pi-check-circle" aria-hidden="true"></i>
+      Mark all read
     </button>
-  </div>
+  </header>
 
-  <div class="notif-stats-grid grid mb-4">
-    <div class="col-12 md:col-4">
-      <div class="notif-stat-card surface-card p-4 border-1 surface-border border-round flex align-items-center gap-3">
-        <div class="notif-stat-icon p-3 border-round flex align-items-center justify-content-center"
-          style="background:linear-gradient(135deg,#ccfbf1,#a7f3d0);">
-          <i class="pi pi-bell text-xl" style="color:#0d9488;"></i>
-        </div>
-        <div>
-          <div class="text-400 text-xs uppercase font-semibold mb-1">Total</div>
-          <div class="text-3xl font-bold text-900">{{ notifService.customerNotifications().length }}</div>
-        </div>
+  <section class="customer-notif__stats" aria-label="Notification counts">
+    <article class="customer-notif-stat">
+      <div class="customer-notif-stat__icon customer-notif-stat__icon--teal">
+        <i class="pi pi-bell" aria-hidden="true"></i>
       </div>
-    </div>
-    <div class="col-12 md:col-4">
-      <div class="notif-stat-card surface-card p-4 border-1 surface-border border-round flex align-items-center gap-3">
-        <div class="notif-stat-icon p-3 border-round flex align-items-center justify-content-center"
-          style="background:linear-gradient(135deg,#fef9c3,#fde68a);">
-          <i class="pi pi-circle-fill text-xl" style="color:#d97706;"></i>
-        </div>
-        <div>
-          <div class="text-400 text-xs uppercase font-semibold mb-1">Unread</div>
-          <div class="text-3xl font-bold text-900">{{ notifService.customerUnreadCount() }}</div>
-        </div>
+      <div>
+        <p class="customer-notif-stat__label">Total</p>
+        <p class="customer-notif-stat__value">{{ notifService.customerNotifications().length }}</p>
       </div>
-    </div>
-    <div class="col-12 md:col-4">
-      <div class="notif-stat-card surface-card p-4 border-1 surface-border border-round flex align-items-center gap-3">
-        <div class="notif-stat-icon p-3 border-round flex align-items-center justify-content-center"
-          style="background:linear-gradient(135deg,#e0e7ff,#c7d2fe);">
-          <i class="pi pi-check text-xl" style="color:#6366f1;"></i>
-        </div>
-        <div>
-          <div class="text-400 text-xs uppercase font-semibold mb-1">Read</div>
-          <div class="text-3xl font-bold text-900">
-            {{ notifService.customerNotifications().length - notifService.customerUnreadCount() }}
-          </div>
-        </div>
+    </article>
+    <article class="customer-notif-stat">
+      <div class="customer-notif-stat__icon customer-notif-stat__icon--amber">
+        <i class="pi pi-circle-fill" aria-hidden="true"></i>
       </div>
-    </div>
-  </div>
+      <div>
+        <p class="customer-notif-stat__label">Unread</p>
+        <p class="customer-notif-stat__value">{{ notifService.customerUnreadCount() }}</p>
+      </div>
+    </article>
+    <article class="customer-notif-stat">
+      <div class="customer-notif-stat__icon customer-notif-stat__icon--indigo">
+        <i class="pi pi-check" aria-hidden="true"></i>
+      </div>
+      <div>
+        <p class="customer-notif-stat__label">Read</p>
+        <p class="customer-notif-stat__value">
+          {{ notifService.customerNotifications().length - notifService.customerUnreadCount() }}
+        </p>
+      </div>
+    </article>
+  </section>
 
-  <div class="notif-panel-shell surface-card border-1 surface-border border-round">
-    <div
-      class="notif-filter-row p-3 border-bottom-1 surface-border flex align-items-center justify-content-between flex-wrap gap-3">
-      <!-- Replaced p-selectbutton with custom radio group logic -->
-      <div class="flex border-1 surface-border border-round overflow-hidden">
-        <button *ngFor="let opt of filterOptions" (click)="filterMode.set(opt.value)"
-          [class.bg-primary]="filterMode() === opt.value" [class.text-white]="filterMode() === opt.value"
-          class="p-2 px-3 border-none cursor-pointer bg-transparent text-700 transition-colors font-medium">
+  <section class="customer-notif__panel" aria-label="Notification list">
+    <div class="customer-notif__toolbar">
+      <div class="customer-notif__filter" role="group" aria-label="Filter">
+        <button
+          *ngFor="let opt of filterOptions"
+          type="button"
+          class="customer-notif__filter-btn"
+          [class.customer-notif__filter-btn--active]="filterMode() === opt.value"
+          (click)="filterMode.set(opt.value)">
           {{ opt.label }}
         </button>
       </div>
-      <span class="text-500 text-sm">
-        <strong class="text-900">{{ filteredNotifications().length }}</strong> notifications
-      </span>
+      <span class="customer-notif__toolbar-meta"><strong>{{ filteredNotifications().length }}</strong> notifications</span>
     </div>
 
-    <div class="flex flex-column">
-      <div *ngFor="let n of filteredNotifications(); let last = last"
-        class="notif-list-item flex gap-3 p-3 cursor-pointer hover:surface-50 transition-colors"
-        [ngClass]="{ 'surface-100': !n.isRead, 'border-bottom-1 surface-border': !last }"
+    <ul *ngIf="filteredNotifications().length > 0" class="customer-notif__list">
+      <li
+        *ngFor="let n of filteredNotifications(); let last = last"
+        class="customer-notif-item"
+        [class.customer-notif-item--unread]="!n.isRead"
+        [class.customer-notif-item--last]="last"
         (click)="notifService.markCustomerRead(n.id)">
-
-        <!-- Replaced p-avatar -->
-        <div class="flex align-items-center justify-content-center border-round flex-shrink-0"
-          [style]="{ 'background': n.avatarColor, 'color': '#fff', 'width': '48px', 'height': '48px', 'font-weight': '700' }">
+        <div
+          class="customer-notif-item__avatar"
+          [style.background]="n.avatarColor">
           {{ n.avatarLabel }}
         </div>
 
-        <div class="flex flex-column gap-2 flex-1 min-w-0">
-          <div class="flex align-items-start justify-content-between gap-3 flex-wrap">
-            <div class="flex align-items-center gap-2 flex-wrap">
-              <span class="text-900 font-semibold text-base">{{ n.title }}</span>
-              <!-- Replaced p-tag with simple span -->
-              <span class="px-2 py-1 border-round text-xs font-bold" [ngClass]="{
-                  'bg-blue-100 text-blue-700': getTypeSeverity(n.type) === 'info',
-                  'bg-green-100 text-green-700': getTypeSeverity(n.type) === 'success',
-                  'bg-orange-100 text-orange-700': getTypeSeverity(n.type) === 'warn'
+        <div class="customer-notif-item__body">
+          <div class="customer-notif-item__top">
+            <div class="customer-notif-item__titles">
+              <span class="customer-notif-item__title">{{ n.title }}</span>
+              <span
+                class="customer-notif-item__type"
+                [ngClass]="{
+                  'customer-notif-item__type--info': getTypeSeverity(n.type) === 'info',
+                  'customer-notif-item__type--success': getTypeSeverity(n.type) === 'success',
+                  'customer-notif-item__type--warn': getTypeSeverity(n.type) === 'warn'
                 }">
                 {{ getTypeLabel(n.type) }}
               </span>
-              <span *ngIf="!n.isRead" class="text-xs font-bold px-2 py-1 border-round"
-                style="background:#0d9488;color:#fff;">
-                NEW
-              </span>
+              <span *ngIf="!n.isRead" class="customer-notif-item__new">New</span>
             </div>
-            <span class="text-400 text-sm flex-shrink-0">
-              <i class="pi pi-clock mr-1"></i>{{ notifService.getTimeAgo(n.createdAt) }}
-            </span>
+            <time class="customer-notif-item__time">
+              <i class="pi pi-clock" aria-hidden="true"></i>
+              {{ notifService.getTimeAgo(n.createdAt) }}
+            </time>
           </div>
-          <p class="text-600 text-sm line-height-3 m-0">{{ n.message }}</p>
-          <div class="flex align-items-center gap-2 mt-1">
-            <i [class]="notifService.getIconForType(n.type)" style="font-size:.75rem;color:#94a3b8;"></i>
-            <span class="text-400 text-xs">{{ n.isRead ? 'Read' : 'Click to mark as read' }}</span>
-          </div>
+          <p class="customer-notif-item__msg">{{ n.message }}</p>
+          <p class="customer-notif-item__foot">
+            <i [class]="notifService.getIconForType(n.type)" aria-hidden="true"></i>
+            <span>{{ n.isRead ? 'Read' : 'Open to mark as read' }}</span>
+          </p>
         </div>
 
-        <!-- Replaced Delete Button -->
         <button
-          class="p-2 border-none bg-transparent text-red-500 hover:bg-red-50 cursor-pointer border-round transition-colors"
-          title="Delete" (click)="$event.stopPropagation(); notifService.deleteCustomerNotification(n.id)">
-          <i class="pi pi-trash"></i>
+          type="button"
+          class="customer-notif-item__delete"
+          title="Delete"
+          (click)="$event.stopPropagation(); notifService.deleteCustomerNotification(n.id)">
+          <i class="pi pi-trash" aria-hidden="true"></i>
         </button>
-      </div>
+      </li>
+    </ul>
 
-      <!-- Empty State -->
-      <div *ngIf="filteredNotifications().length === 0"
-        class="flex flex-column align-items-center justify-content-center py-8 gap-3">
-        <i class="pi pi-bell-slash text-5xl text-200"></i>
-        <span class="text-600 font-medium text-lg text-center px-3">
-          {{ filterMode() === 'unread' ? 'All caught up! No unread notifications.' : 'No notifications yet.' }}
-        </span>
-        <button *ngIf="filterMode() === 'unread'"
-          class="p-2 px-4 border-1 surface-border border-round bg-white text-700 font-semibold cursor-pointer flex align-items-center gap-2"
-          (click)="filterMode.set('all')">
-          <i class="pi pi-list"></i>
-          View All
-        </button>
-      </div>
+    <div *ngIf="filteredNotifications().length === 0" class="customer-notif__empty">
+      <i class="pi pi-bell-slash" aria-hidden="true"></i>
+      <p>
+        {{ filterMode() === 'unread' ? 'No unread notifications.' : 'No notifications yet.' }}
+      </p>
+      <button *ngIf="filterMode() === 'unread'" type="button" class="customer-notif__empty-btn" (click)="filterMode.set('all')">
+        <i class="pi pi-list" aria-hidden="true"></i>
+        View all
+      </button>
     </div>
-  </div>
+  </section>
 </div>
