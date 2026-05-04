@@ -7,7 +7,6 @@
 ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 ![PrimeNG](https://img.shields.io/badge/PrimeNG-007ACC?style=for-the-badge&logo=primeng&logoColor=white)
 
-
 A comprehensive, full-stack platform designed for orchestrating local services. Connecting customers with service providers seamlessly, managing everything from scheduling and bookings to payments and reviews.
 
 ---
@@ -33,8 +32,9 @@ Built with **NestJS**, following an enterprise-grade modular architecture.
 - **Framework:** [NestJS](https://nestjs.com/) (v11)
 - **Database ORM:** [TypeORM](https://typeorm.io/)
 - **Database:** MySQL
+- **Validation:** `class-validator` & `class-transformer`
 - **Authentication:** Passport.js (JWT strategies)
-- **Data Seeding:** Fakel-js for easy development database population
+- **Data Seeding:** Faker.js for easy development database population
 - **Testing:** Jest & Supertest
 
 ### Frontend (`/frontend`)
@@ -42,6 +42,7 @@ Built with **Angular**, featuring a beautiful and responsive UI component librar
 - **Framework:** [Angular](https://angular.dev/) (v21)
 - **UI Components:** [PrimeNG](https://primeng.org/) 
 - **Styling:** CSS & PrimeUI Themes
+- **Animation & Scrolling:** GSAP & Lenis for advanced animations and smooth scrolling
 - **Data Visualization:** Chart.js & ng2-charts for analytics dashboards
 - **Testing:** Vitest
 
@@ -52,27 +53,31 @@ Built with **Angular**, featuring a beautiful and responsive UI component librar
 ```text
 ├── backend/                  # NestJS API application
 │   ├── src/
-│   │   ├── common/           # Decorators, Enums, Interfaces, Guards
+│   │   ├── common/           # Decorators, Enums, Errors, Guards, Pipes, Utils
 │   │   ├── entities/         # TypeORM Database Entities (User, Booking, Payment, etc.)
 │   │   └── modules/          # Feature Modules
 │   │       ├── addresses/    # Handling physical locations
 │   │       ├── auth/         # Authentication & Authorization
 │   │       ├── bookings/     # Booking orchestration
 │   │       ├── categories/   # Service categorization
+│   │       ├── database/     # Database connection and config
 │   │       ├── notification/ # In-app notifications
 │   │       ├── payments/     # Transactions processing
 │   │       ├── reviews/      # Customer feedback system
+│   │       ├── saved-services/# Customer saved/favorite services
 │   │       ├── schedules/    # Provider availability
 │   │       ├── services/     # Core services listing
 │   │       └── users/        # User profile management
 │   └── test/                 # E2E test suites
 │
 ├── frontend/                 # Angular SPA Web application
+│   ├── public/               # Static assets & images
 │   └── src/
 │       ├── app/
 │       │   ├── core/         # Core singletons, interceptors, and services
 │       │   ├── features/     # Smart components and lazy-loaded modules
-│       │   └── layout/       # Structural UI (Headers, Footers, Sidebars)
+│       │   ├── layout/       # Structural UI (Headers, Footers, Sidebars)
+│       │   └── app.routes.ts # Application routing definitions
 │       └── environments/     # Environment specific configurations
 │
 └── README.md                 # Project documentation
@@ -98,8 +103,12 @@ Make sure you have the following installed on your machine:
    ```bash
    npm install
    ```
-3. Configure your database connection inside your NestJS environment/ORM configuration files.
-4. (Optional) Run database seeders if you want dummy data to test UI components out of the box.
+3. Set up your environment variables:
+   Create a `.env` file in the `backend` root and configure your database and JWT secrets (e.g., `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `JWT_SECRET`).
+4. (Optional) Run database seeders if you want dummy data to test UI components out of the box:
+   ```bash
+   npx ts-node seed.ts
+   ```
 5. Start the development server:
    ```bash
    npm run start:dev
@@ -144,4 +153,4 @@ npm run test         # Unit testing with Vitest
 
 ## 📝 License
 
-This project is [UNLICENSED](UNLICENSED). All rights reserved.
+This project is proprietary and confidential. All rights reserved.
