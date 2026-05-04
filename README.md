@@ -127,7 +127,7 @@ Make sure you have the following installed on your machine:
    ```
 3. Start the Angular development server:
    ```bash
-   npm run start
+   ng serve
    ```
    *The application will automatically reload if you change any of the source files. Access it at `http://localhost:4200`.*
 
